@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Salary Calculator</title>
 <meta name="theme-color" content="#1B1030">
+<link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="လစာတွက်စက်">
@@ -821,6 +822,13 @@
   document.getElementById('attend').addEventListener('change', calc);
   document.getElementById('sCur').addEventListener('change', function(){ S.currency = this.value; persist(); calc(); });
   applyLang(); fillSettings(); applyEntryMode();
+</script>
+<script>
+  if ('serviceWorker' in navigator && (location.protocol === 'http:' || location.protocol === 'https:')) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
 </script>
 </body>
 </html>
