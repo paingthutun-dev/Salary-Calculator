@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salary Calculator</title>
+<meta name="theme-color" content="#1B1030">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="လစာတွက်စက်">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23D9480F'/%3E%3Crect x='26' y='20' width='48' height='18' rx='4' fill='white'/%3E%3Crect x='26' y='46' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='44' y='46' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='62' y='46' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='26' y='64' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='44' y='64' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='62' y='64' width='12' height='12' rx='2' fill='white'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23D9480F'/%3E%3Crect x='26' y='20' width='48' height='18' rx='4' fill='white'/%3E%3Crect x='26' y='46' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='44' y='46' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='62' y='46' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='26' y='64' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='44' y='64' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='62' y='64' width='12' height='12' rx='2' fill='white'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --blue:#0B5ED7; --blue-dark:#0848A8; --navy:#0A2540;
+    --bg:#EEF3FB; --card:#FFFFFF; --text:#16233A; --muted:#5B6B85;
+    --line:#DCE6F5; --green:#0E7C4B; --radius:18px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0; font-family:"Noto Sans Myanmar","Myanmar Text","PingFang SC","Microsoft YaHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--bg); color:var(--text);
+  }
+  .wrap{max-width:560px; margin:0 auto; padding:20px 16px 40px;}
+  header{
+    background:linear-gradient(135deg,#0B5ED7,#0848A8);
+    color:#fff; border-radius:22px; padding:22px 20px; margin-bottom:16px;
+    box-shadow:0 10px 24px rgba(11,94,215,.28);
+  }
+  header h1{margin:0 0 4px; font-size:24px;}
+  header .mq{margin:0; overflow:hidden; white-space:nowrap; font-size:14px; opacity:.88;}
+  header .mq-track{display:inline-block; white-space:nowrap; animation:mq-scroll 12s linear infinite;}
+  header .mq-track span{padding-right:2.5rem;}
+  @keyframes mq-scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  @media (prefers-reduced-motion: reduce){header .mq-track{animation:none;}}
+  .card{
+    background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius); padding:18px; margin-bottom:14px;
+    box-shadow:0 2px 10px rgba(10,37,64,.06);
+  }
+  .card h2{margin:0 0 14px; font-size:17px; color:var(--navy);}
+  label{display:block; font-size:14px; color:var(--muted); margin:0 0 6px;}
+  input[type="number"], input[type="text"], select{
+    width:100%; padding:13px 14px; font-size:17px; border:1.5px solid var(--line);
+    border-radius:12px; outline:none; background:#F8FAFE; color:var(--text);
+    font-family:inherit;
+  }
+  input:focus, select:focus{border-color:var(--blue); background:#fff; box-shadow:0 0 0 3px rgba(11,94,215,.15);}
+  .field{margin-bottom:14px;}
+  .field:last-child{margin-bottom:0;}
+  .row{display:flex; gap:12px;}
+  .row .field{flex:1;}
+  .check{
+    display:flex; align-items:center; gap:10px; padding:13px 14px;
+    border:1.5px solid var(--line); border-radius:12px; background:#F8FAFE; cursor:pointer;
+  }
+  .check input{width:20px; height:20px; accent-color:var(--blue); cursor:pointer;}
+  .check span{font-size:16px;}
+  .total{
+    background:var(--navy); color:#fff; border-radius:var(--radius); padding:20px;
+    margin-bottom:14px; box-shadow:0 10px 24px rgba(10,37,64,.25);
+  }
+  .total .lbl{font-size:14px; opacity:.8;}
+  .total .amt{font-size:38px; font-weight:700; margin:4px 0 2px; letter-spacing:.2px;}
+  .total .cur{font-size:18px; opacity:.85; margin-left:6px;}
+  .lines{margin-top:14px; border-top:1px solid rgba(255,255,255,.18); padding-top:12px;}
+  .line{display:flex; justify-content:space-between; padding:5px 0; font-size:15px;}
+  .line span:last-child{font-weight:600;}
+  .line.dim{opacity:.55;}
+  .btn{
+    width:100%; padding:14px; font-size:16px; font-weight:600; border:none;
+    border-radius:12px; cursor:pointer; font-family:inherit;
+  }
+  .btn-blue{background:var(--blue); color:#fff;}
+  .btn-blue:active{background:var(--blue-dark);}
+  .btn-ghost{background:#EAF1FD; color:var(--blue-dark);}
+  .btn-row{display:flex; gap:10px;}
+  .btn-row .btn{flex:1;}
+  .note{font-size:13px; color:var(--muted); line-height:1.6;}
+  .hidden{display:none;}
+  .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:10px;}
+  .topbar h2{margin:0; font-size:19px; color:var(--navy);}
+  .topbar .actions{display:flex; align-items:center; gap:8px;}
+  .lang-select{width:auto; padding:9px 10px; font-size:15px;}
+  .linkbtn{background:none; border:none; color:var(--blue); font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; padding:8px; white-space:nowrap;}
+  .ok{color:var(--green); font-size:14px; text-align:center; margin-top:10px; min-height:20px;}
+  @media (max-width:420px){ .row{flex-direction:column; gap:0;} .row .field{margin-bottom:14px;} }
+  .ot-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .ot-day{display:flex; align-items:center; gap:8px;}
+  .ot-day label{margin:0; white-space:nowrap; font-size:14px;}
+  .ot-day input{padding:11px 10px; font-size:16px;}
+  @media (max-width:380px){ .ot-grid{grid-template-columns:1fr;} }
+  .rec-nav{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+  .rec-navbtn{background:#EAF1FD; color:var(--blue-dark); border:none; border-radius:10px; width:44px; height:44px; font-size:22px; cursor:pointer; font-family:inherit;}
+  .rec-head{display:grid; grid-template-columns:44px repeat(3, minmax(0,1fr)) minmax(76px, 1.4fr); gap:4px; font-size:11px; line-height:1.35; color:var(--muted); padding:0 2px 6px; align-items:center;}
+  .rec-head span{min-width:0; overflow-wrap:anywhere; text-align:center;}
+  .rec-row{display:grid; grid-template-columns:44px repeat(3, minmax(0,1fr)) minmax(76px, 1.4fr); gap:4px; align-items:center; padding:9px 2px; border-top:1px solid var(--line);}
+  .rec-row.hol-row{background:#FFF7E0; border-radius:8px;}
+  .rec-row.ph-row{background:#EAF1FD; border-radius:8px;}
+  .rec-row.sun-row{background:#FDE8E8; border-radius:8px;}
+  .rec-date{font-size:15px; min-width:0; text-align:center;}
+  .rec-date small{display:block; color:var(--muted); font-size:12px; overflow-wrap:anywhere;}
+  .rec-row.hol-row .rec-date{color:#8A5A00;}
+  .rec-row.sun-row .rec-date{color:#C92A2A;}
+  .rec-row input[type="checkbox"]{width:22px; height:22px; accent-color:var(--blue); cursor:pointer; justify-self:center;}
+  .rec-row input[type="number"]{padding:10px 10px; font-size:15px; min-width:0;}
+  .rec-row input[type="number"]:disabled{background:#F1F4F9; color:#9AA7BC;}
+  body.halloween{--blue:#D9480F; --blue-dark:#B34700; --navy:#1A1210; --bg:#EFEAF6; --line:#DDD6F3; --card:#FFFEF9;}
+  body.halloween header{background:linear-gradient(135deg,#D9480F,#3D1470);}
+  body.halloween header h1::after{content:' 🎃';}
+  body.halloween .total{background:linear-gradient(135deg,#3D1470,#150826);}
+  body.halloween .total .amt{color:#FFB35C;}
+  body.halloween .btn-ghost{background:#FDEBD7; color:#7A2E00;}
+  body.halloween .rec-navbtn{background:#FDEBD7; color:#7A2E00;}
+  body.halloween .rec-row.ph-row{background:#F3E8FF;}
+  body.halloween input:focus, body.halloween select:focus{border-color:#D9480F; box-shadow:0 0 0 3px rgba(217,72,15,.18);}
+  body.fs-small .wrap{zoom:.9;}
+  body.fs-large .wrap{zoom:1.15;}
+  #printArea{display:none;}
+  @media print{
+    body{background:#fff;}
+    .wrap{display:none;}
+    #printArea{display:block; padding:10px 16px; color:#000;}
+    #printArea h1{font-size:22px; margin:0 0 4px;}
+    #printArea .p-date{font-size:14px; color:#444; margin-bottom:14px;}
+    #printArea .p-row{display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid #ddd; font-size:15px;}
+    #printArea .p-row span:last-child{font-weight:600;}
+    #printArea .p-total{border-top:2px solid #000; border-bottom:none; font-size:18px; padding-top:12px; margin-top:8px;}
+    body.halloween #printArea .p-total{border-top-color:#D9480F;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1 data-t="appTitle">လစာတွက်စက်</h1>
+    <div class="mq" aria-label="Small steps lead to big results."><div class="mq-track"><span>Small steps lead to big results.</span><span>Small steps lead to big results.</span></div></div>
+  </header>
+
+  <!-- ===== Main calculator ===== -->
+  <div id="mainView">
+    <div class="topbar">
+      <h2 data-t="calcTitle">လစာတွက်ရန်</h2>
+      <div class="actions">
+        <button class="linkbtn" onclick="showSettings()" data-t="settingsBtn">⚙️ ဆက်တင်</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="field" id="daysWrap">
+        <label for="days" data-t="days">အလုပ်လုပ်ရက် (ရက်)</label>
+        <input type="number" id="days" min="0" step="1" inputmode="decimal" data-tp="daysPh">
+      </div>
+      <div class="row" id="rowOtSun">
+        <div class="field" id="otSingleWrap">
+          <label for="otHours" data-t="otHours">နေ့စဉ် OT နာရီ</label>
+          <input type="number" id="otHours" min="0" step="0.5" inputmode="decimal" placeholder="0">
+        </div>
+        <div class="field">
+          <label for="holDays" data-t="holDays">Holiday OT ရက်</label>
+          <input type="number" id="holDays" min="0" step="1" inputmode="decimal" placeholder="0">
+        </div>
+        <div class="field">
+          <label for="phDays" data-t="phDays">Public Holiday ရက်</label>
+          <input type="number" id="phDays" min="0" step="1" inputmode="decimal" placeholder="0">
+        </div>
+      </div>
+      <div id="otPerDayWrap" class="hidden">
+        <div class="field">
+          <label data-t="otPerDayTitle">နေ့အလိုက် OT နာရီ</label>
+          <div id="otDayRows"></div>
+          <div class="note" style="margin-top:10px;"><span data-t="otPerDayTotal">စုစုပေါင်း OT နာရီ</span>: <strong id="otDayTotal">0</strong></div>
+        </div>
+      </div>
+      <div id="recordWrap" class="hidden">
+        <div class="field">
+          <label data-t="recTitle">နေ့စဉ်မှတ်တမ်း</label>
+          <div class="rec-nav">
+            <button class="rec-navbtn" onclick="changeMonth(-1)">‹</button>
+            <strong id="recMonthLabel"></strong>
+            <button class="rec-navbtn" onclick="changeMonth(1)">›</button>
+          </div>
+          <div class="rec-head"><span data-t="recColDate">ရက်စွဲ</span><span data-t="recColWork">အလုပ်ဆင်း</span><span data-t="recColHol">Holiday</span><span data-t="recColPh">Public Holiday</span><span data-t="recColOt">OT နာရီ</span></div>
+          <div id="recDayRows"></div>
+          <div class="note" style="margin-top:12px;">
+            <span data-t="recWorked">အလုပ်ဆင်းရက်</span>: <strong id="recWorkedVal">0</strong> ·
+            <span data-t="recOt">OT နာရီ စုစုပေါင်း</span>: <strong id="recOtVal">0</strong> ·
+            <span data-t="recHol">Holiday OT ရက်</span>: <strong id="recHolVal">0</strong> ·
+            <span data-t="recOtMeal">OT လုပ်တဲ့ ရက်</span>: <strong id="recOtMealVal">0</strong> ·
+            <span data-t="recPh">Public Holiday ရက်</span>: <strong id="recPhVal">0</strong>
+          </div>
+          <button class="btn btn-ghost" style="margin-top:12px;" onclick="clearMonthRecord()" data-t="recClear">ဒီလရဲ့ မှတ်တမ်း ရှင်းမယ်</button>
+        </div>
+      </div>
+      <div class="field">
+        <label class="check">
+          <input type="checkbox" id="attend" checked>
+          <span data-t="attend">ရက်မှန် (Attendance Bonus ထည့်မည်)</span>
+        </label>
+      </div>
+      <div class="field">
+        <label for="otherBonus" data-t="otherBonus">အခြား Bonus</label>
+        <input type="number" id="otherBonus" min="0" step="any" inputmode="decimal" placeholder="0">
+      </div>
+      <button class="btn btn-ghost" onclick="clearInputs()" data-t="clear">ထည့်ထားတာတွေ ရှင်းလင်းမယ်</button>
+    </div>
+
+    <div class="total">
+      <div class="lbl" data-t="totalLbl">စုစုပေါင်း လစာ</div>
+      <div class="amt"><span id="totalAmt">0</span><span class="cur" id="totalCur">ကျပ်</span></div>
+      <div class="lines">
+        <div class="line"><span data-t="lBase">အခြေခံလစာ (Daily Wage × ရက်)</span><span id="lBase">0</span></div>
+        <div class="line"><span data-t="lOt">နေ့စဉ် OT</span><span id="lOt">0</span></div>
+        <div class="line"><span data-t="lHol">Holiday OT</span><span id="lHol">0</span></div>
+        <div class="line" id="rowPh"><span data-t="lPh">Public Holiday (PH × ရက်)</span><span id="lPh">0</span></div>
+        <div class="line" id="rowOtMeal"><span data-t="lOtMeal">OT ထမင်းစရိတ် (OT meal × OT ရက်)</span><span id="lOtMeal">0</span></div>
+        <div class="line"><span data-t="lMeal">ထမင်းစရိတ် (Meal × ရက်)</span><span id="lMeal">0</span></div>
+        <div class="line"><span data-t="lTrans">ကားခ (Transport × ရက်)</span><span id="lTrans">0</span></div>
+        <div class="line" id="rowAttend"><span data-t="lAttend">ရက်မှန်ကြေး (Attendance Bonus)</span><span id="lAttend">0</span></div>
+        <div class="line" id="rowOther"><span data-t="lOther">အခြား Bonus</span><span id="lOther">0</span></div>
+        <div class="line" id="rowIns"><span data-t="lIns">အာမခံကြေး (နှုတ်)</span><span id="lIns">0</span></div>
+      </div>
+    </div>
+
+    <button class="btn btn-blue" onclick="window.print()" data-t="print" style="margin-bottom:14px;">🖨️ ပရင့်ထုတ်မယ်</button>
+
+    <p class="note" data-t="note">ထမင်းစရိတ်နဲ့ ကားခကို အလုပ်လုပ်ရက်နဲ့ မြှောက်တွက်ပါတယ်။ ဈေးနှုန်းတွေအားလုံးကို ဆက်တင်ထဲမှာ ပြင်လို့ရပါတယ်။</p>
+  </div>
+
+  <!-- ===== Settings ===== -->
+  <div id="settingsView" class="hidden">
+    <div class="topbar">
+      <h2 data-t="settingsTitle">ဆက်တင် — ဈေးနှုန်းများ</h2>
+      <button class="linkbtn" onclick="showMain()" data-t="back">← ပြန်သွားမယ်</button>
+    </div>
+
+    <div class="card">
+      <div class="field">
+        <label for="sWage" data-t="sWage">Daily Wage — တစ်ရက်ဈေး</label>
+        <input type="number" id="sWage" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="sOt" data-t="sOt">Daily OT — တစ်နာရီဈေး</label>
+        <input type="number" id="sOt" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="sHoliday" data-t="sHoliday">Holiday OT — တစ်ရက်ဈေး</label>
+        <input type="number" id="sHoliday" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="sPh" data-t="sPh">Public Holiday — တစ်ရက်ဈေး</label>
+        <input type="number" id="sPh" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="sOtMeal" data-t="sOtMeal">OT ထမင်းစရိတ် — တစ်ရက်ဈေး</label>
+        <input type="number" id="sOtMeal" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="sMeal" data-t="sMeal">Meal Allowance — တစ်ရက်ဈေး</label>
+        <input type="number" id="sMeal" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="sTrans" data-t="sTrans">Transportation Allowance — တစ်ရက်ဈေး</label>
+        <input type="number" id="sTrans" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="sAttend" data-t="sAttend">Attendance Bonus — တစ်လစာ</label>
+        <input type="number" id="sAttend" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="sIns" data-t="sIns">အာမခံကြေး — တစ်လစာ</label>
+        <input type="number" id="sIns" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label class="check">
+          <input type="checkbox" id="sOtPerDay">
+          <span data-t="otPerDay">Daily OT ကို ရက်အလိုက် ထည့်မယ်</span>
+        </label>
+      </div>
+      <div class="field">
+        <label class="check">
+          <input type="checkbox" id="sRecordMode">
+          <span data-t="recordMode">နေ့စဉ်မှတ်တမ်း သုံးမယ်</span>
+        </label>
+      </div>
+      <div class="field">
+        <label class="check">
+          <input type="checkbox" id="sHalloween">
+          <span data-t="halloweenTheme">Halloween Theme သုံးမယ် 🎃</span>
+        </label>
+      </div>
+      <div class="field">
+        <label for="sCur" data-t="currency">ငွေကြေး</label>
+        <select id="sCur"></select>
+      </div>
+      <div class="field">
+        <label for="sLang" data-t="language">ဘာသာစကား</label>
+        <select id="sLang" onchange="setLang(this.value)">
+          <option value="my">မြန်မာ</option>
+          <option value="en">English</option>
+          <option value="zh">中文</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="sFontSize" data-t="fontSize">စာလုံးအရွယ်</label>
+        <select id="sFontSize">
+          <option value="small" data-t="fsSmall">သေး</option>
+          <option value="medium" data-t="fsNormal">ပုံမှန်</option>
+          <option value="large" data-t="fsLarge">ကြီး</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-blue" onclick="saveSettings()" data-t="save">သိမ်းမယ်</button>
+        <button class="btn btn-ghost" onclick="resetSettings()" data-t="reset">မူလအတိုင်း ပြန်ထားမယ်</button>
+      </div>
+      <div class="ok" id="saveMsg"></div>
+    </div>
+
+    <div class="card">
+      <h2 data-t="ioTitle">ဆက်တင် ထုတ် / သွင်း</h2>
+      <p class="note" style="margin-top:0" data-t="ioNote">စက်တစ်လုံးမှာ ဈေးနှုန်းတွေ သတ်မှတ်ပြီးရင် ဖိုင်ထုတ်ပြီး တခြားစက်တွေမှာ သွင်းသုံးလို့ရပါတယ်။</p>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="exportSettings()" data-t="export">ဖိုင်ထုတ်မယ် (JSON)</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('importFile').click()" data-t="import">ဖိုင်သွင်းမယ်</button>
+      </div>
+      <input type="file" id="importFile" accept=".json,application/json" class="hidden" onchange="importSettings(event)">
+      <div class="ok" id="ioMsg"></div>
+    </div>
+  </div>
+
+</div>
+
+<div id="printArea"></div>
+
+<script>
+  const KEY = 'salaryCalcSettings.v2', OLD_KEY = 'salaryCalcSettings.v1';
+  const CURS = ['MMK','THB','JPY','CNY'];
+  const SYM = { MMK:'ကျပ်', THB:'฿', JPY:'¥', CNY:'¥' };
+  const DEFAULTS = { wage:10000, ot:2000, holiday:20000, ph:10000, otMeal:3000, meal:3000, trans:2000, attend:30000, insurance:0, currency:'MMK', lang:'my', otPerDay:false, recordMode:false, halloween:true, fontSize:'medium' };
+
+  const I18N = {
+    my: {
+      appTitle:'လစာတွက်စက်',
+      calcTitle:'လစာတွက်ရန်', settingsBtn:'⚙️ ဆက်တင်',
+      days:'အလုပ်လုပ်ရက် (ရက်)', daysPh:'ဥပမာ — 26',
+      otHours:'နေ့စဉ် OT နာရီ', holDays:'Holiday OT ရက်', phDays:'Public Holiday ရက်',
+      attend:'ရက်မှန် (Attendance Bonus ထည့်မည်)', otherBonus:'အခြား Bonus',
+      clear:'ထည့်ထားတာတွေ ရှင်းလင်းမယ်', totalLbl:'စုစုပေါင်း လစာ', print:'🖨️ ပရင့်ထုတ်မယ်', dateLbl:'ရက်စွဲ',
+      lBase:'အခြေခံလစာ (Daily Wage × ရက်)', lOt:'နေ့စဉ် OT', lHol:'Holiday OT', lPh:'Public Holiday (PH × ရက်)', lOtMeal:'OT ထမင်းစရိတ် (OT meal × OT ရက်)',
+      lMeal:'ထမင်းစရိတ် (Meal × ရက်)', lTrans:'ကားခ (Transport × ရက်)',
+      lAttend:'ရက်မှန်ကြေး (Attendance Bonus)', lOther:'အခြား Bonus', lIns:'အာမခံကြေး (နှုတ်)',
+      note:'ထမင်းစရိတ်နဲ့ ကားခကို အလုပ်လုပ်ရက်နဲ့ မြှောက်တွက်ပါတယ်။ OT ထမင်းစရိတ်ကို OT လုပ်တဲ့ရက်နဲ့ မြှောက်တွက်ပါတယ်။ Public Holiday ရက်တွေမှာ PH နှုန်းတစ်မျိုးတည်းသာ ရပြီး ဘာ allowance မှ ထပ်မပေါင်းပါဘူး။ အာမခံကြေးကို စုစုပေါင်းထဲက နှုတ်ပါတယ်။ ဈေးနှုန်းတွေအားလုံးကို ဆက်တင်ထဲမှာ ပြင်လို့ရပါတယ်။',
+      settingsTitle:'ဆက်တင် — ဈေးနှုန်းများ', back:'← ပြန်သွားမယ်',
+      sWage:'Daily Wage — တစ်ရက်ဈေး', sOt:'Daily OT — တစ်နာရီဈေး', sHoliday:'Holiday OT — တစ်ရက်ဈေး', sPh:'Public Holiday — တစ်ရက်ဈေး', sOtMeal:'OT ထမင်းစရိတ် — တစ်ရက်ဈေး',
+      sMeal:'Meal Allowance — တစ်ရက်ဈေး', sTrans:'Transportation Allowance — တစ်ရက်ဈေး',
+      sAttend:'Attendance Bonus — တစ်လစာ', sIns:'အာမခံကြေး — တစ်လစာ',
+      otPerDay:'Daily OT ကို ရက်အလိုက် ထည့်မယ်', otPerDayTitle:'နေ့အလိုက် OT နာရီ',
+      otPerDayTotal:'စုစုပေါင်း OT နာရီ', otDaysHint:'အလုပ်လုပ်ရက် အရင်ထည့်ပါ', dayFmt:'နေ့ {n}',
+      recordMode:'နေ့စဉ်မှတ်တမ်း သုံးမယ်', halloweenTheme:'Halloween Theme သုံးမယ် 🎃', recTitle:'နေ့စဉ်မှတ်တမ်း',
+      recColDate:'ရက်စွဲ', recColWork:'အလုပ်ဆင်း', recColHol:'Holiday', recColPh:'Public Holiday', recColOt:'OT နာရီ',
+      recWorked:'အလုပ်ဆင်းရက်', recOt:'OT နာရီ စုစုပေါင်း', recHol:'Holiday OT ရက်', recOtMeal:'OT လုပ်တဲ့ ရက်', recPh:'Public Holiday ရက်',
+      recClear:'ဒီလရဲ့ မှတ်တမ်း ရှင်းမယ်', recClearConfirm:'ဒီလရဲ့ မှတ်တမ်းအားလုံး ဖျက်မှာလား?',
+      months:['ဇန်နဝါရီ','ဖေဖော်ဝါရီ','မတ်','ဧပြီ','မေ','ဇွန်','ဇူလိုင်','သြဂုတ်','စက်တင်ဘာ','အောက်တိုဘာ','နိုဝင်ဘာ','ဒီဇင်ဘာ'],
+      weekdays:['တနင်္ဂနွေ','တနင်္လာ','အင်္ဂါ','ဗုဒ္ဓဟူး','ကြာသပတေး','သောကြာ','စနေ'],
+      currency:'ငွေကြေး', language:'ဘာသာစကား',
+      fontSize:'စာလုံးအရွယ်', fsSmall:'သေး', fsNormal:'ပုံမှန်', fsLarge:'ကြီး',
+      save:'သိမ်းမယ်', reset:'မူလအတိုင်း ပြန်ထားမယ်',
+      savedMsg:'✓ သိမ်းပြီးပါပြီ — ဒီစက်မှာ ဆက်တင်မှတ်ထားပြီးပါပြီ',
+      resetMsg:'✓ မူလဈေးနှုန်းတွေ ပြန်ထားပြီးပါပြီ',
+      ioTitle:'ဆက်တင် ထုတ် / သွင်း',
+      ioNote:'စက်တစ်လုံးမှာ ဈေးနှုန်းတွေ သတ်မှတ်ပြီးရင် ဖိုင်ထုတ်ပြီး တခြားစက်တွေမှာ သွင်းသုံးလို့ရပါတယ်။',
+      export:'ဖိုင်ထုတ်မယ် (JSON)', import:'ဖိုင်သွင်းမယ်',
+      exportedMsg:'✓ ဆက်တင်ဖိုင် ထုတ်ပြီးပါပြီ', importedMsg:'✓ ဆက်တင် သွင်းပြီးပါပြီ',
+      invalidMsg:'ဖိုင်မမှန်ပါ — JSON ဖိုင်အမှန်ကို ရွေးပေးပါ',
+      curNames:{ MMK:'မြန်မာကျပ်', THB:'ထိုင်းဘတ်', JPY:'ဂျပန်ယန်း', CNY:'တရုတ်ယွမ်' }
+    },
+    en: {
+      appTitle:'Salary Calculator',
+      calcTitle:'Calculate Salary', settingsBtn:'⚙️ Settings',
+      days:'Working Days', daysPh:'e.g. 26',
+      otHours:'Daily OT Hours', holDays:'Holiday OT Days', phDays:'Public Holiday Days',
+      attend:'Full Attendance (include Attendance Bonus)', otherBonus:'Other Bonus',
+      clear:'Clear All', totalLbl:'Total Salary', print:'🖨️ Print', dateLbl:'Date',
+      lBase:'Base Salary (Daily Wage × Days)', lOt:'Daily OT', lHol:'Holiday OT', lPh:'Public Holiday (PH × Days)', lOtMeal:'OT Meal Allowance (OT Meal × OT Days)',
+      lMeal:'Meal Allowance (Meal × Days)', lTrans:'Transport Allowance (Transport × Days)',
+      lAttend:'Attendance Bonus', lOther:'Other Bonus', lIns:'Insurance Fee (deduction)',
+      note:'Meal and transport allowances are multiplied by working days. OT meal allowance is multiplied by OT days. On Public Holiday days only the Public Holiday rate is paid, with no allowances added. Insurance fee is deducted from the total. All rates can be changed in Settings.',
+      settingsTitle:'Settings — Rates', back:'← Back',
+      sWage:'Daily Wage — per day', sOt:'Daily OT — per hour', sHoliday:'Holiday OT — per day', sPh:'Public Holiday — per day', sOtMeal:'OT Meal Allowance — per OT day',
+      sMeal:'Meal Allowance — per day', sTrans:'Transportation Allowance — per day',
+      sAttend:'Attendance Bonus — per month', sIns:'Insurance Fee — per month',
+      otPerDay:'Enter Daily OT hours per day', otPerDayTitle:'OT Hours per Day',
+      otPerDayTotal:'Total OT Hours', otDaysHint:'Enter working days first', dayFmt:'Day {n}',
+      recordMode:'Use daily record', halloweenTheme:'Use Halloween theme 🎃', recTitle:'Daily Record',
+      recColDate:'Date', recColWork:'Worked', recColHol:'Holiday', recColPh:'Public Holiday', recColOt:'OT Hours',
+      recWorked:'Worked Days', recOt:'Total OT Hours', recHol:'Holiday OT Days', recOtMeal:'OT Days', recPh:'Public Holiday Days',
+      recClear:'Clear This Month', recClearConfirm:'Clear all records for this month?',
+      months:['January','February','March','April','May','June','July','August','September','October','November','December'],
+      weekdays:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+      currency:'Currency', language:'Language',
+      fontSize:'Font Size', fsSmall:'Small', fsNormal:'Normal', fsLarge:'Large',
+      save:'Save', reset:'Reset to Defaults',
+      savedMsg:'✓ Saved on this device',
+      resetMsg:'✓ Default rates restored',
+      ioTitle:'Export / Import Settings',
+      ioNote:'Set rates on one device, export the file, and import it on other devices.',
+      export:'Export File (JSON)', import:'Import File',
+      exportedMsg:'✓ Settings file exported', importedMsg:'✓ Settings imported',
+      invalidMsg:'Invalid file — please choose a valid JSON file',
+      curNames:{ MMK:'Myanmar Kyat', THB:'Thai Baht', JPY:'Japanese Yen', CNY:'Chinese Yuan' }
+    },
+    zh: {
+      appTitle:'工资计算器',
+      calcTitle:'计算工资', settingsBtn:'⚙️ 设置',
+      days:'工作天数', daysPh:'例如：26',
+      otHours:'每日加班小时', holDays:'假日加班天数', phDays:'公共假日天数',
+      attend:'全勤（包含全勤奖）', otherBonus:'其他奖金',
+      clear:'清除全部', totalLbl:'工资总额', print:'🖨️ 打印', dateLbl:'日期',
+      lBase:'基本工资（日薪 × 天数）', lOt:'每日加班', lHol:'假日加班', lPh:'公共假日（假日工资 × 天数）', lOtMeal:'加班餐补（餐补 × 加班天数）',
+      lMeal:'餐补（餐补 × 天数）', lTrans:'交通补贴（交通补贴 × 天数）',
+      lAttend:'全勤奖', lOther:'其他奖金', lIns:'保险费（扣除）',
+      note:'餐补和交通补贴按工作天数计算。加班餐补按加班天数计算。公共假日仅按假日工资计算，不另加任何补贴。保险费从总额中扣除。所有标准都可以在设置中修改。',
+      settingsTitle:'设置 — 工资标准', back:'← 返回',
+      sWage:'日薪 — 每天', sOt:'每日加班 — 每小时', sHoliday:'假日加班 — 每天', sPh:'公共假日 — 每天', sOtMeal:'加班餐补 — 每天',
+      sMeal:'餐补 — 每天', sTrans:'交通补贴 — 每天',
+      sAttend:'全勤奖 — 每月', sIns:'保险费 — 每月',
+      otPerDay:'按天输入每日加班小时', otPerDayTitle:'每日加班小时',
+      otPerDayTotal:'加班总小时', otDaysHint:'请先输入工作天数', dayFmt:'第{n}天',
+      recordMode:'使用每日记录', halloweenTheme:'使用万圣节主题 🎃', recTitle:'每日记录',
+      recColDate:'日期', recColWork:'出勤', recColHol:'假日', recColPh:'公共假日', recColOt:'加班小时',
+      recWorked:'出勤天数', recOt:'加班总小时', recHol:'假日加班天数', recOtMeal:'加班天数', recPh:'公共假日天数',
+      recClear:'清除本月记录', recClearConfirm:'确定清除本月所有记录吗？',
+      months:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+      weekdays:['周日','周一','周二','周三','周四','周五','周六'],
+      currency:'货币', language:'语言',
+      fontSize:'字体大小', fsSmall:'小', fsNormal:'正常', fsLarge:'大',
+      save:'保存', reset:'恢复默认',
+      savedMsg:'✓ 已保存在此设备上',
+      resetMsg:'✓ 已恢复默认标准',
+      ioTitle:'导出 / 导入设置',
+      ioNote:'在一台设备上设置好标准后，可以导出文件并在其他设备上导入使用。',
+      export:'导出文件 (JSON)', import:'导入文件',
+      exportedMsg:'✓ 设置文件已导出', importedMsg:'✓ 设置已导入',
+      invalidMsg:'文件无效 — 请选择有效的 JSON 文件',
+      curNames:{ MMK:'缅甸元', THB:'泰铢', JPY:'日元', CNY:'人民币' }
+    }
+  };
+
+  function sanitize(p){
+    const out = {...DEFAULTS};
+    if(!p || typeof p !== 'object') return out;
+    for(const k of ['wage','ot','holiday','ph','meal','trans','attend','otMeal','insurance'])
+      if(typeof p[k] === 'number' && isFinite(p[k]) && p[k] >= 0) out[k] = p[k];
+    if(typeof p.otPerDay === 'boolean') out.otPerDay = p.otPerDay;
+    if(typeof p.recordMode === 'boolean') out.recordMode = p.recordMode;
+    if(typeof p.halloween === 'boolean') out.halloween = p.halloween;
+    if(['small','medium','large'].includes(p.fontSize)) out.fontSize = p.fontSize;
+    if(CURS.includes(p.currency)) out.currency = p.currency;
+    if(['my','en','zh'].includes(p.lang)) out.lang = p.lang;
+    return out;
+  }
+  function load(){
+    try{
+      const v2 = localStorage.getItem(KEY);
+      if(v2) return sanitize(JSON.parse(v2));
+      const v1 = localStorage.getItem(OLD_KEY);
+      if(v1){ const p = sanitize(JSON.parse(v1)); p.currency = 'MMK'; p.lang = 'my'; return p; }
+    }catch(e){}
+    return {...DEFAULTS};
+  }
+  let S = load();
+  function persist(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+  function num(id){ const v = parseFloat(document.getElementById(id).value); return (isFinite(v) && v > 0) ? v : 0; }
+  function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
+  function curLabel(){
+    if(S.currency === 'JPY') return '¥ (JPY)';
+    if(S.currency === 'CNY') return '¥ (CNY)';
+    return SYM[S.currency];
+  }
+  function t(k){ return I18N[S.lang][k]; }
+
+  function applyLang(){
+    document.documentElement.lang = S.lang;
+    document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
+    document.querySelectorAll('[data-tp]').forEach(el => { el.placeholder = t(el.dataset.tp); });
+    const sel = document.getElementById('sCur');
+    sel.innerHTML = '';
+    CURS.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c; o.textContent = c + ' — ' + I18N[S.lang].curNames[c];
+      sel.appendChild(o);
+    });
+    sel.value = S.currency;
+    document.getElementById('sLang').value = S.lang;
+    applyTheme();
+    applyFontSize();
+  }
+  function applyTheme(){ document.body.classList.toggle('halloween', !!S.halloween); }
+  function applyFontSize(){ document.body.classList.toggle('fs-small', S.fontSize === 'small'); document.body.classList.toggle('fs-large', S.fontSize === 'large'); }
+  function setLang(lang){
+    if(!['my','en','zh'].includes(lang)) return;
+    S.lang = lang; persist(); applyLang();
+    if(S.recordMode) renderRecord(); else calc();
+  }
+
+  function calc(){
+    const days = getWorkingDays(), otH = getOtHours(), holD = getHolDays(), phD = getPhDays(), other = num('otherBonus');
+    const otDays = getOtDays();
+    const attendOn = document.getElementById('attend').checked;
+    const base = S.wage * days, ot = S.ot * otH, hol = S.holiday * holD, ph = S.ph * phD;
+    const meal = S.meal * days, trans = S.trans * days;
+    const otMeal = S.otMeal * otDays;
+    const att = attendOn ? S.attend : 0;
+    const ins = S.insurance;
+    const total = base + ot + hol + ph + meal + trans + att + other + otMeal - ins;
+    document.getElementById('totalAmt').textContent = fmt(total);
+    document.getElementById('totalCur').textContent = curLabel();
+    const otT = document.getElementById('otDayTotal');
+    if(otT) otT.textContent = otH;
+    const rw = document.getElementById('recWorkedVal');
+    if(rw){ rw.textContent = days; document.getElementById('recOtVal').textContent = otH; document.getElementById('recHolVal').textContent = holD; document.getElementById('recOtMealVal').textContent = otDays; document.getElementById('recPhVal').textContent = phD; }
+    document.getElementById('lBase').textContent = fmt(base);
+    document.getElementById('lOt').textContent = fmt(ot);
+    document.getElementById('lHol').textContent = fmt(hol);
+    document.getElementById('lPh').textContent = fmt(ph);
+    document.getElementById('lOtMeal').textContent = fmt(otMeal);
+    document.getElementById('lMeal').textContent = fmt(meal);
+    document.getElementById('lTrans').textContent = fmt(trans);
+    document.getElementById('lAttend').textContent = fmt(att);
+    document.getElementById('lOther').textContent = fmt(other);
+    document.getElementById('lIns').textContent = ins > 0 ? '-' + fmt(ins) : '0';
+    document.getElementById('rowAttend').classList.toggle('dim', !attendOn);
+    document.getElementById('rowOther').classList.toggle('dim', other === 0);
+    document.getElementById('rowIns').classList.toggle('dim', ins === 0);
+    document.getElementById('rowOtMeal').classList.toggle('dim', otMeal === 0);
+    document.getElementById('rowPh').classList.toggle('dim', ph === 0);
+    renderPrint(days, otH, holD, phD, base, ot, hol, ph, meal, trans, att, other, otMeal, ins, total);
+  }
+
+  function renderPrint(days, otH, holD, phD, base, ot, hol, ph, meal, trans, att, other, otMeal, ins, total){
+    const loc = S.lang === 'zh' ? 'zh-CN' : 'en-GB';
+    const d = new Date().toLocaleDateString(loc);
+    const rows = [
+      [t('days'), days], [t('otHours'), otH], [t('holDays'), holD], [t('phDays'), phD],
+      [t('lBase'), fmt(base)], [t('lOt'), fmt(ot)], [t('lHol'), fmt(hol)], [t('lPh'), fmt(ph)], [t('lOtMeal'), fmt(otMeal)],
+      [t('lMeal'), fmt(meal)], [t('lTrans'), fmt(trans)],
+      [t('lAttend'), fmt(att)], [t('lOther'), fmt(other)], [t('lIns'), ins > 0 ? '-' + fmt(ins) : '0']
+    ];
+    let h = '<h1>' + t('appTitle') + '</h1>';
+    h += '<div class="p-date">' + t('dateLbl') + ': ' + d + '</div>';
+    rows.forEach(function(r){ h += '<div class="p-row"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>'; });
+    h += '<div class="p-row p-total"><span>' + t('totalLbl') + '</span><span>' + fmt(total) + ' ' + curLabel() + '</span></div>';
+    document.getElementById('printArea').innerHTML = h;
+  }
+
+  let otDayValues = [];
+  function getOtHours(){
+    if(S.recordMode) return sumRecordOt();
+    if(!S.otPerDay) return num('otHours');
+    let s = 0;
+    for(let i = 0; i < otDayValues.length; i++) s += otDayValues[i] || 0;
+    return s;
+  }
+  function countRecordOtDays(){
+    const md = recData[recKey(recYear, recMonth)] || {};
+    let n = 0;
+    for(const d in md) if(md[d].w && !md[d].ph && (md[d].ot || 0) > 0) n++;
+    return n;
+  }
+  function getOtDays(){
+    if(S.recordMode) return countRecordOtDays();
+    if(S.otPerDay){
+      let n = 0;
+      for(let i = 0; i < otDayValues.length; i++) if(otDayValues[i] > 0) n++;
+      return n;
+    }
+    return num('otHours') > 0 ? 1 : 0;
+  }
+  function renderOtDayRows(){
+    const box = document.getElementById('otDayRows');
+    box.querySelectorAll('input').forEach(function(inp){
+      const v = parseFloat(inp.value);
+      otDayValues[parseInt(inp.dataset.idx, 10)] = (isFinite(v) && v > 0) ? v : 0;
+    });
+    const days = Math.floor(num('days'));
+    if(days <= 0){
+      box.innerHTML = '<div class="note">' + t('otDaysHint') + '</div>';
+      otDayValues = []; calc(); return;
+    }
+    otDayValues.length = days;
+    let h = '<div class="ot-grid">';
+    for(let i = 0; i < days; i++){
+      const v = otDayValues[i] ? otDayValues[i] : '';
+      h += '<div class="ot-day"><label>' + t('dayFmt').replace('{n}', i + 1) + '</label><input type="number" min="0" step="0.5" inputmode="decimal" placeholder="0" value="' + v + '" data-idx="' + i + '"></div>';
+    }
+    h += '</div>';
+    box.innerHTML = h;
+    box.querySelectorAll('input').forEach(function(inp){
+      inp.addEventListener('input', function(){
+        const v = parseFloat(inp.value);
+        otDayValues[parseInt(inp.dataset.idx, 10)] = (isFinite(v) && v > 0) ? v : 0;
+        calc();
+      });
+    });
+    calc();
+  }
+  function applyEntryMode(){
+    const rec = !!S.recordMode, per = !!S.otPerDay && !rec;
+    document.getElementById('daysWrap').classList.toggle('hidden', rec);
+    document.getElementById('rowOtSun').classList.toggle('hidden', rec);
+    document.getElementById('otSingleWrap').classList.toggle('hidden', per);
+    document.getElementById('otPerDayWrap').classList.toggle('hidden', !per);
+    document.getElementById('recordWrap').classList.toggle('hidden', !rec);
+    if(rec) renderRecord();
+    else if(per) renderOtDayRows();
+    else calc();
+  }
+
+  const REC_KEY = 'salaryCalcRecords.v1';
+  let recData = loadRec();
+  let recYear = new Date().getFullYear();
+  let recMonth = new Date().getMonth();
+  function loadRec(){
+    try{
+      const p = JSON.parse(localStorage.getItem(REC_KEY) || '{}');
+      return (p && typeof p === 'object') ? p : {};
+    }catch(e){ return {}; }
+  }
+  function saveRec(){ try{ localStorage.setItem(REC_KEY, JSON.stringify(recData)); }catch(e){} }
+  function recKey(y, m){ return y + '-' + String(m + 1).padStart(2, '0'); }
+  function daysInMonth(y, m){ return new Date(y, m + 1, 0).getDate(); }
+  function monthData(){
+    const k = recKey(recYear, recMonth);
+    if(!recData[k]) recData[k] = {};
+    return recData[k];
+  }
+  function countWorked(){
+    const md = recData[recKey(recYear, recMonth)] || {};
+    let n = 0;
+    for(const d in md) if(md[d].w && !md[d].ph) n++;
+    return n;
+  }
+  function sumRecordOt(){
+    const md = recData[recKey(recYear, recMonth)] || {};
+    let s = 0;
+    for(const d in md) if(md[d].w && !md[d].ph) s += md[d].ot || 0;
+    return s;
+  }
+  function countHolWorked(){
+    const md = recData[recKey(recYear, recMonth)] || {};
+    let n = 0;
+    for(const d in md) if(md[d].w && md[d].h && !md[d].ph) n++;
+    return n;
+  }
+  function countPhDays(){
+    const md = recData[recKey(recYear, recMonth)] || {};
+    let n = 0;
+    for(const d in md) if(md[d].ph) n++;
+    return n;
+  }
+  function getHolDays(){ return S.recordMode ? countHolWorked() : num('holDays'); }
+  function getPhDays(){ return S.recordMode ? countPhDays() : num('phDays'); }
+  function getWorkingDays(){ return S.recordMode ? countWorked() : num('days'); }
+  function monthLabel(){
+    const m = I18N[S.lang].months[recMonth];
+    if(S.lang === 'my') return recYear + ' ခုနှစ် ' + m;
+    if(S.lang === 'zh') return recYear + '年' + m;
+    return m + ' ' + recYear;
+  }
+  function renderRecord(){
+    document.getElementById('recMonthLabel').textContent = monthLabel();
+    const md = monthData();
+    const n = daysInMonth(recYear, recMonth);
+    let h = '';
+    for(let d = 1; d <= n; d++){
+      const wd = new Date(recYear, recMonth, d).getDay();
+      const e = md[d] || {};
+      const w = !!e.w, ot = e.ot ? e.ot : '';
+      const holCls = e.h ? ' hol-row' : '';
+      const phCls = e.ph ? ' ph-row' : '';
+      const sunCls = (wd === 0 && !e.h && !e.ph) ? ' sun-row' : '';
+      h += '<div class="rec-row' + holCls + phCls + sunCls + '"><div class="rec-date">' + d + '<small>' + I18N[S.lang].weekdays[wd] + '</small></div>'
+        + '<input type="checkbox" data-day="' + d + '" ' + (w ? 'checked' : '') + '>'
+        + '<input type="checkbox" data-holday="' + d + '" ' + (e.h ? 'checked' : '') + (w ? '' : ' disabled') + '>'
+        + '<input type="checkbox" data-phday="' + d + '" ' + (e.ph ? 'checked' : '') + '>'
+        + '<input type="number" min="0" step="0.5" inputmode="decimal" placeholder="0" value="' + ot + '" data-otday="' + d + '"' + (w ? '' : ' disabled') + '></div>';
+    }
+    const box = document.getElementById('recDayRows');
+    box.innerHTML = h;
+    box.querySelectorAll('input[data-day]').forEach(function(cb){
+      cb.addEventListener('change', function(){
+        const d = parseInt(cb.dataset.day, 10);
+        const md2 = monthData();
+        if(cb.checked){
+          if(!md2[d]) md2[d] = { w: true, ot: 0 };
+          else { md2[d].w = true; md2[d].ph = false; }
+        } else {
+          if(md2[d]){ md2[d].w = false; md2[d].ot = 0; md2[d].h = false; }
+        }
+        saveRec(); renderRecord();
+      });
+    });
+    box.querySelectorAll('input[data-holday]').forEach(function(cb){
+      cb.addEventListener('change', function(){
+        const d = parseInt(cb.dataset.holday, 10);
+        const md2 = monthData();
+        if(!md2[d]) md2[d] = { w: false, ot: 0, h: false };
+        md2[d].h = cb.checked;
+        if(cb.checked) md2[d].ph = false;
+        saveRec(); renderRecord();
+      });
+    });
+    box.querySelectorAll('input[data-phday]').forEach(function(cb){
+      cb.addEventListener('change', function(){
+        const d = parseInt(cb.dataset.phday, 10);
+        const md2 = monthData();
+        if(!md2[d]) md2[d] = { w: false, ot: 0, h: false, ph: false };
+        if(cb.checked){ md2[d].ph = true; md2[d].w = false; md2[d].ot = 0; md2[d].h = false; }
+        else md2[d].ph = false;
+        saveRec(); renderRecord();
+      });
+    });
+    box.querySelectorAll('input[type="number"]').forEach(function(inp){
+      inp.addEventListener('input', function(){
+        const d = parseInt(inp.dataset.otday, 10);
+        const v = parseFloat(inp.value);
+        const md2 = monthData();
+        if(!md2[d]) md2[d] = { w: true, ot: 0 };
+        md2[d].ot = (isFinite(v) && v > 0) ? v : 0;
+        saveRec(); calc();
+      });
+    });
+    calc();
+  }
+  function changeMonth(dir){
+    recMonth += dir;
+    if(recMonth < 0){ recMonth = 11; recYear--; }
+    if(recMonth > 11){ recMonth = 0; recYear++; }
+    renderRecord();
+  }
+  function clearMonthRecord(){
+    if(!confirm(t('recClearConfirm'))) return;
+    delete recData[recKey(recYear, recMonth)];
+    saveRec(); renderRecord();
+  }
+
+  function fillSettings(){
+    document.getElementById('sWage').value = S.wage;
+    document.getElementById('sOt').value = S.ot;
+    document.getElementById('sHoliday').value = S.holiday;
+    document.getElementById('sPh').value = S.ph;
+    document.getElementById('sOtMeal').value = S.otMeal;
+    document.getElementById('sMeal').value = S.meal;
+    document.getElementById('sTrans').value = S.trans;
+    document.getElementById('sAttend').value = S.attend;
+    document.getElementById('sIns').value = S.insurance;
+    document.getElementById('sOtPerDay').checked = !!S.otPerDay;
+    document.getElementById('sRecordMode').checked = !!S.recordMode;
+    document.getElementById('sHalloween').checked = !!S.halloween;
+    document.getElementById('sFontSize').value = S.fontSize;
+    document.getElementById('sCur').value = S.currency;
+    document.getElementById('sLang').value = S.lang;
+  }
+  function saveSettings(){
+    S = {
+      wage: num('sWage'), ot: num('sOt'), holiday: num('sHoliday'), ph: num('sPh'), otMeal: num('sOtMeal'),
+      meal: num('sMeal'), trans: num('sTrans'), attend: num('sAttend'), insurance: num('sIns'),
+      currency: document.getElementById('sCur').value,
+      lang: S.lang,
+      otPerDay: document.getElementById('sOtPerDay').checked,
+      recordMode: document.getElementById('sRecordMode').checked,
+      halloween: document.getElementById('sHalloween').checked,
+      fontSize: document.getElementById('sFontSize').value
+    };
+    if(!CURS.includes(S.currency)) S.currency = 'MMK';
+    persist(); fillSettings(); applyLang(); applyEntryMode();
+    const m = document.getElementById('saveMsg');
+    m.textContent = t('savedMsg');
+    setTimeout(()=> m.textContent = '', 3000);
+  }
+  function resetSettings(){
+    const lang = S.lang;
+    S = {...DEFAULTS, lang}; persist(); fillSettings(); applyLang(); applyEntryMode();
+    const m = document.getElementById('saveMsg');
+    m.textContent = t('resetMsg');
+    setTimeout(()=> m.textContent = '', 3000);
+  }
+  function exportSettings(){
+    const blob = new Blob([JSON.stringify(S, null, 2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'salary-calculator-settings.json';
+    a.click(); URL.revokeObjectURL(a.href);
+    document.getElementById('ioMsg').textContent = t('exportedMsg');
+  }
+  function importSettings(ev){
+    const f = ev.target.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = ()=>{
+      try{
+        S = sanitize(JSON.parse(r.result));
+        persist(); fillSettings(); applyLang(); applyEntryMode();
+        document.getElementById('ioMsg').textContent = t('importedMsg');
+      }catch(e){ document.getElementById('ioMsg').textContent = t('invalidMsg'); }
+    };
+    r.readAsText(f); ev.target.value = '';
+  }
+  function clearInputs(){
+    ['days','otHours','holDays','phDays','otherBonus'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('attend').checked = true; calc();
+    document.getElementById('days').focus();
+  }
+  function showSettings(){ fillSettings(); document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.remove('hidden'); window.scrollTo(0,0); }
+  function showMain(){ document.getElementById('settingsView').classList.add('hidden'); document.getElementById('mainView').classList.remove('hidden'); calc(); window.scrollTo(0,0); }
+
+  ['days','otHours','holDays','phDays','otherBonus'].forEach(id =>
+    document.getElementById(id).addEventListener('input', calc));
+  document.getElementById('days').addEventListener('input', function(){ if(S.otPerDay && !S.recordMode) renderOtDayRows(); });
+  document.getElementById('attend').addEventListener('change', calc);
+  document.getElementById('sCur').addEventListener('change', function(){ S.currency = this.value; persist(); calc(); });
+  applyLang(); fillSettings(); applyEntryMode();
+</script>
+</body>
+</html>
