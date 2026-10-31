@@ -30,7 +30,7 @@
     box-shadow:0 10px 24px rgba(11,94,215,.28);
   }
   header h1{margin:0 0 4px; font-size:24px;}
-  header .mq{margin:0; overflow:hidden; white-space:nowrap; font-size:14px; opacity:.88;}
+  header .mq{margin:0; overflow:hidden; white-space:nowrap; font-size:14px; opacity:.88; cursor:pointer;}
   header .mq-track{display:inline-block; white-space:nowrap; animation:mq-scroll 12s linear infinite;}
   header .mq-track span{padding-right:2.5rem;}
   @keyframes mq-scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
@@ -137,7 +137,7 @@
 
   <header>
     <h1 data-t="appTitle">လစာတွက်စက်</h1>
-    <div class="mq" aria-label="Small steps lead to big results."><div class="mq-track"><span>Small steps lead to big results.</span><span>Small steps lead to big results.</span></div></div>
+    <div class="mq" aria-label="Small steps lead to big results."><div class="mq-track" id="mqTrack"><span>Small steps lead to big results.</span><span>Small steps lead to big results.</span></div></div>
   </header>
 
   <!-- ===== Main calculator ===== -->
@@ -821,6 +821,42 @@
   document.getElementById('days').addEventListener('input', function(){ if(S.otPerDay && !S.recordMode) renderOtDayRows(); });
   document.getElementById('attend').addEventListener('change', calc);
   document.getElementById('sCur').addEventListener('change', function(){ S.currency = this.value; persist(); calc(); });
+  /* ===== Banner: random financial tips + motivation =====
+     Random message on load, rotates every 10s, tap banner to shuffle. */
+  const BANNER_MSGS = [
+    "လစာရတာနဲ့ အရင်ဆုံး ၁၀% စုပါ — ကျန်တာနဲ့မှ သုံးပါ။",
+    "အရေးပေါ်ငွေ အနည်းဆုံး ၃ လစာ စုထားပါ။",
+    "ဝင်ငွေထက် ထွက်ငွေ မများအောင် အမြဲ သတိထားပါ။",
+    "အကြွေးကို အတိုးများတဲ့ဟာက အရင် ဆပ်ပါ။",
+    "နေ့စဉ် သုံးငွေကို မှတ်ထားရင် ပိုငွေ ဘယ်လောက် ထွက်လဲ မြင်ရမယ်။",
+    "OT ကြေးကို သုံးမယ့်အစား စုငွေထဲ ထည့်ပါ။",
+    "စျေးဝယ်တိုင်း လိုအပ်လား၊ လိုချင်လားလို့ အရင် မေးပါ။",
+    "လစာတိုးတိုင်း သုံးငွေတိုးတာထက် စုငွေတိုးအောင် လုပ်ပါ။",
+    "Small steps lead to big results.",
+    "ဒီနေ့ စုတဲ့ ငွေသေးသေးလေးက မနက်ဖြန်ရဲ့ လုံခြုံမှုပဲ။",
+    "ငွေကို ထိန်းနိုင်တဲ့သူက ဘဝကို ထိန်းနိုင်တယ်။",
+    "သည်းခံပြီး စုပါ — ရလဒ်က အချိန်နဲ့အမျှ ကြီးလာမယ်။",
+    "တစ်ရက်ချင်း တိုးတက်တာက အောင်မြင်မှုရဲ့ လျှို့ဝှက်ချက်ပဲ။",
+    "ပန်းတိုင်ကြီးကို ခြေလှမ်းသေးသေးလေးတွေနဲ့ လျှောက်ပါ။"
+  ];
+  let bannerIdx = -1;
+  function showBanner(){
+    let i;
+    do { i = Math.floor(Math.random() * BANNER_MSGS.length); } while (i === bannerIdx && BANNER_MSGS.length > 1);
+    bannerIdx = i;
+    const msg = BANNER_MSGS[i];
+    const mq = document.querySelector('.mq');
+    const track = document.getElementById('mqTrack');
+    if (mq) mq.setAttribute('aria-label', msg);
+    if (track) {
+      track.querySelectorAll('span').forEach(s => s.textContent = msg);
+      track.style.animation = 'none'; void track.offsetWidth; track.style.animation = '';
+    }
+  }
+  document.querySelector('.mq').addEventListener('click', showBanner);
+  showBanner();
+  setInterval(showBanner, 10000);
+
   applyLang(); fillSettings(); applyEntryMode();
 </script>
 <script>
