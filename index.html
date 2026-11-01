@@ -72,7 +72,10 @@
   .btn{
     width:100%; padding:14px; font-size:16px; font-weight:600; border:none;
     border-radius:12px; cursor:pointer; font-family:inherit;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.35), inset 0 -3px 0 rgba(0,0,0,.14), 0 5px 12px rgba(10,37,64,.20);
+    transition:transform .08s ease, box-shadow .08s ease;
   }
+  .btn:active{transform:translateY(2px); box-shadow:inset 0 1px 0 rgba(255,255,255,.25), inset 0 -1px 0 rgba(0,0,0,.10), 0 1px 3px rgba(10,37,64,.16);}
   .btn-blue{background:var(--blue); color:#fff;}
   .btn-blue:active{background:var(--blue-dark);}
   .btn-ghost{background:#EAF1FD; color:var(--blue-dark);}
@@ -84,7 +87,8 @@
   .topbar h2{margin:0; font-size:19px; color:var(--navy);}
   .topbar .actions{display:flex; align-items:center; gap:8px;}
   .lang-select{width:auto; padding:9px 10px; font-size:15px;}
-  .linkbtn{background:none; border:none; color:var(--blue); font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; padding:8px; white-space:nowrap;}
+  .linkbtn{background:#EAF1FD; border:none; border-radius:999px; color:var(--blue-dark); font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; padding:9px 14px; white-space:nowrap; box-shadow:inset 0 1px 0 rgba(255,255,255,.6), inset 0 -2px 0 rgba(0,0,0,.10), 0 3px 8px rgba(10,37,64,.16); transition:transform .08s ease, box-shadow .08s ease;}
+  .linkbtn:active{transform:translateY(1px); box-shadow:inset 0 1px 0 rgba(255,255,255,.4), inset 0 -1px 0 rgba(0,0,0,.08), 0 1px 3px rgba(10,37,64,.14);}
   .ok{color:var(--green); font-size:14px; text-align:center; margin-top:10px; min-height:20px;}
   @media (max-width:420px){ .row{flex-direction:column; gap:0;} .row .field{margin-bottom:14px;} }
   .ot-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
@@ -93,7 +97,8 @@
   .ot-day input{padding:11px 10px; font-size:16px;}
   @media (max-width:380px){ .ot-grid{grid-template-columns:1fr;} }
   .rec-nav{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
-  .rec-navbtn{background:#EAF1FD; color:var(--blue-dark); border:none; border-radius:10px; width:44px; height:44px; font-size:22px; cursor:pointer; font-family:inherit;}
+  .rec-navbtn{background:#EAF1FD; color:var(--blue-dark); border:none; border-radius:10px; width:44px; height:44px; font-size:22px; cursor:pointer; font-family:inherit; box-shadow:inset 0 1px 0 rgba(255,255,255,.6), inset 0 -2px 0 rgba(0,0,0,.10), 0 3px 8px rgba(10,37,64,.16); transition:transform .08s ease, box-shadow .08s ease;}
+  .rec-navbtn:active{transform:translateY(1px); box-shadow:inset 0 1px 0 rgba(255,255,255,.4), inset 0 -1px 0 rgba(0,0,0,.08), 0 1px 3px rgba(10,37,64,.14);}
   .cal-head{display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); gap:4px; font-size:12px; color:var(--muted); padding:0 2px 6px; text-align:center;}
   .cal-head span.sun-h{color:#C92A2A;}
   .cal-grid{display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); gap:4px;}
@@ -122,6 +127,8 @@
   body.halloween .total{background:linear-gradient(135deg,#3D1470,#150826);}
   body.halloween .total .amt{color:#FFB35C;}
   body.halloween .btn-ghost{background:#FDEBD7; color:#7A2E00;}
+  body.halloween .linkbtn{background:#FDEBD7; color:#7A2E00;}
+  body.halloween .rec-navbtn{background:#FDEBD7; color:#7A2E00;}
   body.halloween .rec-navbtn{background:#FDEBD7; color:#7A2E00;}
   body.halloween .cal-day.ph-row{background:#F3E8FF;}
   body.halloween input:focus, body.halloween select:focus{border-color:#D9480F; box-shadow:0 0 0 3px rgba(217,72,15,.18);}
@@ -143,7 +150,8 @@
   .sp-notes div{margin-bottom:4px;}
   .sp-notes div:last-child{margin-bottom:0;}
   .sp-actions{display:flex; gap:10px; justify-content:center; margin-top:14px;}
-  .sp-btn{background:#D9480F; color:#fff; border:none; border-radius:10px; padding:12px 18px; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit;}
+  .sp-btn{background:#D9480F; color:#fff; border:none; border-radius:10px; padding:12px 18px; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; box-shadow:inset 0 1px 0 rgba(255,255,255,.35), inset 0 -3px 0 rgba(0,0,0,.20), 0 5px 12px rgba(0,0,0,.35); transition:transform .08s ease, box-shadow .08s ease;}
+  .sp-btn:active{transform:translateY(2px); box-shadow:inset 0 1px 0 rgba(255,255,255,.25), inset 0 -1px 0 rgba(0,0,0,.15), 0 1px 3px rgba(0,0,0,.30);}
   .sp-btn.ghost{background:rgba(255,255,255,.15);}
   .sp-tap{font-size:12px; opacity:.55; margin-top:16px;}
   @media (prefers-reduced-motion: reduce){ .sp-logo{animation:none;} .sp-bar span{animation:none; width:100%;} }
