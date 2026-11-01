@@ -119,12 +119,6 @@
   body.fs-small .wrap{zoom:.9;}
   body.fs-large .wrap{zoom:1.15;}
   #printArea{display:none;}
-  #slipContent h1{font-size:22px; margin:0 0 4px; color:var(--navy);}
-  #slipContent .p-date{font-size:14px; color:var(--muted); margin-bottom:12px;}
-  #slipContent .p-row{display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line); font-size:15px;}
-  #slipContent .p-row span:last-child{font-weight:600;}
-  #slipContent .p-total{border-top:2px solid var(--navy); border-bottom:none; font-size:18px; padding-top:12px; margin-top:8px;}
-  body.halloween #slipContent .p-total{border-top-color:#D9480F;}
   @media print{
     body{background:#fff;}
     .wrap{display:none;}
@@ -344,10 +338,8 @@
       <h2 data-t="slipTitle">လစာစလစ်</h2>
       <button class="linkbtn" onclick="showMain()" data-t="back">← ပြန်သွားမယ်</button>
     </div>
-    <div class="card">
-      <div id="slipContent"></div>
-      <button class="btn btn-blue" onclick="window.print()" data-t="print" style="margin-top:14px;">🖨️ ပရင့်ထုတ်မယ်</button>
-    </div>
+    <div id="slipContent"></div>
+    <button class="btn btn-blue" onclick="window.print()" data-t="print">🖨️ ပရင့်ထုတ်မယ်</button>
   </div>
 
 </div>
@@ -556,7 +548,30 @@
     document.getElementById('rowIns').classList.toggle('dim', ins === 0);
     document.getElementById('rowOtMeal').classList.toggle('dim', otMeal === 0);
     document.getElementById('rowPh').classList.toggle('dim', ph === 0);
+    renderSlipCard(base, ot, hol, ph, otMeal, meal, trans, att, other, ins, total, attendOn);
     renderPrint(days, otH, holD, phD, base, ot, hol, ph, meal, trans, att, other, otMeal, ins, total);
+  }
+
+  /* Slip preview card — same look as the main total card, no IDs, no date. */
+  function renderSlipCard(base, ot, hol, ph, otMeal, meal, trans, att, other, ins, total, attendOn){
+    const rows = [
+      [t('lBase'), fmt(base), false],
+      [t('lOt'), fmt(ot), false],
+      [t('lHol'), fmt(hol), false],
+      [t('lPh'), fmt(ph), ph === 0],
+      [t('lOtMeal'), fmt(otMeal), otMeal === 0],
+      [t('lMeal'), fmt(meal), false],
+      [t('lTrans'), fmt(trans), false],
+      [t('lAttend'), fmt(att), !attendOn],
+      [t('lOther'), fmt(other), other === 0],
+      [t('lIns'), ins > 0 ? '-' + fmt(ins) : '0', ins === 0]
+    ];
+    let h = '<div class="total"><div class="lbl">' + t('totalLbl') + '</div>';
+    h += '<div class="amt">' + fmt(total) + '<span class="cur">' + curLabel() + '</span></div><div class="lines">';
+    rows.forEach(function(r){ h += '<div class="line' + (r[2] ? ' dim' : '') + '"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>'; });
+    h += '</div></div>';
+    const sc = document.getElementById('slipContent');
+    if (sc) sc.innerHTML = h;
   }
 
   function renderPrint(days, otH, holD, phD, base, ot, hol, ph, meal, trans, att, other, otMeal, ins, total){
@@ -573,8 +588,6 @@
     rows.forEach(function(r){ h += '<div class="p-row"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>'; });
     h += '<div class="p-row p-total"><span>' + t('totalLbl') + '</span><span>' + fmt(total) + ' ' + curLabel() + '</span></div>';
     document.getElementById('printArea').innerHTML = h;
-    const sc = document.getElementById('slipContent');
-    if (sc) sc.innerHTML = h;
   }
 
   let otDayValues = [];
