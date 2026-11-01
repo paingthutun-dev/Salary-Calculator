@@ -52,6 +52,16 @@
   .field:last-child{margin-bottom:0;}
   .row{display:flex; gap:12px;}
   .row .field{flex:1;}
+  .app-row{display:flex; gap:12px; align-items:flex-end;}
+  .app-row .field{flex:1; min-width:0;}
+  .settings-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .settings-grid h2, .settings-grid .btn-row, .settings-grid .ok, .settings-grid .app-row{grid-column:1 / -1;}
+  .settings-grid .field{margin-bottom:0; display:flex; flex-direction:column;}
+  .settings-grid .field input[type=number], .settings-grid .field select, .settings-grid .field .check{margin-top:auto;}
+  .settings-grid .field .check{font-size:17px;}
+  .settings-grid .field .check-fill{height:100%;}
+  #ot3Wrap.dim{opacity:.55;}
+  #calEditOtWrap.dim{opacity:.55;}
   .check{
     display:flex; align-items:center; gap:10px; padding:13px 14px;
     border:1.5px solid var(--line); border-radius:12px; background:#F8FAFE; cursor:pointer;
@@ -91,11 +101,6 @@
   .linkbtn:active{transform:translateY(1px); box-shadow:inset 0 1px 0 rgba(255,255,255,.4), inset 0 -1px 0 rgba(0,0,0,.08), 0 1px 3px rgba(10,37,64,.14);}
   .ok{color:var(--green); font-size:14px; text-align:center; margin-top:10px; min-height:20px;}
   @media (max-width:420px){ .row{flex-direction:column; gap:0;} .row .field{margin-bottom:14px;} }
-  .ot-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
-  .ot-day{display:flex; align-items:center; gap:8px;}
-  .ot-day label{margin:0; white-space:nowrap; font-size:14px;}
-  .ot-day input{padding:11px 10px; font-size:16px;}
-  @media (max-width:380px){ .ot-grid{grid-template-columns:1fr;} }
   .rec-nav{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
   .rec-navbtn{background:#EAF1FD; color:var(--blue-dark); border:none; border-radius:10px; width:44px; height:44px; font-size:22px; cursor:pointer; font-family:inherit; box-shadow:inset 0 1px 0 rgba(255,255,255,.6), inset 0 -2px 0 rgba(0,0,0,.10), 0 3px 8px rgba(10,37,64,.16); transition:transform .08s ease, box-shadow .08s ease;}
   .rec-navbtn:active{transform:translateY(1px); box-shadow:inset 0 1px 0 rgba(255,255,255,.4), inset 0 -1px 0 rgba(0,0,0,.08), 0 1px 3px rgba(10,37,64,.14);}
@@ -120,6 +125,12 @@
   .cal-edit-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
   .cal-edit-head strong{font-size:16px;}
   .cal-edit .check{margin-bottom:10px;}
+  .cal-checks{display:flex; gap:8px;}
+  .cal-checks .check{flex:1 1 0; min-width:0; padding:11px 8px; gap:8px;}
+  .cal-checks .check input{flex-shrink:0;}
+  .cal-checks .check span{font-size:15px; overflow-wrap:anywhere;}
+  .cal-checks .field{flex:1 1 0; min-width:0; display:flex; margin-bottom:10px;}
+  .cal-checks .field input{flex:1; min-width:0;}
   .cal-edit input[type="number"]:disabled{background:#F1F4F9; color:#9AA7BC;}
   body.halloween{--blue:#D9480F; --blue-dark:#B34700; --navy:#1A1210; --bg:#EFEAF6; --line:#DDD6F3; --card:#FFFEF9;}
   body.halloween header{background:linear-gradient(135deg,#D9480F,#3D1470);}
@@ -215,23 +226,16 @@
       </div>
       <div class="row" id="rowOtSun">
         <div class="field" id="otSingleWrap">
-          <label for="otHours" data-t="otHours">နေ့စဉ် OT နာရီ</label>
+          <label for="otHours" data-t="otHours">နေ့စဉ်အချိန်ပို နာရီ</label>
           <input type="number" id="otHours" min="0" step="0.5" inputmode="decimal" placeholder="0">
         </div>
         <div class="field">
-          <label for="holDays" data-t="holDays">Holiday OT ရက်</label>
+          <label for="holDays" data-t="holDays">အားလပ်ရက်အချိန်ပို (ရက်)</label>
           <input type="number" id="holDays" min="0" step="1" inputmode="decimal" placeholder="0">
         </div>
         <div class="field">
-          <label for="phDays" data-t="phDays">Public Holiday ရက်</label>
+          <label for="phDays" data-t="phDays">အစိုးရပိတ်ရက် (ရက်)</label>
           <input type="number" id="phDays" min="0" step="1" inputmode="decimal" placeholder="0">
-        </div>
-      </div>
-      <div id="otPerDayWrap" class="hidden">
-        <div class="field">
-          <label data-t="otPerDayTitle">နေ့အလိုက် OT နာရီ</label>
-          <div id="otDayRows"></div>
-          <div class="note" style="margin-top:10px;"><span data-t="otPerDayTotal">စုစုပေါင်း OT နာရီ</span>: <strong id="otDayTotal">0</strong></div>
         </div>
       </div>
       <div id="recordWrap" class="hidden">
@@ -246,36 +250,44 @@
           <div id="calGrid" class="cal-grid"></div>
           <div id="calEdit" class="cal-edit hidden">
             <div class="cal-edit-head"><strong id="calEditLabel"></strong><button class="linkbtn" onclick="closeCalEdit()">✕</button></div>
-            <label class="check"><input type="checkbox" id="calEditW"><span data-t="recColWork">အလုပ်ဆင်း</span></label>
-            <label class="check"><input type="checkbox" id="calEditH"><span data-t="recColHol">Holiday</span></label>
-            <label class="check"><input type="checkbox" id="calEditP"><span data-t="recColPh">Public Holiday</span></label>
-            <div class="field"><label data-t="recColOt">OT နာရီ</label><input type="number" id="calEditOt" min="0" step="0.5" inputmode="decimal" placeholder="0"></div>
+            <div class="cal-checks">
+              <label class="check"><input type="checkbox" id="calEditW"><span data-t="recColWork">အလုပ်ဆင်း</span></label>
+              <label class="check"><input type="checkbox" id="calEditH"><span data-t="recColHol">အားလပ်ရက် အလုပ်ဆင်း</span></label>
+            </div>
+            <div class="cal-checks">
+              <label class="check"><input type="checkbox" id="calEditP"><span data-t="recColPh">နားရက်</span></label>
+              <div class="field" id="calEditOtWrap"><input type="number" id="calEditOt" min="0" step="0.5" inputmode="decimal" data-tp="recColOt"></div>
+            </div>
           </div>
           <p class="note" id="calLegend" style="margin-top:10px;"></p>
           <div class="note" style="margin-top:12px;">
             <span data-t="recWorked">အလုပ်ဆင်းရက်</span>: <strong id="recWorkedVal">0</strong> ·
             <span data-t="recOt">OT နာရီ စုစုပေါင်း</span>: <strong id="recOtVal">0</strong> ·
-            <span data-t="recHol">Holiday OT ရက်</span>: <strong id="recHolVal">0</strong> ·
+            <span data-t="recHol">အားလပ်ရက်အချိန်ပို (ရက်)</span>: <strong id="recHolVal">0</strong> ·
             <span data-t="recOtMeal">OT လုပ်တဲ့ ရက်</span>: <strong id="recOtMealVal">0</strong> ·
-            <span data-t="recPh">Public Holiday ရက်</span>: <strong id="recPhVal">0</strong>
+            <span data-t="recPh">အစိုးရပိတ်ရက် (ရက်)</span>: <strong id="recPhVal">0</strong>
           </div>
           <button class="btn btn-ghost" style="margin-top:12px;" onclick="clearMonthRecord()" data-t="recClear">ဒီလရဲ့ မှတ်တမ်း ရှင်းမယ်</button>
         </div>
       </div>
       <div class="field">
         <label class="check">
-          <input type="checkbox" id="attend" checked>
-          <span data-t="attend">ရက်မှန် (Attendance Bonus ထည့်မည်)</span>
+          <input type="checkbox" id="attend">
+          <span data-t="attend">ရက်မှန်ကြေး ထည့်မည်</span>
         </label>
       </div>
       <div class="field">
         <label for="otherBonus" data-t="otherBonus">အခြား Bonus</label>
         <input type="number" id="otherBonus" min="0" step="any" inputmode="decimal" placeholder="0">
       </div>
+      <div class="field" id="ot3Wrap">
+        <label for="ot3Hours" data-t="ot3Hours">OT*3 နာရီ</label>
+        <input type="number" id="ot3Hours" min="0" step="0.5" inputmode="decimal" placeholder="0">
+      </div>
       <button class="btn btn-ghost" onclick="clearInputs()" data-t="clear">ထည့်ထားတာတွေ ရှင်းလင်းမယ်</button>
     </div>
 
-    <p class="note" data-t="note">ထမင်းစရိတ်နဲ့ ကားခကို အလုပ်လုပ်ရက်နဲ့ မြှောက်တွက်ပါတယ်။ ဈေးနှုန်းတွေအားလုံးကို ဆက်တင်ထဲမှာ ပြင်လို့ရပါတယ်။</p>
+    <p class="note" data-t="note">ထမင်းစရိတ်နဲ့ ခရီးစရိတ်ကို အလုပ်လုပ်ရက်နဲ့ မြှောက်တွက်ပါတယ်။ ဈေးနှုန်းတွေအားလုံးကို ဆက်တင်ထဲမှာ ပြင်လို့ရပါတယ်။</p>
   </div>
 
   <!-- ===== Settings ===== -->
@@ -283,65 +295,35 @@
     <div class="topbar">
       <h2 data-t="settingsTitle">ဆက်တင် — ဈေးနှုန်းများ</h2>
       <div class="actions">
+        <button class="linkbtn" onclick="showRates()" data-t="ratesBtn">ဈေးနှုန်းများ</button>
         <button class="linkbtn" onclick="showAbout()" data-t="aboutTitle">အကြောင်း</button>
         <button class="linkbtn" onclick="showMain()" data-t="back">← ပြန်သွားမယ်</button>
       </div>
     </div>
 
-    <div class="card">
+    <div class="card settings-grid">
       <div class="field">
-        <label for="sWage" data-t="sWage">Daily Wage — တစ်ရက်ဈေး</label>
-        <input type="number" id="sWage" min="0" step="any" inputmode="decimal">
+        <label for="sEntryMode" data-t="recordMode">ထည့်သွင်းနည်း</label>
+        <select id="sEntryMode">
+          <option value="calendar" data-t="modeCalendar">ပြက္ခဒိန်</option>
+          <option value="calculator" data-t="modeCalculator">တွက်စက်</option>
+        </select>
       </div>
-      <div class="field">
-        <label for="sOt" data-t="sOt">Daily OT — တစ်နာရီဈေး</label>
-        <input type="number" id="sOt" min="0" step="any" inputmode="decimal">
-      </div>
-      <div class="field">
-        <label for="sHoliday" data-t="sHoliday">Holiday OT — တစ်ရက်ဈေး</label>
-        <input type="number" id="sHoliday" min="0" step="any" inputmode="decimal">
-      </div>
-      <div class="field">
-        <label for="sPh" data-t="sPh">Public Holiday — တစ်ရက်ဈေး</label>
-        <input type="number" id="sPh" min="0" step="any" inputmode="decimal">
-      </div>
-      <div class="field">
-        <label for="sOtMeal" data-t="sOtMeal">OT ထမင်းစရိတ် — တစ်ရက်ဈေး</label>
-        <input type="number" id="sOtMeal" min="0" step="any" inputmode="decimal">
-      </div>
-      <div class="field">
-        <label for="sMeal" data-t="sMeal">Meal Allowance — တစ်ရက်ဈေး</label>
-        <input type="number" id="sMeal" min="0" step="any" inputmode="decimal">
-      </div>
-      <div class="field">
-        <label for="sTrans" data-t="sTrans">Transportation Allowance — တစ်ရက်ဈေး</label>
-        <input type="number" id="sTrans" min="0" step="any" inputmode="decimal">
-      </div>
-      <div class="field">
-        <label for="sAttend" data-t="sAttend">Attendance Bonus — တစ်လစာ</label>
-        <input type="number" id="sAttend" min="0" step="any" inputmode="decimal">
-      </div>
-      <div class="field">
-        <label for="sIns" data-t="sIns">အာမခံကြေး — တစ်လစာ</label>
-        <input type="number" id="sIns" min="0" step="any" inputmode="decimal">
-      </div>
-      <div class="field">
-        <label class="check">
-          <input type="checkbox" id="sOtPerDay">
-          <span data-t="otPerDay">Daily OT ကို ရက်အလိုက် ထည့်မယ်</span>
-        </label>
-      </div>
-      <div class="field">
-        <label class="check">
-          <input type="checkbox" id="sRecordMode">
-          <span data-t="recordMode">နေ့စဉ်မှတ်တမ်း သုံးမယ်</span>
-        </label>
-      </div>
-      <div class="field">
-        <label class="check">
-          <input type="checkbox" id="sHalloween">
-          <span data-t="halloweenTheme">Halloween Theme သုံးမယ် 🎃</span>
-        </label>
+      <div class="app-row">
+        <div class="field">
+          <label class="check">
+            <input type="checkbox" id="sHalloween">
+            <span data-t="halloweenTheme">Halloween Theme သုံးမယ် 🎃</span>
+          </label>
+        </div>
+        <div class="field">
+          <label for="sFontSize" data-t="fontSize">စာလုံးအရွယ်</label>
+          <select id="sFontSize">
+            <option value="small" data-t="fsSmall">သေး</option>
+            <option value="medium" data-t="fsNormal">ပုံမှန်</option>
+            <option value="large" data-t="fsLarge">ကြီး</option>
+          </select>
+        </div>
       </div>
       <div class="field">
         <label for="sCur" data-t="currency">ငွေကြေး</label>
@@ -353,14 +335,6 @@
           <option value="my">မြန်မာ</option>
           <option value="en">English</option>
           <option value="zh">中文</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="sFontSize" data-t="fontSize">စာလုံးအရွယ်</label>
-        <select id="sFontSize">
-          <option value="small" data-t="fsSmall">သေး</option>
-          <option value="medium" data-t="fsNormal">ပုံမှန်</option>
-          <option value="large" data-t="fsLarge">ကြီး</option>
         </select>
       </div>
       <div class="btn-row">
@@ -379,6 +353,62 @@
       </div>
       <input type="file" id="importFile" accept=".json,application/json" class="hidden" onchange="importSettings(event)">
       <div class="ok" id="ioMsg"></div>
+    </div>
+  </div>
+
+  <!-- ===== Rates ===== -->
+  <div id="ratesView" class="hidden">
+    <div class="topbar">
+      <h2 data-t="ratesTitle">ဈေးနှုန်းများ</h2>
+      <button class="linkbtn" onclick="showSettings()" data-t="back">← ပြန်သွားမယ်</button>
+    </div>
+
+    <div class="card settings-grid">
+      <div class="field">
+        <label for="sWage" data-t="sWage">လုပ်အားခ — တစ်ရက်ဈေး</label>
+        <input type="number" id="sWage" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="sOt" data-t="sOt">နေ့စဉ်အချိန်ပို — တစ်နာရီဈေး</label>
+        <input type="number" id="sOt" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="sOt3" data-t="sOt3">OT*3 — တစ်နာရီဈေး</label>
+        <input type="number" id="sOt3" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="sHoliday" data-t="sHoliday">အားလပ်ရက်အချိန်ပို — တစ်ရက်ဈေး</label>
+        <input type="number" id="sHoliday" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="sPh" data-t="sPh">အစိုးရပိတ်ရက် — တစ်ရက်ဈေး</label>
+        <input type="number" id="sPh" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="sOtMeal" data-t="sOtMeal">OT ထမင်းစရိတ် — တစ်ရက်ဈေး</label>
+        <input type="number" id="sOtMeal" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="sMeal" data-t="sMeal">ထမင်းစရိတ် — တစ်ရက်ဈေး</label>
+        <input type="number" id="sMeal" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="sTrans" data-t="sTrans">ခရီးစရိတ် — တစ်ရက်ဈေး</label>
+        <input type="number" id="sTrans" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="sAttend" data-t="sAttend">ရက်မှန်ကြေး — တစ်လစာ</label>
+        <input type="number" id="sAttend" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="sIns" data-t="sIns">အာမခံကြေး — တစ်လစာ</label>
+        <input type="number" id="sIns" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-blue" onclick="saveSettings()" data-t="save">သိမ်းမယ်</button>
+        <button class="btn btn-ghost" onclick="resetSettings()" data-t="reset">မူလအတိုင်း ပြန်ထားမယ်</button>
+      </div>
+      <div class="ok" id="ratesSaveMsg"></div>
     </div>
   </div>
 
@@ -449,30 +479,28 @@
   }
   const CURS = ['MMK','THB','JPY','CNY'];
   const SYM = { MMK:'ကျပ်', THB:'฿', JPY:'¥', CNY:'¥' };
-  const DEFAULTS = { wage:10000, ot:2000, holiday:20000, ph:10000, otMeal:3000, meal:3000, trans:2000, attend:30000, insurance:0, currency:'MMK', lang:'my', otPerDay:false, recordMode:false, halloween:true, fontSize:'medium' };
+  const DEFAULTS = { wage:357, ot:66.9, holiday:357, ph:357, otMeal:30, meal:30, trans:30, attend:0, insurance:0, ot3Rate:200.7, currency:'THB', lang:'en', recordMode:true, halloween:true, fontSize:'medium' };
 
   const I18N = {
     my: {
       appTitle:'လစာတွက်စက်',
       calcTitle:'လစာတွက်ရန်', settingsBtn:'⚙️ ဆက်တင်', slipBtn:'🧾 စလစ်', slipTitle:'လစာစလစ်',
       days:'အလုပ်လုပ်ရက် (ရက်)', daysPh:'ဥပမာ — 26',
-      otHours:'နေ့စဉ် OT နာရီ', holDays:'Holiday OT ရက်', phDays:'Public Holiday ရက်',
-      attend:'ရက်မှန် (Attendance Bonus ထည့်မည်)', otherBonus:'အခြား Bonus',
+      otHours:'နေ့စဉ်အချိန်ပို နာရီ', ot3Hours:'OT*3 နာရီ', holDays:'အားလပ်ရက်အချိန်ပို (ရက်)', phDays:'အစိုးရပိတ်ရက် (ရက်)',
+      attend:'ရက်မှန်ကြေး ထည့်မည်', otherBonus:'အခြား Bonus',
       clear:'ထည့်ထားတာတွေ ရှင်းလင်းမယ်', totalLbl:'စုစုပေါင်း လစာ', print:'🖨️ ပရင့်ထုတ်မယ်', dateLbl:'ရက်စွဲ',
-      lBase:'အခြေခံလစာ (Daily Wage × ရက်)', lOt:'နေ့စဉ် OT', lHol:'Holiday OT', lPh:'Public Holiday (PH × ရက်)', lOtMeal:'OT ထမင်းစရိတ် (OT meal × OT ရက်)',
-      lMeal:'ထမင်းစရိတ် (Meal × ရက်)', lTrans:'ကားခ (Transport × ရက်)',
-      lAttend:'ရက်မှန်ကြေး (Attendance Bonus)', lOther:'အခြား Bonus', lIns:'အာမခံကြေး (နှုတ်)',
-      note:'ထမင်းစရိတ်နဲ့ ကားခကို အလုပ်လုပ်ရက်နဲ့ မြှောက်တွက်ပါတယ်။ OT ထမင်းစရိတ်ကို OT လုပ်တဲ့ရက်နဲ့ မြှောက်တွက်ပါတယ်။ Public Holiday ရက်တွေမှာ PH နှုန်းတစ်မျိုးတည်းသာ ရပြီး ဘာ allowance မှ ထပ်မပေါင်းပါဘူး။ အာမခံကြေးကို စုစုပေါင်းထဲက နှုတ်ပါတယ်။ ဈေးနှုန်းတွေအားလုံးကို ဆက်တင်ထဲမှာ ပြင်လို့ရပါတယ်။',
-      settingsTitle:'ဆက်တင် — ဈေးနှုန်းများ', back:'← ပြန်သွားမယ်',
-      sWage:'Daily Wage — တစ်ရက်ဈေး', sOt:'Daily OT — တစ်နာရီဈေး', sHoliday:'Holiday OT — တစ်ရက်ဈေး', sPh:'Public Holiday — တစ်ရက်ဈေး', sOtMeal:'OT ထမင်းစရိတ် — တစ်ရက်ဈေး',
-      sMeal:'Meal Allowance — တစ်ရက်ဈေး', sTrans:'Transportation Allowance — တစ်ရက်ဈေး',
-      sAttend:'Attendance Bonus — တစ်လစာ', sIns:'အာမခံကြေး — တစ်လစာ',
-      otPerDay:'Daily OT ကို ရက်အလိုက် ထည့်မယ်', otPerDayTitle:'နေ့အလိုက် OT နာရီ',
-      otPerDayTotal:'စုစုပေါင်း OT နာရီ', otDaysHint:'အလုပ်လုပ်ရက် အရင်ထည့်ပါ', dayFmt:'နေ့ {n}',
-      recordMode:'နေ့စဉ်မှတ်တမ်း သုံးမယ်', halloweenTheme:'Halloween Theme သုံးမယ် 🎃', recTitle:'နေ့စဉ်မှတ်တမ်း',
-      recColDate:'ရက်စွဲ', recColWork:'အလုပ်ဆင်း', recColHol:'Holiday', recColPh:'Public Holiday', recColOt:'OT နာရီ',
-      recWorked:'အလုပ်ဆင်းရက်', recOt:'OT နာရီ စုစုပေါင်း', recHol:'Holiday OT ရက်', recOtMeal:'OT လုပ်တဲ့ ရက်', recPh:'Public Holiday ရက်',
-      recClear:'ဒီလရဲ့ မှတ်တမ်း ရှင်းမယ်', recClearConfirm:'ဒီလရဲ့ မှတ်တမ်းအားလုံး ဖျက်မှာလား?', splashChecking:'Update စစ်နေသည်…', splashUptoDate:'နောက်ဆုံးဗားရှင်း ဖြစ်နေသည် ✓', splashUpdateAvail:'Update အသစ် ရှိသည်', splashOffline:'Offline — သိမ်းထားတဲ့ ဗားရှင်းကို သုံးနေသည်', splashWhatsNew:'အသစ်ပါဝင်တာများ', splashTap:'ဆက်ရန် နှိပ်ပါ', splashUpdateBtn:'အခု Update လုပ်မယ်', splashContinue:'ဆက်သွားမယ်', aboutTitle:'အကြောင်း', aboutVersion:'ဗားရှင်း', aboutContact:'ဆက်သွယ်ရန်', aboutCheck:'Update စစ်မယ်',
+      lBase:'အခြေခံလစာ (လုပ်အားခ × ရက်)', lOt:'နေ့စဉ်အချိန်ပို', lOt3:'OT*3', lHol:'အားလပ်ရက်အချိန်ပို', lPh:'အစိုးရပိတ်ရက် (PH × ရက်)', lOtMeal:'OT ထမင်းစရိတ် (OT meal × OT ရက်)',
+      lMeal:'ထမင်းစရိတ် × ရက်', lTrans:'ခရီးစရိတ် × ရက်',
+      lAttend:'ရက်မှန်ကြေး', lOther:'အခြား Bonus', lIns:'အာမခံကြေး (နှုတ်)',
+      note:'ထမင်းစရိတ်နဲ့ ခရီးစရိတ်ကို အလုပ်လုပ်ရက်နဲ့ မြှောက်တွက်ပါတယ်။ OT ထမင်းစရိတ်ကို OT လုပ်တဲ့ရက်နဲ့ မြှောက်တွက်ပါတယ်။ အစိုးရပိတ်ရက်တွေမှာ PH နှုန်းတစ်မျိုးတည်းသာ ရပြီး ဘာ allowance မှ ထပ်မပေါင်းပါဘူး။ အာမခံကြေးကို စုစုပေါင်းထဲက နှုတ်ပါတယ်။ ဈေးနှုန်းတွေအားလုံးကို ဆက်တင်ထဲမှာ ပြင်လို့ရပါတယ်။',
+      settingsTitle:'ဆက်တင်', back:'← ပြန်သွားမယ်',
+      sWage:'လုပ်အားခ — တစ်ရက်ဈေး', sOt:'နေ့စဉ်အချိန်ပို — တစ်နာရီဈေး', sOt3:'OT*3 — တစ်နာရီဈေး', sHoliday:'အားလပ်ရက်အချိန်ပို — တစ်ရက်ဈေး', sPh:'အစိုးရပိတ်ရက် — တစ်ရက်ဈေး', sOtMeal:'OT ထမင်းစရိတ် — တစ်ရက်ဈေး',
+      sMeal:'ထမင်းစရိတ် — တစ်ရက်ဈေး', sTrans:'ခရီးစရိတ် — တစ်ရက်ဈေး',
+      sAttend:'ရက်မှန်ကြေး — တစ်လစာ', sIns:'အာမခံကြေး — တစ်လစာ',
+      recordMode:'ထည့်သွင်းနည်း', modeCalendar:'ပြက္ခဒိန်', modeCalculator:'တွက်စက်', halloweenTheme:'Halloween theme', recTitle:'နေ့စဉ်မှတ်တမ်း',
+      recColDate:'ရက်စွဲ', recColWork:'အလုပ်ဆင်း', recColHol:'အားလပ်ရက် အလုပ်ဆင်း', recColPh:'နားရက်', recColOt:'OT နာရီ',
+      recWorked:'အလုပ်ဆင်းရက်', recOt:'OT နာရီ စုစုပေါင်း', recHol:'အားလပ်ရက်အချိန်ပို (ရက်)', recOtMeal:'OT လုပ်တဲ့ ရက်', recPh:'အစိုးရပိတ်ရက် (ရက်)',
+      recClear:'ဒီလရဲ့ မှတ်တမ်း ရှင်းမယ်', recClearConfirm:'ဒီလရဲ့ မှတ်တမ်းအားလုံး ဖျက်မှာလား?', splashChecking:'Update စစ်နေသည်…', splashUptoDate:'နောက်ဆုံးဗားရှင်း ဖြစ်နေသည် ✓', splashUpdateAvail:'Update အသစ် ရှိသည်', splashOffline:'Offline — သိမ်းထားတဲ့ ဗားရှင်းကို သုံးနေသည်', splashWhatsNew:'အသစ်ပါဝင်တာများ', splashTap:'ဆက်ရန် နှိပ်ပါ', splashUpdateBtn:'အခု Update လုပ်မယ်', splashContinue:'ဆက်သွားမယ်', aboutTitle:'အကြောင်း', ratesBtn:'ဈေးနှုန်းများ', ratesTitle:'ဈေးနှုန်းများ', aboutVersion:'ဗားရှင်း', aboutContact:'ဆက်သွယ်ရန်', aboutCheck:'Update စစ်မယ်',
       months:['ဇန်နဝါရီ','ဖေဖော်ဝါရီ','မတ်','ဧပြီ','မေ','ဇွန်','ဇူလိုင်','သြဂုတ်','စက်တင်ဘာ','အောက်တိုဘာ','နိုဝင်ဘာ','ဒီဇင်ဘာ'],
       weekdays:['တနင်္ဂနွေ','တနင်္လာ','အင်္ဂါ','ဗုဒ္ဓဟူး','ကြာသပတေး','သောကြာ','စနေ'], weekdaysShort:['နွေ','လာ','ဂါ','ဟူး','တေး','ကြာ','နေ'],
       currency:'ငွေကြေး', language:'ဘာသာစကား',
@@ -491,23 +519,21 @@
       appTitle:'Salary Calculator',
       calcTitle:'Calculate Salary', settingsBtn:'⚙️ Settings', slipBtn:'🧾 Slip', slipTitle:'Salary Slip',
       days:'Working Days', daysPh:'e.g. 26',
-      otHours:'Daily OT Hours', holDays:'Holiday OT Days', phDays:'Public Holiday Days',
+      otHours:'Daily OT Hours', ot3Hours:'OT*3 Hours', holDays:'Holiday OT Days', phDays:'Public Holiday Days',
       attend:'Full Attendance (include Attendance Bonus)', otherBonus:'Other Bonus',
       clear:'Clear All', totalLbl:'Total Salary', print:'🖨️ Print', dateLbl:'Date',
-      lBase:'Base Salary (Daily Wage × Days)', lOt:'Daily OT', lHol:'Holiday OT', lPh:'Public Holiday (PH × Days)', lOtMeal:'OT Meal Allowance (OT Meal × OT Days)',
+      lBase:'Base Salary (Daily Wage × Days)', lOt:'Daily OT', lOt3:'OT*3', lHol:'Holiday OT', lPh:'Public Holiday (PH × Days)', lOtMeal:'OT Meal Allowance (OT Meal × OT Days)',
       lMeal:'Meal Allowance (Meal × Days)', lTrans:'Transport Allowance (Transport × Days)',
       lAttend:'Attendance Bonus', lOther:'Other Bonus', lIns:'Insurance Fee (deduction)',
       note:'Meal and transport allowances are multiplied by working days. OT meal allowance is multiplied by OT days. On Public Holiday days only the Public Holiday rate is paid, with no allowances added. Insurance fee is deducted from the total. All rates can be changed in Settings.',
-      settingsTitle:'Settings — Rates', back:'← Back',
-      sWage:'Daily Wage — per day', sOt:'Daily OT — per hour', sHoliday:'Holiday OT — per day', sPh:'Public Holiday — per day', sOtMeal:'OT Meal Allowance — per OT day',
+      settingsTitle:'Settings', back:'← Back',
+      sWage:'Daily Wage — per day', sOt:'Daily OT — per hour', sOt3:'OT*3 — per hour', sHoliday:'Holiday OT — per day', sPh:'Public Holiday — per day', sOtMeal:'OT Meal Allowance — per OT day',
       sMeal:'Meal Allowance — per day', sTrans:'Transportation Allowance — per day',
       sAttend:'Attendance Bonus — per month', sIns:'Insurance Fee — per month',
-      otPerDay:'Enter Daily OT hours per day', otPerDayTitle:'OT Hours per Day',
-      otPerDayTotal:'Total OT Hours', otDaysHint:'Enter working days first', dayFmt:'Day {n}',
-      recordMode:'Use daily record', halloweenTheme:'Use Halloween theme 🎃', recTitle:'Daily Record',
-      recColDate:'Date', recColWork:'Worked', recColHol:'Holiday', recColPh:'Public Holiday', recColOt:'OT Hours',
+      recordMode:'Entry Method', modeCalendar:'Calendar', modeCalculator:'Calculator', halloweenTheme:'Halloween theme', recTitle:'Daily Record',
+      recColDate:'Date', recColWork:'Worked', recColHol:'Holiday(Worked)', recColPh:'Public Holiday', recColOt:'OT Hours',
       recWorked:'Worked Days', recOt:'Total OT Hours', recHol:'Holiday OT Days', recOtMeal:'OT Days', recPh:'Public Holiday Days',
-      recClear:'Clear This Month', recClearConfirm:'Clear all records for this month?', splashChecking:'Checking for updates…', splashUptoDate:'Up to date ✓', splashUpdateAvail:'Update available', splashOffline:'Offline — using saved version', splashWhatsNew:"What's new", splashTap:'Tap to continue', splashUpdateBtn:'Update now', splashContinue:'Continue', aboutTitle:'About', aboutVersion:'Version', aboutContact:'Contact', aboutCheck:'Check for updates',
+      recClear:'Clear This Month', recClearConfirm:'Clear all records for this month?', splashChecking:'Checking for updates…', splashUptoDate:'Up to date ✓', splashUpdateAvail:'Update available', splashOffline:'Offline — using saved version', splashWhatsNew:"What's new", splashTap:'Tap to continue', splashUpdateBtn:'Update now', splashContinue:'Continue', aboutTitle:'About', ratesBtn:'Rates', ratesTitle:'Rates', aboutVersion:'Version', aboutContact:'Contact', aboutCheck:'Check for updates',
       months:['January','February','March','April','May','June','July','August','September','October','November','December'],
       weekdays:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], weekdaysShort:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
       currency:'Currency', language:'Language',
@@ -526,23 +552,21 @@
       appTitle:'工资计算器',
       calcTitle:'计算工资', settingsBtn:'⚙️ 设置', slipBtn:'🧾 工资单', slipTitle:'工资单',
       days:'工作天数', daysPh:'例如：26',
-      otHours:'每日加班小时', holDays:'假日加班天数', phDays:'公共假日天数',
+      otHours:'每日加班小时', ot3Hours:'OT*3 小时', holDays:'假日加班天数', phDays:'公共假日天数',
       attend:'全勤（包含全勤奖）', otherBonus:'其他奖金',
       clear:'清除全部', totalLbl:'工资总额', print:'🖨️ 打印', dateLbl:'日期',
-      lBase:'基本工资（日薪 × 天数）', lOt:'每日加班', lHol:'假日加班', lPh:'公共假日（假日工资 × 天数）', lOtMeal:'加班餐补（餐补 × 加班天数）',
+      lBase:'基本工资（日薪 × 天数）', lOt:'每日加班', lOt3:'OT*3', lHol:'假日加班', lPh:'公共假日（假日工资 × 天数）', lOtMeal:'加班餐补（餐补 × 加班天数）',
       lMeal:'餐补（餐补 × 天数）', lTrans:'交通补贴（交通补贴 × 天数）',
       lAttend:'全勤奖', lOther:'其他奖金', lIns:'保险费（扣除）',
       note:'餐补和交通补贴按工作天数计算。加班餐补按加班天数计算。公共假日仅按假日工资计算，不另加任何补贴。保险费从总额中扣除。所有标准都可以在设置中修改。',
-      settingsTitle:'设置 — 工资标准', back:'← 返回',
-      sWage:'日薪 — 每天', sOt:'每日加班 — 每小时', sHoliday:'假日加班 — 每天', sPh:'公共假日 — 每天', sOtMeal:'加班餐补 — 每天',
+      settingsTitle:'设置', back:'← 返回',
+      sWage:'日薪 — 每天', sOt:'每日加班 — 每小时', sOt3:'OT*3 — 每小时', sHoliday:'假日加班 — 每天', sPh:'公共假日 — 每天', sOtMeal:'加班餐补 — 每天',
       sMeal:'餐补 — 每天', sTrans:'交通补贴 — 每天',
       sAttend:'全勤奖 — 每月', sIns:'保险费 — 每月',
-      otPerDay:'按天输入每日加班小时', otPerDayTitle:'每日加班小时',
-      otPerDayTotal:'加班总小时', otDaysHint:'请先输入工作天数', dayFmt:'第{n}天',
-      recordMode:'使用每日记录', halloweenTheme:'使用万圣节主题 🎃', recTitle:'每日记录',
+      recordMode:'输入方式', modeCalendar:'日历', modeCalculator:'计算器', halloweenTheme:'Halloween theme', recTitle:'每日记录',
       recColDate:'日期', recColWork:'出勤', recColHol:'假日', recColPh:'公共假日', recColOt:'加班小时',
       recWorked:'出勤天数', recOt:'加班总小时', recHol:'假日加班天数', recOtMeal:'加班天数', recPh:'公共假日天数',
-      recClear:'清除本月记录', recClearConfirm:'确定清除本月所有记录吗？', splashChecking:'正在检查更新…', splashUptoDate:'已是最新版本 ✓', splashUpdateAvail:'有新版本', splashOffline:'离线 — 使用已保存版本', splashWhatsNew:'更新内容', splashTap:'点击继续', splashUpdateBtn:'立即更新', splashContinue:'继续', aboutTitle:'关于', aboutVersion:'版本', aboutContact:'联系方式', aboutCheck:'检查更新',
+      recClear:'清除本月记录', recClearConfirm:'确定清除本月所有记录吗？', splashChecking:'正在检查更新…', splashUptoDate:'已是最新版本 ✓', splashUpdateAvail:'有新版本', splashOffline:'离线 — 使用已保存版本', splashWhatsNew:'更新内容', splashTap:'点击继续', splashUpdateBtn:'立即更新', splashContinue:'继续', aboutTitle:'关于', ratesBtn:'费率', ratesTitle:'费率', aboutVersion:'版本', aboutContact:'联系方式', aboutCheck:'检查更新',
       months:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
       weekdays:['周日','周一','周二','周三','周四','周五','周六'], weekdaysShort:['周日','周一','周二','周三','周四','周五','周六'],
       currency:'货币', language:'语言',
@@ -562,9 +586,8 @@
   function sanitize(p){
     const out = {...DEFAULTS};
     if(!p || typeof p !== 'object') return out;
-    for(const k of ['wage','ot','holiday','ph','meal','trans','attend','otMeal','insurance'])
+    for(const k of ['wage','ot','holiday','ph','meal','trans','attend','otMeal','insurance','ot3Rate'])
       if(typeof p[k] === 'number' && isFinite(p[k]) && p[k] >= 0) out[k] = p[k];
-    if(typeof p.otPerDay === 'boolean') out.otPerDay = p.otPerDay;
     if(typeof p.recordMode === 'boolean') out.recordMode = p.recordMode;
     if(typeof p.halloween === 'boolean') out.halloween = p.halloween;
     if(['small','medium','large'].includes(p.fontSize)) out.fontSize = p.fontSize;
@@ -618,27 +641,33 @@
 
   function calc(){
     const days = getWorkingDays(), otH = getOtHours(), holD = getHolDays(), phD = getPhDays(), other = num('otherBonus');
+    const ot3On = hasHoliday();
+    const ot3H = ot3On ? num('ot3Hours') : 0;
+    const ot3El = document.getElementById('ot3Hours');
+    if(ot3El) ot3El.disabled = !ot3On;
+    const ot3Wrap = document.getElementById('ot3Wrap');
+    if(ot3Wrap) ot3Wrap.classList.toggle('dim', !ot3On);
     const otDays = getOtDays();
+    const otMealDays = (ot3H > 0 && otDays === 0) ? 1 : otDays;
     const attendOn = document.getElementById('attend').checked;
-    const base = S.wage * days, ot = S.ot * otH, hol = S.holiday * holD, ph = S.ph * phD;
+    const base = S.wage * days, ot = S.ot * otH, ot3 = S.ot3Rate * ot3H, hol = S.holiday * holD, ph = S.ph * phD;
     const meal = S.meal * days, trans = S.trans * days;
-    const otMeal = S.otMeal * otDays;
+    const otMeal = S.otMeal * otMealDays;
     const att = attendOn ? S.attend : 0;
     const ins = S.insurance;
-    const total = base + ot + hol + ph + meal + trans + att + other + otMeal - ins;
-    const otT = document.getElementById('otDayTotal');
-    if(otT) otT.textContent = otH;
+    const total = base + ot + ot3 + hol + ph + meal + trans + att + other + otMeal - ins;
     const rw = document.getElementById('recWorkedVal');
-    if(rw){ rw.textContent = days; document.getElementById('recOtVal').textContent = otH; document.getElementById('recHolVal').textContent = holD; document.getElementById('recOtMealVal').textContent = otDays; document.getElementById('recPhVal').textContent = phD; }
-    renderSlipCard(base, ot, hol, ph, otMeal, meal, trans, att, other, ins, total, attendOn);
-    renderPrint(days, otH, holD, phD, base, ot, hol, ph, meal, trans, att, other, otMeal, ins, total);
+    if(rw){ rw.textContent = days; document.getElementById('recOtVal').textContent = otH; document.getElementById('recHolVal').textContent = holD; document.getElementById('recOtMealVal').textContent = otMealDays; document.getElementById('recPhVal').textContent = phD; }
+    renderSlipCard(base, ot, ot3, hol, ph, otMeal, meal, trans, att, other, ins, total, attendOn);
+    renderPrint(days, otH, holD, phD, ot3H, base, ot, ot3, hol, ph, meal, trans, att, other, otMeal, ins, total);
   }
 
   /* Slip preview card — same look as the main total card, no IDs, no date. */
-  function renderSlipCard(base, ot, hol, ph, otMeal, meal, trans, att, other, ins, total, attendOn){
+  function renderSlipCard(base, ot, ot3, hol, ph, otMeal, meal, trans, att, other, ins, total, attendOn){
     const rows = [
       [t('lBase'), fmt(base), false],
       [t('lOt'), fmt(ot), false],
+      [t('lOt3'), fmt(ot3), ot3 === 0],
       [t('lHol'), fmt(hol), false],
       [t('lPh'), fmt(ph), ph === 0],
       [t('lOtMeal'), fmt(otMeal), otMeal === 0],
@@ -656,12 +685,12 @@
     if (sc) sc.innerHTML = h;
   }
 
-  function renderPrint(days, otH, holD, phD, base, ot, hol, ph, meal, trans, att, other, otMeal, ins, total){
+  function renderPrint(days, otH, holD, phD, ot3H, base, ot, ot3, hol, ph, meal, trans, att, other, otMeal, ins, total){
     const loc = S.lang === 'zh' ? 'zh-CN' : 'en-GB';
     const d = new Date().toLocaleDateString(loc);
     const rows = [
-      [t('days'), days], [t('otHours'), otH], [t('holDays'), holD], [t('phDays'), phD],
-      [t('lBase'), fmt(base)], [t('lOt'), fmt(ot)], [t('lHol'), fmt(hol)], [t('lPh'), fmt(ph)], [t('lOtMeal'), fmt(otMeal)],
+      [t('days'), days], [t('otHours'), otH], [t('ot3Hours'), ot3H], [t('holDays'), holD], [t('phDays'), phD],
+      [t('lBase'), fmt(base)], [t('lOt'), fmt(ot)], [t('lOt3'), fmt(ot3)], [t('lHol'), fmt(hol)], [t('lPh'), fmt(ph)], [t('lOtMeal'), fmt(otMeal)],
       [t('lMeal'), fmt(meal)], [t('lTrans'), fmt(trans)],
       [t('lAttend'), fmt(att)], [t('lOther'), fmt(other)], [t('lIns'), ins > 0 ? '-' + fmt(ins) : '0']
     ];
@@ -672,66 +701,26 @@
     document.getElementById('printArea').innerHTML = h;
   }
 
-  let otDayValues = [];
   function getOtHours(){
     if(S.recordMode) return sumRecordOt();
-    if(!S.otPerDay) return num('otHours');
-    let s = 0;
-    for(let i = 0; i < otDayValues.length; i++) s += otDayValues[i] || 0;
-    return s;
+    return num('otHours');
   }
   function countRecordOtDays(){
     const md = recData[recKey(recYear, recMonth)] || {};
     let n = 0;
-    for(const d in md) if(md[d].w && !md[d].ph && (md[d].ot || 0) > 0) n++;
+    for(const d in md) if(md[d].w && !md[d].ph && !md[d].h && (md[d].ot || 0) > 0) n++;
     return n;
   }
   function getOtDays(){
     if(S.recordMode) return countRecordOtDays();
-    if(S.otPerDay){
-      let n = 0;
-      for(let i = 0; i < otDayValues.length; i++) if(otDayValues[i] > 0) n++;
-      return n;
-    }
     return num('otHours') > 0 ? 1 : 0;
   }
-  function renderOtDayRows(){
-    const box = document.getElementById('otDayRows');
-    box.querySelectorAll('input').forEach(function(inp){
-      const v = parseFloat(inp.value);
-      otDayValues[parseInt(inp.dataset.idx, 10)] = (isFinite(v) && v > 0) ? v : 0;
-    });
-    const days = Math.floor(num('days'));
-    if(days <= 0){
-      box.innerHTML = '<div class="note">' + t('otDaysHint') + '</div>';
-      otDayValues = []; calc(); return;
-    }
-    otDayValues.length = days;
-    let h = '<div class="ot-grid">';
-    for(let i = 0; i < days; i++){
-      const v = otDayValues[i] ? otDayValues[i] : '';
-      h += '<div class="ot-day"><label>' + t('dayFmt').replace('{n}', i + 1) + '</label><input type="number" min="0" step="0.5" inputmode="decimal" placeholder="0" value="' + v + '" data-idx="' + i + '"></div>';
-    }
-    h += '</div>';
-    box.innerHTML = h;
-    box.querySelectorAll('input').forEach(function(inp){
-      inp.addEventListener('input', function(){
-        const v = parseFloat(inp.value);
-        otDayValues[parseInt(inp.dataset.idx, 10)] = (isFinite(v) && v > 0) ? v : 0;
-        calc();
-      });
-    });
-    calc();
-  }
   function applyEntryMode(){
-    const rec = !!S.recordMode, per = !!S.otPerDay && !rec;
+    const rec = !!S.recordMode;
     document.getElementById('daysWrap').classList.toggle('hidden', rec);
     document.getElementById('rowOtSun').classList.toggle('hidden', rec);
-    document.getElementById('otSingleWrap').classList.toggle('hidden', per);
-    document.getElementById('otPerDayWrap').classList.toggle('hidden', !per);
     document.getElementById('recordWrap').classList.toggle('hidden', !rec);
     if(rec) renderRecord();
-    else if(per) renderOtDayRows();
     else calc();
   }
 
@@ -762,7 +751,7 @@
   function sumRecordOt(){
     const md = recData[recKey(recYear, recMonth)] || {};
     let s = 0;
-    for(const d in md) if(md[d].w && !md[d].ph) s += md[d].ot || 0;
+    for(const d in md) if(md[d].w && !md[d].ph && !md[d].h) s += md[d].ot || 0;
     return s;
   }
   function countHolWorked(){
@@ -778,6 +767,14 @@
     return n;
   }
   function getHolDays(){ return S.recordMode ? countHolWorked() : num('holDays'); }
+  function hasHoliday(){
+    if(S.recordMode){
+      const md = recData[recKey(recYear, recMonth)] || {};
+      for(const d in md) if(md[d].h) return true;
+      return false;
+    }
+    return num('holDays') > 0;
+  }
   function getPhDays(){ return S.recordMode ? countPhDays() : num('phDays'); }
   function getWorkingDays(){ return S.recordMode ? countWorked() : num('days'); }
   function monthLabel(){
@@ -850,8 +847,8 @@
     hCb.checked = !!e.h;
     pCb.checked = !!e.ph;
     otIn.value = (e.ot && e.ot > 0) ? e.ot : '';
-    hCb.disabled = !e.w;
-    otIn.disabled = !e.w;
+    otIn.disabled = !e.w || !!e.h;
+    document.getElementById('calEditOtWrap').classList.toggle('dim', otIn.disabled);
   }
   function closeCalEdit(){ selDay = 0; renderRecord(); }
   document.getElementById('calEditW').addEventListener('change', function(){
@@ -870,7 +867,7 @@
     const md = monthData();
     if(!md[selDay]) md[selDay] = { w: false, ot: 0, h: false };
     md[selDay].h = this.checked;
-    if(this.checked) md[selDay].ph = false;
+    if(this.checked){ md[selDay].ph = false; md[selDay].w = true; }
     saveRec(); renderRecord();
   });
   document.getElementById('calEditP').addEventListener('change', function(){
@@ -906,6 +903,7 @@
   function fillSettings(){
     document.getElementById('sWage').value = S.wage;
     document.getElementById('sOt').value = S.ot;
+    document.getElementById('sOt3').value = S.ot3Rate;
     document.getElementById('sHoliday').value = S.holiday;
     document.getElementById('sPh').value = S.ph;
     document.getElementById('sOtMeal').value = S.otMeal;
@@ -913,36 +911,31 @@
     document.getElementById('sTrans').value = S.trans;
     document.getElementById('sAttend').value = S.attend;
     document.getElementById('sIns').value = S.insurance;
-    document.getElementById('sOtPerDay').checked = !!S.otPerDay;
-    document.getElementById('sRecordMode').checked = !!S.recordMode;
+    document.getElementById('sEntryMode').value = S.recordMode ? 'calendar' : 'calculator';
     document.getElementById('sHalloween').checked = !!S.halloween;
     document.getElementById('sFontSize').value = S.fontSize;
     document.getElementById('sCur').value = S.currency;
     document.getElementById('sLang').value = S.lang;
   }
+  function flashMsg(id, key){ const m = document.getElementById(id); if(!m) return; m.textContent = t(key); setTimeout(()=> m.textContent = '', 3000); }
   function saveSettings(){
     S = {
       wage: num('sWage'), ot: num('sOt'), holiday: num('sHoliday'), ph: num('sPh'), otMeal: num('sOtMeal'),
-      meal: num('sMeal'), trans: num('sTrans'), attend: num('sAttend'), insurance: num('sIns'),
+      meal: num('sMeal'), trans: num('sTrans'), attend: num('sAttend'), insurance: num('sIns'), ot3Rate: num('sOt3'),
       currency: document.getElementById('sCur').value,
       lang: S.lang,
-      otPerDay: document.getElementById('sOtPerDay').checked,
-      recordMode: document.getElementById('sRecordMode').checked,
+      recordMode: document.getElementById('sEntryMode').value === 'calendar',
       halloween: document.getElementById('sHalloween').checked,
       fontSize: document.getElementById('sFontSize').value
     };
     if(!CURS.includes(S.currency)) S.currency = 'MMK';
     persist(); fillSettings(); applyLang(); applyEntryMode();
-    const m = document.getElementById('saveMsg');
-    m.textContent = t('savedMsg');
-    setTimeout(()=> m.textContent = '', 3000);
+    flashMsg('saveMsg', 'savedMsg'); flashMsg('ratesSaveMsg', 'savedMsg');
   }
   function resetSettings(){
     const lang = S.lang;
     S = {...DEFAULTS, lang}; persist(); fillSettings(); applyLang(); applyEntryMode();
-    const m = document.getElementById('saveMsg');
-    m.textContent = t('resetMsg');
-    setTimeout(()=> m.textContent = '', 3000);
+    flashMsg('saveMsg', 'resetMsg'); flashMsg('ratesSaveMsg', 'resetMsg');
   }
   function exportSettings(){
     const blob = new Blob([JSON.stringify(S, null, 2)], {type:'application/json'});
@@ -965,18 +958,18 @@
     r.readAsText(f); ev.target.value = '';
   }
   function clearInputs(){
-    ['days','otHours','holDays','phDays','otherBonus'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('attend').checked = true; calc();
+    ['days','otHours','holDays','phDays','otherBonus','ot3Hours'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('attend').checked = false; calc();
     document.getElementById('days').focus();
   }
-  function showSettings(){ fillSettings(); document.getElementById('mainView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('settingsView').classList.remove('hidden'); window.scrollTo(0,0); }
-  function showMain(){ document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('mainView').classList.remove('hidden'); calc(); window.scrollTo(0,0); }
-  function showSlip(){ calc(); document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('slipView').classList.remove('hidden'); window.scrollTo(0,0); }
-  function showAbout(){ document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.remove('hidden'); window.scrollTo(0,0); }
+  function showSettings(){ fillSettings(); document.getElementById('mainView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('settingsView').classList.remove('hidden'); window.scrollTo(0,0); }
+  function showMain(){ document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('mainView').classList.remove('hidden'); calc(); window.scrollTo(0,0); }
+  function showSlip(){ calc(); document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('slipView').classList.remove('hidden'); window.scrollTo(0,0); }
+  function showAbout(){ document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('aboutView').classList.remove('hidden'); window.scrollTo(0,0); }
+  function showRates(){ document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.remove('hidden'); window.scrollTo(0,0); }
 
-  ['days','otHours','holDays','phDays','otherBonus'].forEach(id =>
+  ['days','otHours','holDays','phDays','otherBonus','ot3Hours'].forEach(id =>
     document.getElementById(id).addEventListener('input', calc));
-  document.getElementById('days').addEventListener('input', function(){ if(S.otPerDay && !S.recordMode) renderOtDayRows(); });
   document.getElementById('attend').addEventListener('change', calc);
   document.getElementById('sCur').addEventListener('change', function(){ S.currency = this.value; persist(); calc(); });
   /* ===== Banner: random financial tips + motivation =====
