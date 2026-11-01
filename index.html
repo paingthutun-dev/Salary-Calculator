@@ -93,9 +93,9 @@
   .btn-row .btn{flex:1;}
   .note{font-size:13px; color:var(--muted); line-height:1.6;}
   .hidden{display:none;}
-  .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:10px;}
+  .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:10px; flex-wrap:wrap;}
   .topbar h2{margin:0; font-size:19px; color:var(--navy);}
-  .topbar .actions{display:flex; align-items:center; gap:8px;}
+  .topbar .actions{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
   .lang-select{width:auto; padding:9px 10px; font-size:15px;}
   .linkbtn{background:#EAF1FD; border:none; border-radius:999px; color:var(--blue-dark); font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; padding:9px 14px; white-space:nowrap; box-shadow:inset 0 1px 0 rgba(255,255,255,.6), inset 0 -2px 0 rgba(0,0,0,.10), 0 3px 8px rgba(10,37,64,.16); transition:transform .08s ease, box-shadow .08s ease;}
   .linkbtn:active{transform:translateY(1px); box-shadow:inset 0 1px 0 rgba(255,255,255,.4), inset 0 -1px 0 rgba(0,0,0,.08), 0 1px 3px rgba(10,37,64,.14);}
@@ -236,6 +236,7 @@
       <h2 data-t="calcTitle">လစာတွက်ရန်</h2>
       <div class="actions">
         <button class="linkbtn" onclick="showSlip()" data-t="slipBtn">🧾 စလစ်</button>
+        <button class="linkbtn" onclick="showExchange()" data-t="exBtn">💱 လဲလှယ်</button>
         <button class="linkbtn" onclick="showSettings()" data-t="settingsBtn">⚙️ ဆက်တင်</button>
       </div>
     </div>
@@ -467,6 +468,60 @@
     </div>
   </div>
 
+  <!-- ===== Exchange ===== -->
+  <div id="exchangeView" class="hidden">
+    <div class="topbar">
+      <h2 data-t="exTitle">ငွေလဲလှယ်</h2>
+      <button class="linkbtn" onclick="showMain()" data-t="back">← ပြန်သွားမယ်</button>
+    </div>
+    <div class="card">
+      <div class="field">
+        <label for="exAmount" data-t="exAmount">ပမာဏ</label>
+        <input type="number" id="exAmount" value="1000" inputmode="decimal">
+      </div>
+      <div class="app-row">
+        <div class="field">
+          <label for="exFrom" data-t="exFrom">မှ</label>
+          <select id="exFrom">
+            <option value="THB">THB</option>
+            <option value="MMK">MMK</option>
+            <option value="JPY">JPY</option>
+            <option value="CNY">CNY</option>
+            <option value="USD">USD</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="exTo" data-t="exTo">သို့</label>
+          <select id="exTo">
+            <option value="THB">THB</option>
+            <option value="MMK" selected>MMK</option>
+            <option value="JPY">JPY</option>
+            <option value="CNY">CNY</option>
+            <option value="USD">USD</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-ghost" onclick="exSwap()" data-t="exSwap">⇄ နေရာချင်း</button>
+      <div class="total" style="margin-top:14px;">
+        <div class="lbl" id="exResultLbl">—</div>
+        <div class="amt" id="exResult">—</div>
+      </div>
+      <p class="note" id="exRateLine"></p>
+      <p class="note" id="exUpdatedLine"></p>
+      <p class="note hidden" id="exOfflineLine" data-t="exOffline">အင်တာနက်မရှိလို့ နောက်ဆုံးသိမ်းထားတဲ့ ဈေးနဲ့ တွက်ပြထားတယ်။</p>
+      <p class="note hidden" id="exNoRateLine" data-t="exNoRate">ဈေးနှုန်း မရှိသေးဘူး — အင်တာနက် ဖွင့်ပြီး Refresh နှိပ်ပါ၊ ဒါမှမဟုတ် ကိုယ်ပိုင် ဈေးနှုန်း ရိုက်ထည့်ပါ။</p>
+      <div id="exSetWrap">
+        <div class="field" style="margin-top:12px;">
+          <label for="exSetRate" data-t="exSetRate">သတ်မှတ်ဈေး (100,000 MMK = ? THB)</label>
+          <input type="number" id="exSetRate" inputmode="decimal">
+        </div>
+        <p class="note" data-t="exSetHint">THB↔MMK အတွက်ပဲ သုံးမယ်။ MMK→THB ဆို 30 ခွာပြီး တွက်မယ်။</p>
+      </div>
+      <button class="btn btn-blue" style="margin-top:12px;" onclick="fetchEx(true)" data-t="exRefresh">🔄 ဈေးနှုန်း အသစ်ယူမယ်</button>
+      <p class="note" style="text-align:center;margin-top:12px;"><a href="https://www.exchangerate-api.com" target="_blank" rel="noopener" data-t="exAttr">Rates by ExchangeRate-API</a></p>
+    </div>
+  </div>
+
 </div>
 
 <div id="printArea"></div>
@@ -521,7 +576,7 @@
       sWage:'လုပ်အားခ — တစ်ရက်ဈေး', sOt:'နေ့စဉ်အချိန်ပို — တစ်နာရီဈေး', sOt3:'OT*3 — တစ်နာရီဈေး', sHoliday:'အားလပ်ရက်အချိန်ပို — တစ်ရက်ဈေး', sPh:'အစိုးရပိတ်ရက် — တစ်ရက်ဈေး', sOtMeal:'OT ထမင်းစရိတ် — တစ်ရက်ဈေး',
       sMeal:'ထမင်းစရိတ် — တစ်ရက်ဈေး', sTrans:'ခရီးစရိတ် — တစ်ရက်ဈေး',
       sAttend:'ရက်မှန်ကြေး — တစ်လစာ', sIns:'အာမခံကြေး — တစ်လစာ',
-      recordMode:'ထည့်သွင်းနည်း', modeCalendar:'ပြက္ခဒိန်', modeCalculator:'တွက်စက်', themeTitle:'Theme', themeDefault:'ပုံမှန်', themeHalloween:'Halloween 🎃', themeThadingyut:'သီတင်းကျွတ် 🪔', themeThingyan:'သင်္ကြန် 💦🌼', recTitle:'နေ့စဉ်မှတ်တမ်း',
+      recordMode:'ထည့်သွင်းနည်း', modeCalendar:'ပြက္ခဒိန်', modeCalculator:'တွက်စက်', themeTitle:'Theme', themeDefault:'ပုံမှန်', themeHalloween:'Halloween 🎃', themeThadingyut:'သီတင်းကျွတ် 🪔', themeThingyan:'သင်္ကြန် 💦🌼', exBtn:'💱 လဲလှယ်', exTitle:'ငွေလဲလှယ်', exAmount:'ပမာဏ', exFrom:'မှ', exTo:'သို့', exSwap:'⇄ နေရာချင်း', exRefresh:'🔄 ဈေးနှုန်း အသစ်ယူမယ်', exSetRate:'သတ်မှတ်ဈေး (100,000 MMK = ? THB)', exSetHint:'THB↔MMK အတွက်ပဲ သုံးမယ်။ MMK→THB ဆို 30 ခွာပြီး တွက်မယ်။', exManualShort:'ကိုယ်ပိုင် ဈေး', exOffline:'အင်တာနက်မရှိလို့ နောက်ဆုံးသိမ်းထားတဲ့ ဈေးနဲ့ တွက်ပြထားတယ်။', exNoRate:'ဈေးနှုန်း မရှိသေးဘူး — အင်တာနက် ဖွင့်ပြီး Refresh နှိပ်ပါ၊ ဒါမှမဟုတ် ကိုယ်ပိုင် ဈေးနှုန်း ရိုက်ထည့်ပါ။', exAttr:'Rates by ExchangeRate-API', exUpdated:'နောက်ဆုံး update', recTitle:'နေ့စဉ်မှတ်တမ်း',
       recColDate:'ရက်စွဲ', recColWork:'အလုပ်ဆင်း', recColHol:'အားလပ်ရက် အလုပ်ဆင်း', recColPh:'နားရက်', recColOt:'OT နာရီ',
       recWorked:'အလုပ်ဆင်းရက်', recOt:'OT နာရီ စုစုပေါင်း', recHol:'အားလပ်ရက်အချိန်ပို (ရက်)', recOtMeal:'OT လုပ်တဲ့ ရက်', recPh:'အစိုးရပိတ်ရက် (ရက်)',
       recClear:'ဒီလရဲ့ မှတ်တမ်း ရှင်းမယ်', recClearConfirm:'ဒီလရဲ့ မှတ်တမ်းအားလုံး ဖျက်မှာလား?', splashChecking:'Update စစ်နေသည်…', splashUptoDate:'နောက်ဆုံးဗားရှင်း ဖြစ်နေသည် ✓', splashUpdateAvail:'Update အသစ် ရှိသည်', splashOffline:'Offline — သိမ်းထားတဲ့ ဗားရှင်းကို သုံးနေသည်', splashWhatsNew:'အသစ်ပါဝင်တာများ', splashTap:'ဆက်ရန် နှိပ်ပါ', splashUpdateBtn:'အခု Update လုပ်မယ်', splashContinue:'ဆက်သွားမယ်', aboutTitle:'အကြောင်း', ratesBtn:'ဈေးနှုန်းများ', ratesTitle:'ဈေးနှုန်းများ', aboutVersion:'ဗားရှင်း', aboutContact:'ဆက်သွယ်ရန်', aboutCheck:'Update စစ်မယ်',
@@ -554,7 +609,7 @@
       sWage:'Daily Wage — per day', sOt:'Daily OT — per hour', sOt3:'OT*3 — per hour', sHoliday:'Holiday OT — per day', sPh:'Public Holiday — per day', sOtMeal:'OT Meal Allowance — per OT day',
       sMeal:'Meal Allowance — per day', sTrans:'Transportation Allowance — per day',
       sAttend:'Attendance Bonus — per month', sIns:'Insurance Fee — per month',
-      recordMode:'Entry Method', modeCalendar:'Calendar', modeCalculator:'Calculator', themeTitle:'Theme', themeDefault:'Default', themeHalloween:'Halloween 🎃', themeThadingyut:'Thadingyut 🪔', themeThingyan:'Thingyan 💦🌼', recTitle:'Daily Record',
+      recordMode:'Entry Method', modeCalendar:'Calendar', modeCalculator:'Calculator', themeTitle:'Theme', themeDefault:'Default', themeHalloween:'Halloween 🎃', themeThadingyut:'Thadingyut 🪔', themeThingyan:'Thingyan 💦🌼', exBtn:'💱 Exchange', exTitle:'Currency Exchange', exAmount:'Amount', exFrom:'From', exTo:'To', exSwap:'⇄ Swap', exRefresh:'🔄 Refresh rates', exSetRate:'Set rate (100,000 MMK = ? THB)', exSetHint:'Used only for THB↔MMK. For MMK→THB, 30 is subtracted first.', exManualShort:'own rate', exOffline:'No internet — showing the last saved rate.', exNoRate:'No rate yet — connect to the internet and tap Refresh, or enter your own rate.', exAttr:'Rates by ExchangeRate-API', exUpdated:'Last updated', recTitle:'Daily Record',
       recColDate:'Date', recColWork:'Worked', recColHol:'Holiday OT', recColPh:'Public Holiday', recColOt:'OT Hours',
       recWorked:'Worked Days', recOt:'Total OT Hours', recHol:'Holiday OT Days', recOtMeal:'OT Days', recPh:'Public Holiday Days',
       recClear:'Clear This Month', recClearConfirm:'Clear all records for this month?', splashChecking:'Checking for updates…', splashUptoDate:'Up to date ✓', splashUpdateAvail:'Update available', splashOffline:'Offline — using saved version', splashWhatsNew:"What's new", splashTap:'Tap to continue', splashUpdateBtn:'Update now', splashContinue:'Continue', aboutTitle:'About', ratesBtn:'Rates', ratesTitle:'Rates', aboutVersion:'Version', aboutContact:'Contact', aboutCheck:'Check for updates',
@@ -587,7 +642,7 @@
       sWage:'日薪 — 每天', sOt:'每日加班 — 每小时', sOt3:'OT*3 — 每小时', sHoliday:'假日加班 — 每天', sPh:'公共假日 — 每天', sOtMeal:'加班餐补 — 每天',
       sMeal:'餐补 — 每天', sTrans:'交通补贴 — 每天',
       sAttend:'全勤奖 — 每月', sIns:'保险费 — 每月',
-      recordMode:'输入方式', modeCalendar:'日历', modeCalculator:'计算器', themeTitle:'主题', themeDefault:'默认', themeHalloween:'万圣节 🎃', themeThadingyut:'点灯节 🪔', themeThingyan:'泼水节 💦🌼', recTitle:'每日记录',
+      recordMode:'输入方式', modeCalendar:'日历', modeCalculator:'计算器', themeTitle:'主题', themeDefault:'默认', themeHalloween:'万圣节 🎃', themeThadingyut:'点灯节 🪔', themeThingyan:'泼水节 💦🌼', exBtn:'💱 换算', exTitle:'货币换算', exAmount:'金额', exFrom:'从', exTo:'到', exSwap:'⇄ 互换', exRefresh:'🔄 更新汇率', exSetRate:'设定汇率（100,000 MMK = ? THB）', exSetHint:'仅用于 THB↔MMK。MMK→THB 时先减 30 再计算。', exManualShort:'自定义', exOffline:'无网络 — 显示上次保存的汇率。', exNoRate:'暂无汇率 — 请联网后点击刷新，或输入自定义汇率。', exAttr:'Rates by ExchangeRate-API', exUpdated:'最后更新', recTitle:'每日记录',
       recColDate:'日期', recColWork:'出勤', recColHol:'假日', recColPh:'公共假日', recColOt:'加班小时',
       recWorked:'出勤天数', recOt:'加班总小时', recHol:'假日加班天数', recOtMeal:'加班天数', recPh:'公共假日天数',
       recClear:'清除本月记录', recClearConfirm:'确定清除本月所有记录吗？', splashChecking:'正在检查更新…', splashUptoDate:'已是最新版本 ✓', splashUpdateAvail:'有新版本', splashOffline:'离线 — 使用已保存版本', splashWhatsNew:'更新内容', splashTap:'点击继续', splashUpdateBtn:'立即更新', splashContinue:'继续', aboutTitle:'关于', ratesBtn:'费率', ratesTitle:'费率', aboutVersion:'版本', aboutContact:'联系方式', aboutCheck:'检查更新',
@@ -992,17 +1047,137 @@
     document.getElementById('attend').checked = false; calc();
     document.getElementById('days').focus();
   }
-  function showSettings(){ fillSettings(); document.getElementById('mainView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('settingsView').classList.remove('hidden'); window.scrollTo(0,0); }
-  function showMain(){ document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('mainView').classList.remove('hidden'); calc(); window.scrollTo(0,0); }
-  function showSlip(){ calc(); document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('slipView').classList.remove('hidden'); window.scrollTo(0,0); }
-  function showAbout(){ document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('aboutView').classList.remove('hidden'); window.scrollTo(0,0); }
-  function showRates(){ document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.remove('hidden'); window.scrollTo(0,0); }
+  function showSettings(){ fillSettings(); document.getElementById('mainView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('exchangeView').classList.add('hidden'); document.getElementById('settingsView').classList.remove('hidden'); window.scrollTo(0,0); }
+  function showMain(){ document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('exchangeView').classList.add('hidden'); document.getElementById('mainView').classList.remove('hidden'); calc(); window.scrollTo(0,0); }
+  function showSlip(){ calc(); document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('exchangeView').classList.add('hidden'); document.getElementById('slipView').classList.remove('hidden'); window.scrollTo(0,0); }
+  function showAbout(){ document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('exchangeView').classList.add('hidden'); document.getElementById('aboutView').classList.remove('hidden'); window.scrollTo(0,0); }
+  function showRates(){ document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('exchangeView').classList.add('hidden'); document.getElementById('ratesView').classList.remove('hidden'); window.scrollTo(0,0); }
+  /* ===== Exchange ===== */
+  const EX_KEY = 'salaryCalcExchange.v1';
+  let EX = (function(){
+    try{
+      const p = JSON.parse(localStorage.getItem(EX_KEY));
+      if(p && typeof p === 'object') return {rates: p.rates || null, updated: p.updated || 0, setRate: (typeof p.setRate === 'number' && p.setRate > 0) ? p.setRate : 700.7};
+    }catch(e){}
+    return {rates: null, updated: 0, setRate: 700.7};
+  })();
+  function saveEx(){ try{ localStorage.setItem(EX_KEY, JSON.stringify(EX)); }catch(e){} }
+  function fmtEx(n){ return n.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2}); }
+  function fmtRate(n){ return n.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 4}); }
+  function exRateFor(from, to){
+    if(from === to) return {rate: 1, manual: false, spread: false};
+    if(from === 'THB' && to === 'MMK'){
+      const Y = EX.setRate;
+      if(!(Y && Y > 0)) return null;
+      return {rate: 100000 / Y, manual: true, spread: false};
+    }
+    if(from === 'MMK' && to === 'THB'){
+      const Y = EX.setRate;
+      if(!(Y && Y > 30)) return null;
+      return {rate: (Y - 30) / 100000, manual: true, spread: true};
+    }
+    if(EX.rates && EX.rates[from] && EX.rates[to]) return {rate: EX.rates[to] / EX.rates[from], manual: false, spread: false};
+    return null;
+  }
+  function exPairChanged(){
+    const from = document.getElementById('exFrom').value;
+    const to = document.getElementById('exTo').value;
+    const isThbMmk = (from === 'THB' && to === 'MMK') || (from === 'MMK' && to === 'THB');
+    document.getElementById('exSetWrap').classList.toggle('hidden', !isThbMmk);
+    renderEx();
+  }
+  function exSetChanged(){
+    const v = parseFloat(document.getElementById('exSetRate').value);
+    EX.setRate = (v && v > 0) ? v : null;
+    saveEx();
+    renderEx();
+  }
+  function exSwap(){
+    const f = document.getElementById('exFrom');
+    const t = document.getElementById('exTo');
+    const tmp = f.value; f.value = t.value; t.value = tmp;
+    exPairChanged();
+  }
+  function renderEx(){
+    const amt = parseFloat(document.getElementById('exAmount').value) || 0;
+    const from = document.getElementById('exFrom').value;
+    const to = document.getElementById('exTo').value;
+    const r = exRateFor(from, to);
+    const lbl = document.getElementById('exResultLbl');
+    const res = document.getElementById('exResult');
+    const rateLine = document.getElementById('exRateLine');
+    const updLine = document.getElementById('exUpdatedLine');
+    const offLine = document.getElementById('exOfflineLine');
+    const noLine = document.getElementById('exNoRateLine');
+    if(!r){
+      lbl.textContent = from + ' → ' + to;
+      res.textContent = '—';
+      rateLine.textContent = '';
+      noLine.classList.remove('hidden');
+    }else{
+      lbl.textContent = fmtEx(amt) + ' ' + from + ' → ' + to;
+      res.textContent = fmtEx(amt * r.rate) + ' ' + to;
+      rateLine.textContent = '1 ' + from + ' = ' + fmtRate(r.rate) + ' ' + to + (r.manual ? ' (' + t('exManualShort') + ')' : '') + (r.spread ? ' (−30)' : '');
+      noLine.classList.add('hidden');
+      if(r.manual) offLine.classList.add('hidden');
+    }
+    const isThbMmk = (from === 'THB' && to === 'MMK') || (from === 'MMK' && to === 'THB');
+    updLine.textContent = (!isThbMmk && EX.updated) ? (t('exUpdated') + ': ' + new Date(EX.updated).toLocaleString()) : '';
+  }
+  function exShowOfflineNote(){
+    const from = document.getElementById('exFrom').value;
+    const to = document.getElementById('exTo').value;
+    const r = exRateFor(from, to);
+    const off = document.getElementById('exOfflineLine');
+    if(r && !r.manual) off.classList.remove('hidden');
+    else off.classList.add('hidden');
+  }
+  function fetchEx(force){
+    if(!force && EX.rates && EX.updated && (Date.now() - EX.updated < 24 * 3600 * 1000)){
+      document.getElementById('exOfflineLine').classList.add('hidden');
+      renderEx();
+      return;
+    }
+    fetch('https://open.er-api.com/v6/latest/USD')
+      .then(function(resp){ if(!resp.ok) throw new Error('net'); return resp.json(); })
+      .then(function(data){
+        if(data && data.result === 'success' && data.rates){
+          EX.rates = data.rates;
+          EX.updated = Date.now();
+          saveEx();
+          document.getElementById('exOfflineLine').classList.add('hidden');
+        }else{
+          exShowOfflineNote();
+        }
+        renderEx();
+      })
+      .catch(function(){
+        exShowOfflineNote();
+        renderEx();
+      });
+  }
+  function showExchange(){
+    document.getElementById('mainView').classList.add('hidden');
+    document.getElementById('settingsView').classList.add('hidden');
+    document.getElementById('slipView').classList.add('hidden');
+    document.getElementById('aboutView').classList.add('hidden');
+    document.getElementById('ratesView').classList.add('hidden');
+    document.getElementById('exchangeView').classList.remove('hidden');
+    document.getElementById('exSetRate').value = (EX.setRate && EX.setRate > 0) ? EX.setRate : '';
+    exPairChanged();
+    fetchEx(false);
+    window.scrollTo(0, 0);
+  }
 
   ['days','otHours','holDays','phDays','otherBonus','ot3Hours'].forEach(id =>
     document.getElementById(id).addEventListener('input', calc));
   document.getElementById('attend').addEventListener('change', calc);
   document.getElementById('sCur').addEventListener('change', function(){ S.currency = this.value; persist(); calc(); });
   document.getElementById('sTheme').addEventListener('change', function(){ S.theme = this.value; persist(); applyTheme(); });
+  document.getElementById('exAmount').addEventListener('input', renderEx);
+  document.getElementById('exFrom').addEventListener('change', exPairChanged);
+  document.getElementById('exTo').addEventListener('change', exPairChanged);
+  document.getElementById('exSetRate').addEventListener('input', exSetChanged);
   /* ===== Banner: random financial tips + motivation =====
      Random message on load, rotates every 10s, tap banner to shuffle. */
   const BANNER_MSGS = [
