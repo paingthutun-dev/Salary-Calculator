@@ -145,6 +145,7 @@
     <div class="topbar">
       <h2 data-t="calcTitle">လစာတွက်ရန်</h2>
       <div class="actions">
+        <button class="linkbtn" onclick="window.print()" data-t="slipBtn">🧾 စလစ်</button>
         <button class="linkbtn" onclick="showSettings()" data-t="settingsBtn">⚙️ ဆက်တင်</button>
       </div>
     </div>
@@ -344,7 +345,7 @@
   const I18N = {
     my: {
       appTitle:'လစာတွက်စက်',
-      calcTitle:'လစာတွက်ရန်', settingsBtn:'⚙️ ဆက်တင်',
+      calcTitle:'လစာတွက်ရန်', settingsBtn:'⚙️ ဆက်တင်', slipBtn:'🧾 စလစ်',
       days:'အလုပ်လုပ်ရက် (ရက်)', daysPh:'ဥပမာ — 26',
       otHours:'နေ့စဉ် OT နာရီ', holDays:'Holiday OT ရက်', phDays:'Public Holiday ရက်',
       attend:'ရက်မှန် (Attendance Bonus ထည့်မည်)', otherBonus:'အခြား Bonus',
@@ -379,7 +380,7 @@
     },
     en: {
       appTitle:'Salary Calculator',
-      calcTitle:'Calculate Salary', settingsBtn:'⚙️ Settings',
+      calcTitle:'Calculate Salary', settingsBtn:'⚙️ Settings', slipBtn:'🧾 Slip',
       days:'Working Days', daysPh:'e.g. 26',
       otHours:'Daily OT Hours', holDays:'Holiday OT Days', phDays:'Public Holiday Days',
       attend:'Full Attendance (include Attendance Bonus)', otherBonus:'Other Bonus',
@@ -414,7 +415,7 @@
     },
     zh: {
       appTitle:'工资计算器',
-      calcTitle:'计算工资', settingsBtn:'⚙️ 设置',
+      calcTitle:'计算工资', settingsBtn:'⚙️ 设置', slipBtn:'🧾 工资单',
       days:'工作天数', daysPh:'例如：26',
       otHours:'每日加班小时', holDays:'假日加班天数', phDays:'公共假日天数',
       attend:'全勤（包含全勤奖）', otherBonus:'其他奖金',
