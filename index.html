@@ -119,6 +119,12 @@
   body.fs-small .wrap{zoom:.9;}
   body.fs-large .wrap{zoom:1.15;}
   #printArea{display:none;}
+  #slipContent h1{font-size:22px; margin:0 0 4px; color:var(--navy);}
+  #slipContent .p-date{font-size:14px; color:var(--muted); margin-bottom:12px;}
+  #slipContent .p-row{display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line); font-size:15px;}
+  #slipContent .p-row span:last-child{font-weight:600;}
+  #slipContent .p-total{border-top:2px solid var(--navy); border-bottom:none; font-size:18px; padding-top:12px; margin-top:8px;}
+  body.halloween #slipContent .p-total{border-top-color:#D9480F;}
   @media print{
     body{background:#fff;}
     .wrap{display:none;}
@@ -145,7 +151,7 @@
     <div class="topbar">
       <h2 data-t="calcTitle">လစာတွက်ရန်</h2>
       <div class="actions">
-        <button class="linkbtn" onclick="window.print()" data-t="slipBtn">🧾 စလစ်</button>
+        <button class="linkbtn" onclick="showSlip()" data-t="slipBtn">🧾 စလစ်</button>
         <button class="linkbtn" onclick="showSettings()" data-t="settingsBtn">⚙️ ဆက်တင်</button>
       </div>
     </div>
@@ -332,6 +338,18 @@
     </div>
   </div>
 
+  <!-- ===== Slip preview ===== -->
+  <div id="slipView" class="hidden">
+    <div class="topbar">
+      <h2 data-t="slipTitle">လစာစလစ်</h2>
+      <button class="linkbtn" onclick="showMain()" data-t="back">← ပြန်သွားမယ်</button>
+    </div>
+    <div class="card">
+      <div id="slipContent"></div>
+      <button class="btn btn-blue" onclick="window.print()" data-t="print" style="margin-top:14px;">🖨️ ပရင့်ထုတ်မယ်</button>
+    </div>
+  </div>
+
 </div>
 
 <div id="printArea"></div>
@@ -345,7 +363,7 @@
   const I18N = {
     my: {
       appTitle:'လစာတွက်စက်',
-      calcTitle:'လစာတွက်ရန်', settingsBtn:'⚙️ ဆက်တင်', slipBtn:'🧾 စလစ်',
+      calcTitle:'လစာတွက်ရန်', settingsBtn:'⚙️ ဆက်တင်', slipBtn:'🧾 စလစ်', slipTitle:'လစာစလစ်',
       days:'အလုပ်လုပ်ရက် (ရက်)', daysPh:'ဥပမာ — 26',
       otHours:'နေ့စဉ် OT နာရီ', holDays:'Holiday OT ရက်', phDays:'Public Holiday ရက်',
       attend:'ရက်မှန် (Attendance Bonus ထည့်မည်)', otherBonus:'အခြား Bonus',
@@ -380,7 +398,7 @@
     },
     en: {
       appTitle:'Salary Calculator',
-      calcTitle:'Calculate Salary', settingsBtn:'⚙️ Settings', slipBtn:'🧾 Slip',
+      calcTitle:'Calculate Salary', settingsBtn:'⚙️ Settings', slipBtn:'🧾 Slip', slipTitle:'Salary Slip',
       days:'Working Days', daysPh:'e.g. 26',
       otHours:'Daily OT Hours', holDays:'Holiday OT Days', phDays:'Public Holiday Days',
       attend:'Full Attendance (include Attendance Bonus)', otherBonus:'Other Bonus',
@@ -415,7 +433,7 @@
     },
     zh: {
       appTitle:'工资计算器',
-      calcTitle:'计算工资', settingsBtn:'⚙️ 设置', slipBtn:'🧾 工资单',
+      calcTitle:'计算工资', settingsBtn:'⚙️ 设置', slipBtn:'🧾 工资单', slipTitle:'工资单',
       days:'工作天数', daysPh:'例如：26',
       otHours:'每日加班小时', holDays:'假日加班天数', phDays:'公共假日天数',
       attend:'全勤（包含全勤奖）', otherBonus:'其他奖金',
@@ -555,6 +573,8 @@
     rows.forEach(function(r){ h += '<div class="p-row"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>'; });
     h += '<div class="p-row p-total"><span>' + t('totalLbl') + '</span><span>' + fmt(total) + ' ' + curLabel() + '</span></div>';
     document.getElementById('printArea').innerHTML = h;
+    const sc = document.getElementById('slipContent');
+    if (sc) sc.innerHTML = h;
   }
 
   let otDayValues = [];
@@ -814,8 +834,9 @@
     document.getElementById('attend').checked = true; calc();
     document.getElementById('days').focus();
   }
-  function showSettings(){ fillSettings(); document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.remove('hidden'); window.scrollTo(0,0); }
-  function showMain(){ document.getElementById('settingsView').classList.add('hidden'); document.getElementById('mainView').classList.remove('hidden'); calc(); window.scrollTo(0,0); }
+  function showSettings(){ fillSettings(); document.getElementById('mainView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('settingsView').classList.remove('hidden'); window.scrollTo(0,0); }
+  function showMain(){ document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('mainView').classList.remove('hidden'); calc(); window.scrollTo(0,0); }
+  function showSlip(){ calc(); document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.remove('hidden'); window.scrollTo(0,0); }
 
   ['days','otHours','holDays','phDays','otherBonus'].forEach(id =>
     document.getElementById(id).addEventListener('input', calc));
