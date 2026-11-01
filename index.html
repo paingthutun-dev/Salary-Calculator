@@ -3,7 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Salary Calculator</title>
+<title>လစာတွက်စက် | Salary Calculator</title>
+<meta name="description" content="ရက်မှန်ကြေး၊ OT၊ အားလပ်ရက်အပါအဝင် လစာကို အလွယ်တွက်လို့ရတယ်။ Free, login မလို, offline ရတယ်။">
+<meta property="og:title" content="လစာတွက်စက် | Salary Calculator">
+<meta property="og:description" content="ရက်မှန်ကြေး၊ OT၊ အားလပ်ရက်အပါအဝင် လစာကို အလွယ်တွက်လို့ရတယ်။ Free, login မလို, offline ရတယ်။">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://paingthutun-dev.github.io/Salary-Calculator/">
+<meta property="og:image" content="https://paingthutun-dev.github.io/Salary-Calculator/icon-512.png">
+<meta name="twitter:card" content="summary">
 <meta name="theme-color" content="#1B1030">
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
@@ -237,7 +244,8 @@
       <div class="actions">
         <button class="linkbtn" onclick="showSlip()" data-t="slipBtn">🧾 စလစ်</button>
         <button class="linkbtn" onclick="showExchange()" data-t="exBtn">💱 လဲလှယ်</button>
-        <button class="linkbtn" onclick="showSettings()" data-t="settingsBtn">⚙️ ဆက်တင်</button>
+        <button class="linkbtn" onclick="shareApp()" id="shareBtn" data-t="shareBtn">📤 မျှဝေ</button>
+        <button class="linkbtn" onclick="showSettings()" data-t="settingsBtn">⚙️</button>
       </div>
     </div>
 
@@ -556,7 +564,7 @@
   const I18N = {
     my: {
       appTitle:'လစာတွက်စက်',
-      calcTitle:'လစာတွက်ရန်', settingsBtn:'⚙️ ဆက်တင်', slipBtn:'🧾 စလစ်', slipTitle:'လစာစလစ်',
+      calcTitle:'လစာတွက်ရန်', settingsBtn:'⚙️', slipBtn:'🧾 စလစ်', slipTitle:'လစာစလစ်',
       days:'အလုပ်လုပ်ရက် (ရက်)', daysPh:'ဥပမာ — 26',
       otHours:'နေ့စဉ်အချိန်ပို နာရီ', ot3Hours:'OT*3 နာရီ', holDays:'အားလပ်ရက်အချိန်ပို (ရက်)', phDays:'အစိုးရပိတ်ရက် (ရက်)',
       attend:'ရက်မှန်ကြေး ထည့်မည်', otherBonus:'အခြား Bonus',
@@ -569,7 +577,7 @@
       sWage:'လုပ်အားခ — တစ်ရက်ဈေး', sOt:'နေ့စဉ်အချိန်ပို — တစ်နာရီဈေး', sOt3:'OT*3 — တစ်နာရီဈေး', sHoliday:'အားလပ်ရက်အချိန်ပို — တစ်ရက်ဈေး', sPh:'အစိုးရပိတ်ရက် — တစ်ရက်ဈေး', sOtMeal:'OT ထမင်းစရိတ် — တစ်ရက်ဈေး',
       sMeal:'ထမင်းစရိတ် — တစ်ရက်ဈေး', sTrans:'ခရီးစရိတ် — တစ်ရက်ဈေး',
       sAttend:'ရက်မှန်ကြေး — တစ်လစာ', sIns:'အာမခံကြေး — တစ်လစာ',
-      recordMode:'ထည့်သွင်းနည်း', modeCalendar:'ပြက္ခဒိန်', modeCalculator:'တွက်စက်', themeTitle:'Theme', themeDefault:'ပုံမှန်', themeHalloween:'Halloween 🎃', themeThadingyut:'သီတင်းကျွတ် 🪔', themeThingyan:'သင်္ကြန် 💦🌼', exBtn:'💱 လဲလှယ်', exTitle:'ငွေလဲလှယ်', exAmount:'ပမာဏ', exFrom:'မှ', exTo:'သို့', exSwap:'⇄ နေရာချင်း', exRefresh:'🔄 ဈေးနှုန်း အသစ်ယူမယ်', exCentral:'သတ်မှတ်ဈေး', exOffline:'အင်တာနက်မရှိလို့ နောက်ဆုံးသိမ်းထားတဲ့ ဈေးနဲ့ တွက်ပြထားတယ်။', exNoRate:'ဈေးနှုန်း မရှိသေးဘူး — အင်တာနက် ဖွင့်ပြီး Refresh နှိပ်ပါ။', exAttr:'Rates by ExchangeRate-API', exUpdated:'နောက်ဆုံး update', recTitle:'နေ့စဉ်မှတ်တမ်း',
+      recordMode:'ထည့်သွင်းနည်း', modeCalendar:'ပြက္ခဒိန်', modeCalculator:'တွက်စက်', themeTitle:'Theme', themeDefault:'ပုံမှန်', themeHalloween:'Halloween 🎃', themeThadingyut:'သီတင်းကျွတ် 🪔', themeThingyan:'သင်္ကြန် 💦🌼', exBtn:'💱 လဲလှယ်', exTitle:'ငွေလဲလှယ်', exAmount:'ပမာဏ', exFrom:'မှ', exTo:'သို့', exSwap:'⇄ နေရာချင်း', exRefresh:'🔄 ဈေးနှုန်း အသစ်ယူမယ်', exCentral:'သတ်မှတ်ဈေး', exOffline:'အင်တာနက်မရှိလို့ နောက်ဆုံးသိမ်းထားတဲ့ ဈေးနဲ့ တွက်ပြထားတယ်။', exNoRate:'ဈေးနှုန်း မရှိသေးဘူး — အင်တာနက် ဖွင့်ပြီး Refresh နှိပ်ပါ။', exAttr:'Rates by ExchangeRate-API', exUpdated:'နောက်ဆုံး update', shareBtn:'📤 မျှဝေ', shareText:'လစာတွက်စက် — ရက်မှန်ကြေး၊ OT၊ အားလပ်ရက်အပါအဝင် လစာကို အလွယ်တွက်လို့ရတယ်။ Free, login မလို, offline ရတယ်။', shareCopied:'ကူးပြီးပြီ', shareCopyManually:'လင့်ခ်ကို ကူးယူပါ', recTitle:'နေ့စဉ်မှတ်တမ်း',
       recColDate:'ရက်စွဲ', recColWork:'အလုပ်ဆင်း', recColHol:'အားလပ်ရက် အလုပ်ဆင်း', recColPh:'နားရက်', recColOt:'OT နာရီ',
       recWorked:'အလုပ်ဆင်းရက်', recOt:'OT နာရီ စုစုပေါင်း', recHol:'အားလပ်ရက်အချိန်ပို (ရက်)', recOtMeal:'OT လုပ်တဲ့ ရက်', recPh:'အစိုးရပိတ်ရက် (ရက်)',
       recClear:'ဒီလရဲ့ မှတ်တမ်း ရှင်းမယ်', recClearConfirm:'ဒီလရဲ့ မှတ်တမ်းအားလုံး ဖျက်မှာလား?', splashChecking:'Update စစ်နေသည်…', splashUptoDate:'နောက်ဆုံးဗားရှင်း ဖြစ်နေသည် ✓', splashUpdateAvail:'Update အသစ် ရှိသည်', splashOffline:'Offline — သိမ်းထားတဲ့ ဗားရှင်းကို သုံးနေသည်', splashWhatsNew:'အသစ်ပါဝင်တာများ', splashTap:'ဆက်ရန် နှိပ်ပါ', splashUpdateBtn:'အခု Update လုပ်မယ်', splashContinue:'ဆက်သွားမယ်', aboutTitle:'အကြောင်း', ratesBtn:'ဈေးနှုန်းများ', ratesTitle:'ဈေးနှုန်းများ', aboutVersion:'ဗားရှင်း', aboutContact:'ဆက်သွယ်ရန်', aboutCheck:'Update စစ်မယ်',
@@ -589,7 +597,7 @@
     },
     en: {
       appTitle:'Salary Calculator',
-      calcTitle:'Calculate Salary', settingsBtn:'⚙️ Settings', slipBtn:'🧾 Slip', slipTitle:'Salary Slip',
+      calcTitle:'Calculate Salary', settingsBtn:'⚙️', slipBtn:'🧾 Slip', slipTitle:'Salary Slip',
       days:'Working Days', daysPh:'e.g. 26',
       otHours:'Daily OT Hours', ot3Hours:'OT*3 Hours', holDays:'Holiday OT Days', phDays:'Public Holiday Days',
       attend:'Full Attendance (include Attendance Bonus)', otherBonus:'Other Bonus',
@@ -602,7 +610,7 @@
       sWage:'Daily Wage — per day', sOt:'Daily OT — per hour', sOt3:'OT*3 — per hour', sHoliday:'Holiday OT — per day', sPh:'Public Holiday — per day', sOtMeal:'OT Meal Allowance — per OT day',
       sMeal:'Meal Allowance — per day', sTrans:'Transportation Allowance — per day',
       sAttend:'Attendance Bonus — per month', sIns:'Insurance Fee — per month',
-      recordMode:'Entry Method', modeCalendar:'Calendar', modeCalculator:'Calculator', themeTitle:'Theme', themeDefault:'Default', themeHalloween:'Halloween 🎃', themeThadingyut:'Thadingyut 🪔', themeThingyan:'Thingyan 💦🌼', exBtn:'💱 Exchange', exTitle:'Currency Exchange', exAmount:'Amount', exFrom:'From', exTo:'To', exSwap:'⇄ Swap', exRefresh:'🔄 Refresh rates', exCentral:'set rate', exOffline:'No internet — showing the last saved rate.', exNoRate:'No rate yet — connect to the internet and tap Refresh.', exAttr:'Rates by ExchangeRate-API', exUpdated:'Last updated', recTitle:'Daily Record',
+      recordMode:'Entry Method', modeCalendar:'Calendar', modeCalculator:'Calculator', themeTitle:'Theme', themeDefault:'Default', themeHalloween:'Halloween 🎃', themeThadingyut:'Thadingyut 🪔', themeThingyan:'Thingyan 💦🌼', exBtn:'💱 Exchange', exTitle:'Currency Exchange', exAmount:'Amount', exFrom:'From', exTo:'To', exSwap:'⇄ Swap', exRefresh:'🔄 Refresh rates', exCentral:'set rate', exOffline:'No internet — showing the last saved rate.', exNoRate:'No rate yet — connect to the internet and tap Refresh.', exAttr:'Rates by ExchangeRate-API', exUpdated:'Last updated', shareBtn:'📤 Share', shareText:'Salary Calculator — easily calculate your salary including attendance bonus, OT and holidays. Free, no login, works offline.', shareCopied:'Copied', shareCopyManually:'Copy the link', recTitle:'Daily Record',
       recColDate:'Date', recColWork:'Worked', recColHol:'Holiday OT', recColPh:'Public Holiday', recColOt:'OT Hours',
       recWorked:'Worked Days', recOt:'Total OT Hours', recHol:'Holiday OT Days', recOtMeal:'OT Days', recPh:'Public Holiday Days',
       recClear:'Clear This Month', recClearConfirm:'Clear all records for this month?', splashChecking:'Checking for updates…', splashUptoDate:'Up to date ✓', splashUpdateAvail:'Update available', splashOffline:'Offline — using saved version', splashWhatsNew:"What's new", splashTap:'Tap to continue', splashUpdateBtn:'Update now', splashContinue:'Continue', aboutTitle:'About', ratesBtn:'Rates', ratesTitle:'Rates', aboutVersion:'Version', aboutContact:'Contact', aboutCheck:'Check for updates',
@@ -622,7 +630,7 @@
     },
     zh: {
       appTitle:'工资计算器',
-      calcTitle:'计算工资', settingsBtn:'⚙️ 设置', slipBtn:'🧾 工资单', slipTitle:'工资单',
+      calcTitle:'计算工资', settingsBtn:'⚙️', slipBtn:'🧾 工资单', slipTitle:'工资单',
       days:'工作天数', daysPh:'例如：26',
       otHours:'每日加班小时', ot3Hours:'OT*3 小时', holDays:'假日加班天数', phDays:'公共假日天数',
       attend:'全勤（包含全勤奖）', otherBonus:'其他奖金',
@@ -635,7 +643,7 @@
       sWage:'日薪 — 每天', sOt:'每日加班 — 每小时', sOt3:'OT*3 — 每小时', sHoliday:'假日加班 — 每天', sPh:'公共假日 — 每天', sOtMeal:'加班餐补 — 每天',
       sMeal:'餐补 — 每天', sTrans:'交通补贴 — 每天',
       sAttend:'全勤奖 — 每月', sIns:'保险费 — 每月',
-      recordMode:'输入方式', modeCalendar:'日历', modeCalculator:'计算器', themeTitle:'主题', themeDefault:'默认', themeHalloween:'万圣节 🎃', themeThadingyut:'点灯节 🪔', themeThingyan:'泼水节 💦🌼', exBtn:'💱 换算', exTitle:'货币换算', exAmount:'金额', exFrom:'从', exTo:'到', exSwap:'⇄ 互换', exRefresh:'🔄 更新汇率', exCentral:'设定汇率', exOffline:'无网络 — 显示上次保存的汇率。', exNoRate:'暂无汇率 — 请联网后点击刷新。', exAttr:'Rates by ExchangeRate-API', exUpdated:'最后更新', recTitle:'每日记录',
+      recordMode:'输入方式', modeCalendar:'日历', modeCalculator:'计算器', themeTitle:'主题', themeDefault:'默认', themeHalloween:'万圣节 🎃', themeThadingyut:'点灯节 🪔', themeThingyan:'泼水节 💦🌼', exBtn:'💱 换算', exTitle:'货币换算', exAmount:'金额', exFrom:'从', exTo:'到', exSwap:'⇄ 互换', exRefresh:'🔄 更新汇率', exCentral:'设定汇率', exOffline:'无网络 — 显示上次保存的汇率。', exNoRate:'暂无汇率 — 请联网后点击刷新。', exAttr:'Rates by ExchangeRate-API', exUpdated:'最后更新', shareBtn:'📤 分享', shareText:'工资计算器 — 轻松计算包含全勤奖、加班和假期的工资。免费、无需登录、可离线使用。', shareCopied:'已复制', shareCopyManually:'复制链接', recTitle:'每日记录',
       recColDate:'日期', recColWork:'出勤', recColHol:'假日', recColPh:'公共假日', recColOt:'加班小时',
       recWorked:'出勤天数', recOt:'加班总小时', recHol:'假日加班天数', recOtMeal:'加班天数', recPh:'公共假日天数',
       recClear:'清除本月记录', recClearConfirm:'确定清除本月所有记录吗？', splashChecking:'正在检查更新…', splashUptoDate:'已是最新版本 ✓', splashUpdateAvail:'有新版本', splashOffline:'离线 — 使用已保存版本', splashWhatsNew:'更新内容', splashTap:'点击继续', splashUpdateBtn:'立即更新', splashContinue:'继续', aboutTitle:'关于', ratesBtn:'费率', ratesTitle:'费率', aboutVersion:'版本', aboutContact:'联系方式', aboutCheck:'检查更新',
@@ -1170,6 +1178,31 @@
     fetchCentral();
     fetchEx(false);
     window.scrollTo(0, 0);
+  }
+  async function shareApp(){
+    const url = 'https://paingthutun-dev.github.io/Salary-Calculator/';
+    const btn = document.getElementById('shareBtn');
+    const orig = btn.innerHTML;
+    if(navigator.share){
+      try{ await navigator.share({title: document.title, text: t('shareText'), url: url}); return; }catch(e){ if(e && e.name === 'AbortError') return; }
+    }
+    let ok = false;
+    try{ await navigator.clipboard.writeText(url); ok = true; }catch(e){}
+    if(!ok){
+      try{
+        const ta = document.createElement('textarea');
+        ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+      }catch(e){}
+    }
+    if(ok){
+      btn.textContent = '✓ ' + t('shareCopied');
+      setTimeout(function(){ btn.innerHTML = orig; }, 2000);
+    }else{
+      prompt(t('shareCopyManually'), url);
+    }
   }
 
   ['days','otHours','holDays','phDays','otherBonus','ot3Hours'].forEach(id =>
