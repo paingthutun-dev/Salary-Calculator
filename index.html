@@ -94,19 +94,28 @@
   @media (max-width:380px){ .ot-grid{grid-template-columns:1fr;} }
   .rec-nav{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
   .rec-navbtn{background:#EAF1FD; color:var(--blue-dark); border:none; border-radius:10px; width:44px; height:44px; font-size:22px; cursor:pointer; font-family:inherit;}
-  .rec-head{display:grid; grid-template-columns:44px repeat(3, minmax(0,1fr)) minmax(76px, 1.4fr); gap:4px; font-size:11px; line-height:1.35; color:var(--muted); padding:0 2px 6px; align-items:center;}
-  .rec-head span{min-width:0; overflow-wrap:anywhere; text-align:center;}
-  .rec-row{display:grid; grid-template-columns:44px repeat(3, minmax(0,1fr)) minmax(76px, 1.4fr); gap:4px; align-items:center; padding:9px 2px; border-top:1px solid var(--line);}
-  .rec-row.hol-row{background:#FFF7E0; border-radius:8px;}
-  .rec-row.ph-row{background:#EAF1FD; border-radius:8px;}
-  .rec-row.sun-row{background:#FDE8E8; border-radius:8px;}
-  .rec-date{font-size:15px; min-width:0; text-align:center;}
-  .rec-date small{display:block; color:var(--muted); font-size:12px; overflow-wrap:anywhere;}
-  .rec-row.hol-row .rec-date{color:#8A5A00;}
-  .rec-row.sun-row .rec-date{color:#C92A2A;}
-  .rec-row input[type="checkbox"]{width:22px; height:22px; accent-color:var(--blue); cursor:pointer; justify-self:center;}
-  .rec-row input[type="number"]{padding:10px 10px; font-size:15px; min-width:0;}
-  .rec-row input[type="number"]:disabled{background:#F1F4F9; color:#9AA7BC;}
+  .cal-head{display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); gap:4px; font-size:12px; color:var(--muted); padding:0 2px 6px; text-align:center;}
+  .cal-head span.sun-h{color:#C92A2A;}
+  .cal-grid{display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); gap:4px;}
+  .cal-blank{min-height:64px;}
+  .cal-day{min-height:64px; background:#F8FAFE; border:1px solid var(--line); border-radius:10px; padding:6px 2px; text-align:center; cursor:pointer;}
+  .cal-day .d-num{font-size:15px; font-weight:700;}
+  .cal-day .d-meta{display:block; font-size:10px; line-height:1.5; overflow-wrap:anywhere;}
+  .cal-day .d-meta.work{color:#0E7C4B; font-weight:700;}
+  .cal-day .d-meta.hol{color:#8A5A00; font-weight:700;}
+  .cal-day .d-meta.ph{color:var(--blue-dark); font-weight:700;}
+  .cal-day .d-meta.ot{color:var(--muted);}
+  .cal-day.hol-row{background:#FFF7E0;}
+  .cal-day.ph-row{background:#EAF1FD;}
+  .cal-day.sun-row{background:#FDE8E8;}
+  .cal-day.sun-row .d-num{color:#C92A2A;}
+  .cal-day.sel{outline:2px solid var(--blue); outline-offset:-2px;}
+  .cal-day.today .d-num{display:inline-block; background:var(--blue); color:#fff; border-radius:50%; width:26px; height:26px; line-height:26px;}
+  .cal-edit{margin-top:12px; background:#F8FAFE; border:1px solid var(--line); border-radius:12px; padding:12px;}
+  .cal-edit-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .cal-edit-head strong{font-size:16px;}
+  .cal-edit .check{margin-bottom:10px;}
+  .cal-edit input[type="number"]:disabled{background:#F1F4F9; color:#9AA7BC;}
   body.halloween{--blue:#D9480F; --blue-dark:#B34700; --navy:#1A1210; --bg:#EFEAF6; --line:#DDD6F3; --card:#FFFEF9;}
   body.halloween header{background:linear-gradient(135deg,#D9480F,#3D1470);}
   body.halloween header h1::after{content:' 🎃';}
@@ -114,14 +123,34 @@
   body.halloween .total .amt{color:#FFB35C;}
   body.halloween .btn-ghost{background:#FDEBD7; color:#7A2E00;}
   body.halloween .rec-navbtn{background:#FDEBD7; color:#7A2E00;}
-  body.halloween .rec-row.ph-row{background:#F3E8FF;}
+  body.halloween .cal-day.ph-row{background:#F3E8FF;}
   body.halloween input:focus, body.halloween select:focus{border-color:#D9480F; box-shadow:0 0 0 3px rgba(217,72,15,.18);}
   body.fs-small .wrap{zoom:.9;}
   body.fs-large .wrap{zoom:1.15;}
   #printArea{display:none;}
+  #splash{position:fixed; inset:0; z-index:9999; background:#1B1030; color:#fff; display:flex; align-items:center; justify-content:center; text-align:center; padding:24px;}
+  #splash.hidden{display:none;}
+  .sp-box{max-width:320px; width:100%;}
+  .sp-logo{width:96px; height:96px; border-radius:22px; animation:sp-pulse 1.6s ease-in-out infinite;}
+  @keyframes sp-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+  .sp-name{font-size:24px; font-weight:700; margin-top:16px;}
+  .sp-ver{font-size:14px; opacity:.75; margin-top:4px;}
+  .sp-bar{height:4px; background:rgba(255,255,255,.2); border-radius:2px; margin:18px auto 12px; overflow:hidden;}
+  .sp-bar span{display:block; height:100%; width:40%; background:#FFB35C; border-radius:2px; animation:sp-slide 1.2s ease-in-out infinite;}
+  @keyframes sp-slide{0%{transform:translateX(-100%);}100%{transform:translateX(350%);}}
+  .sp-status{font-size:14px; opacity:.85; min-height:20px;}
+  .sp-notes{margin-top:12px; text-align:left; font-size:13px; line-height:1.6; background:rgba(255,255,255,.08); border-radius:12px; padding:12px 14px; max-height:160px; overflow:auto;}
+  .sp-notes div{margin-bottom:4px;}
+  .sp-notes div:last-child{margin-bottom:0;}
+  .sp-actions{display:flex; gap:10px; justify-content:center; margin-top:14px;}
+  .sp-btn{background:#D9480F; color:#fff; border:none; border-radius:10px; padding:12px 18px; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit;}
+  .sp-btn.ghost{background:rgba(255,255,255,.15);}
+  .sp-tap{font-size:12px; opacity:.55; margin-top:16px;}
+  @media (prefers-reduced-motion: reduce){ .sp-logo{animation:none;} .sp-bar span{animation:none; width:100%;} }
   @media print{
     body{background:#fff;}
     .wrap{display:none;}
+    #splash{display:none;}
     #printArea{display:block; padding:10px 16px; color:#000;}
     #printArea h1{font-size:22px; margin:0 0 4px;}
     #printArea .p-date{font-size:14px; color:#444; margin-bottom:14px;}
@@ -133,6 +162,27 @@
 </style>
 </head>
 <body>
+<div id="splash">
+  <div class="sp-box">
+    <img class="sp-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23D9480F'/%3E%3Crect x='26' y='20' width='48' height='18' rx='4' fill='white'/%3E%3Crect x='26' y='46' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='44' y='46' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='62' y='46' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='26' y='64' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='44' y='64' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='62' y='64' width='12' height='12' rx='2' fill='white'/%3E%3C/svg%3E" alt="Salary Calculator">
+    <div class="sp-name">Salary Calculator</div>
+    <div class="sp-ver" id="splashVersion"></div>
+    <div class="sp-bar"><span></span></div>
+    <div class="sp-status" id="splashStatus" data-t="splashChecking">Checking for updates…</div>
+    <div id="splashNotes" class="sp-notes hidden"></div>
+    <div id="splashActions" class="sp-actions hidden">
+      <button class="sp-btn" onclick="location.reload()" data-t="splashUpdateBtn">Update now</button>
+      <button class="sp-btn ghost" onclick="hideSplash()" data-t="splashContinue">Continue</button>
+    </div>
+    <div class="sp-tap" data-t="splashTap">Tap to continue</div>
+  </div>
+</div>
+<script>
+  setTimeout(function(){
+    var s = document.getElementById('splash');
+    if(s && !s.dataset.keep) s.classList.add('hidden');
+  }, 10000);
+</script>
 <div class="wrap">
 
   <header>
@@ -184,8 +234,16 @@
             <strong id="recMonthLabel"></strong>
             <button class="rec-navbtn" onclick="changeMonth(1)">›</button>
           </div>
-          <div class="rec-head"><span data-t="recColDate">ရက်စွဲ</span><span data-t="recColWork">အလုပ်ဆင်း</span><span data-t="recColHol">Holiday</span><span data-t="recColPh">Public Holiday</span><span data-t="recColOt">OT နာရီ</span></div>
-          <div id="recDayRows"></div>
+          <div id="calHead" class="cal-head"></div>
+          <div id="calGrid" class="cal-grid"></div>
+          <div id="calEdit" class="cal-edit hidden">
+            <div class="cal-edit-head"><strong id="calEditLabel"></strong><button class="linkbtn" onclick="closeCalEdit()">✕</button></div>
+            <label class="check"><input type="checkbox" id="calEditW"><span data-t="recColWork">အလုပ်ဆင်း</span></label>
+            <label class="check"><input type="checkbox" id="calEditH"><span data-t="recColHol">Holiday</span></label>
+            <label class="check"><input type="checkbox" id="calEditP"><span data-t="recColPh">Public Holiday</span></label>
+            <div class="field"><label data-t="recColOt">OT နာရီ</label><input type="number" id="calEditOt" min="0" step="0.5" inputmode="decimal" placeholder="0"></div>
+          </div>
+          <p class="note" id="calLegend" style="margin-top:10px;"></p>
           <div class="note" style="margin-top:12px;">
             <span data-t="recWorked">အလုပ်ဆင်းရက်</span>: <strong id="recWorkedVal">0</strong> ·
             <span data-t="recOt">OT နာရီ စုစုပေါင်း</span>: <strong id="recOtVal">0</strong> ·
@@ -208,25 +266,6 @@
       </div>
       <button class="btn btn-ghost" onclick="clearInputs()" data-t="clear">ထည့်ထားတာတွေ ရှင်းလင်းမယ်</button>
     </div>
-
-    <div class="total">
-      <div class="lbl" data-t="totalLbl">စုစုပေါင်း လစာ</div>
-      <div class="amt"><span id="totalAmt">0</span><span class="cur" id="totalCur">ကျပ်</span></div>
-      <div class="lines">
-        <div class="line"><span data-t="lBase">အခြေခံလစာ (Daily Wage × ရက်)</span><span id="lBase">0</span></div>
-        <div class="line"><span data-t="lOt">နေ့စဉ် OT</span><span id="lOt">0</span></div>
-        <div class="line"><span data-t="lHol">Holiday OT</span><span id="lHol">0</span></div>
-        <div class="line" id="rowPh"><span data-t="lPh">Public Holiday (PH × ရက်)</span><span id="lPh">0</span></div>
-        <div class="line" id="rowOtMeal"><span data-t="lOtMeal">OT ထမင်းစရိတ် (OT meal × OT ရက်)</span><span id="lOtMeal">0</span></div>
-        <div class="line"><span data-t="lMeal">ထမင်းစရိတ် (Meal × ရက်)</span><span id="lMeal">0</span></div>
-        <div class="line"><span data-t="lTrans">ကားခ (Transport × ရက်)</span><span id="lTrans">0</span></div>
-        <div class="line" id="rowAttend"><span data-t="lAttend">ရက်မှန်ကြေး (Attendance Bonus)</span><span id="lAttend">0</span></div>
-        <div class="line" id="rowOther"><span data-t="lOther">အခြား Bonus</span><span id="lOther">0</span></div>
-        <div class="line" id="rowIns"><span data-t="lIns">အာမခံကြေး (နှုတ်)</span><span id="lIns">0</span></div>
-      </div>
-    </div>
-
-    <button class="btn btn-blue" onclick="window.print()" data-t="print" style="margin-bottom:14px;">🖨️ ပရင့်ထုတ်မယ်</button>
 
     <p class="note" data-t="note">ထမင်းစရိတ်နဲ့ ကားခကို အလုပ်လုပ်ရက်နဲ့ မြှောက်တွက်ပါတယ်။ ဈေးနှုန်းတွေအားလုံးကို ဆက်တင်ထဲမှာ ပြင်လို့ရပါတယ်။</p>
   </div>
@@ -330,6 +369,20 @@
       <input type="file" id="importFile" accept=".json,application/json" class="hidden" onchange="importSettings(event)">
       <div class="ok" id="ioMsg"></div>
     </div>
+    <div class="card">
+      <h2 data-t="aboutTitle">အကြောင်း</h2>
+      <div style="text-align:center;">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23D9480F'/%3E%3Crect x='26' y='20' width='48' height='18' rx='4' fill='white'/%3E%3Crect x='26' y='46' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='44' y='46' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='62' y='46' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='26' y='64' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='44' y='64' width='12' height='12' rx='2' fill='white'/%3E%3Crect x='62' y='64' width='12' height='12' rx='2' fill='white'/%3E%3C/svg%3E" alt="Salary Calculator" style="width:72px;height:72px;border-radius:18px;">
+        <div style="font-size:18px;font-weight:700;margin-top:8px;">Salary Calculator</div>
+        <div style="color:var(--muted);margin-top:2px;"><span data-t="aboutVersion">ဗားရှင်း</span> <span id="aboutVersionNum"></span></div>
+      </div>
+      <p class="note" style="margin-top:12px;"><span data-t="aboutContact">ဆက်သွယ်ရန်</span>: <a href="mailto:paingthu512.pt@gmail.com">paingthu512.pt@gmail.com</a> · <a href="https://github.com/paingthutun-dev" target="_blank" rel="noopener">github.com/paingthutun-dev</a></p>
+      <div style="margin-top:12px;"><strong data-t="splashWhatsNew">အသစ်ပါဝင်တာများ</strong></div>
+      <ul id="aboutNotes" style="margin:8px 0 0 18px;padding:0;line-height:1.7;font-size:14px;"></ul>
+      <button class="btn btn-ghost" style="margin-top:14px;" onclick="checkUpdateFromAbout()" data-t="aboutCheck">Update စစ်မယ်</button>
+      <button id="aboutUpdateBtn" class="btn btn-blue hidden" style="margin-top:10px;" onclick="location.reload()" data-t="splashUpdateBtn">အခု Update လုပ်မယ်</button>
+      <p class="note" id="aboutUpdateStatus" style="margin-top:10px;"></p>
+    </div>
   </div>
 
   <!-- ===== Slip preview ===== -->
@@ -348,6 +401,34 @@
 
 <script>
   const KEY = 'salaryCalcSettings.v2', OLD_KEY = 'salaryCalcSettings.v1';
+  const APP_VERSION = '1.0.0';
+  const APP_NOTES = [
+    'နေ့စဉ်မှတ်တမ်းကို Calendar ပုံစံဖြင့် ပြသခြင်း',
+    'Slip ကို Print မထုတ်ခင် Preview ကြည့်နိုင်ခြင်း',
+    'Banner တွင် ငွေကြေးဗဟုသုတနှင့် Motivation စာများ အလှည့်ကျ ပြသခြင်း',
+    'App အဖြစ် Install လုပ်နိုင်ပြီး Offline သုံးနိုင်ခြင်း'
+  ];
+  function verCmp(a, b){
+    const pa = String(a).split('.').map(function(x){ return parseInt(x, 10) || 0; });
+    const pb = String(b).split('.').map(function(x){ return parseInt(x, 10) || 0; });
+    for(let i = 0; i < Math.max(pa.length, pb.length); i++){
+      const d = (pa[i] || 0) - (pb[i] || 0);
+      if(d !== 0) return d;
+    }
+    return 0;
+  }
+  async function fetchRemoteVersion(){
+    try{
+      const ctrl = new AbortController();
+      const to = setTimeout(function(){ ctrl.abort(); }, 3000);
+      const r = await fetch('version.json', { signal: ctrl.signal, cache: 'no-store' });
+      clearTimeout(to);
+      if(!r.ok) return null;
+      const j = await r.json();
+      if(!j || !j.version) return null;
+      return j;
+    }catch(e){ return null; }
+  }
   const CURS = ['MMK','THB','JPY','CNY'];
   const SYM = { MMK:'ကျပ်', THB:'฿', JPY:'¥', CNY:'¥' };
   const DEFAULTS = { wage:10000, ot:2000, holiday:20000, ph:10000, otMeal:3000, meal:3000, trans:2000, attend:30000, insurance:0, currency:'MMK', lang:'my', otPerDay:false, recordMode:false, halloween:true, fontSize:'medium' };
@@ -373,9 +454,9 @@
       recordMode:'နေ့စဉ်မှတ်တမ်း သုံးမယ်', halloweenTheme:'Halloween Theme သုံးမယ် 🎃', recTitle:'နေ့စဉ်မှတ်တမ်း',
       recColDate:'ရက်စွဲ', recColWork:'အလုပ်ဆင်း', recColHol:'Holiday', recColPh:'Public Holiday', recColOt:'OT နာရီ',
       recWorked:'အလုပ်ဆင်းရက်', recOt:'OT နာရီ စုစုပေါင်း', recHol:'Holiday OT ရက်', recOtMeal:'OT လုပ်တဲ့ ရက်', recPh:'Public Holiday ရက်',
-      recClear:'ဒီလရဲ့ မှတ်တမ်း ရှင်းမယ်', recClearConfirm:'ဒီလရဲ့ မှတ်တမ်းအားလုံး ဖျက်မှာလား?',
+      recClear:'ဒီလရဲ့ မှတ်တမ်း ရှင်းမယ်', recClearConfirm:'ဒီလရဲ့ မှတ်တမ်းအားလုံး ဖျက်မှာလား?', splashChecking:'Update စစ်နေသည်…', splashUptoDate:'နောက်ဆုံးဗားရှင်း ဖြစ်နေသည် ✓', splashUpdateAvail:'Update အသစ် ရှိသည်', splashOffline:'Offline — သိမ်းထားတဲ့ ဗားရှင်းကို သုံးနေသည်', splashWhatsNew:'အသစ်ပါဝင်တာများ', splashTap:'ဆက်ရန် နှိပ်ပါ', splashUpdateBtn:'အခု Update လုပ်မယ်', splashContinue:'ဆက်သွားမယ်', aboutTitle:'အကြောင်း', aboutVersion:'ဗားရှင်း', aboutContact:'ဆက်သွယ်ရန်', aboutCheck:'Update စစ်မယ်',
       months:['ဇန်နဝါရီ','ဖေဖော်ဝါရီ','မတ်','ဧပြီ','မေ','ဇွန်','ဇူလိုင်','သြဂုတ်','စက်တင်ဘာ','အောက်တိုဘာ','နိုဝင်ဘာ','ဒီဇင်ဘာ'],
-      weekdays:['တနင်္ဂနွေ','တနင်္လာ','အင်္ဂါ','ဗုဒ္ဓဟူး','ကြာသပတေး','သောကြာ','စနေ'],
+      weekdays:['တနင်္ဂနွေ','တနင်္လာ','အင်္ဂါ','ဗုဒ္ဓဟူး','ကြာသပတေး','သောကြာ','စနေ'], weekdaysShort:['နွေ','လာ','ဂါ','ဟူး','တေး','ကြာ','နေ'],
       currency:'ငွေကြေး', language:'ဘာသာစကား',
       fontSize:'စာလုံးအရွယ်', fsSmall:'သေး', fsNormal:'ပုံမှန်', fsLarge:'ကြီး',
       save:'သိမ်းမယ်', reset:'မူလအတိုင်း ပြန်ထားမယ်',
@@ -408,9 +489,9 @@
       recordMode:'Use daily record', halloweenTheme:'Use Halloween theme 🎃', recTitle:'Daily Record',
       recColDate:'Date', recColWork:'Worked', recColHol:'Holiday', recColPh:'Public Holiday', recColOt:'OT Hours',
       recWorked:'Worked Days', recOt:'Total OT Hours', recHol:'Holiday OT Days', recOtMeal:'OT Days', recPh:'Public Holiday Days',
-      recClear:'Clear This Month', recClearConfirm:'Clear all records for this month?',
+      recClear:'Clear This Month', recClearConfirm:'Clear all records for this month?', splashChecking:'Checking for updates…', splashUptoDate:'Up to date ✓', splashUpdateAvail:'Update available', splashOffline:'Offline — using saved version', splashWhatsNew:"What's new", splashTap:'Tap to continue', splashUpdateBtn:'Update now', splashContinue:'Continue', aboutTitle:'About', aboutVersion:'Version', aboutContact:'Contact', aboutCheck:'Check for updates',
       months:['January','February','March','April','May','June','July','August','September','October','November','December'],
-      weekdays:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+      weekdays:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], weekdaysShort:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
       currency:'Currency', language:'Language',
       fontSize:'Font Size', fsSmall:'Small', fsNormal:'Normal', fsLarge:'Large',
       save:'Save', reset:'Reset to Defaults',
@@ -443,9 +524,9 @@
       recordMode:'使用每日记录', halloweenTheme:'使用万圣节主题 🎃', recTitle:'每日记录',
       recColDate:'日期', recColWork:'出勤', recColHol:'假日', recColPh:'公共假日', recColOt:'加班小时',
       recWorked:'出勤天数', recOt:'加班总小时', recHol:'假日加班天数', recOtMeal:'加班天数', recPh:'公共假日天数',
-      recClear:'清除本月记录', recClearConfirm:'确定清除本月所有记录吗？',
+      recClear:'清除本月记录', recClearConfirm:'确定清除本月所有记录吗？', splashChecking:'正在检查更新…', splashUptoDate:'已是最新版本 ✓', splashUpdateAvail:'有新版本', splashOffline:'离线 — 使用已保存版本', splashWhatsNew:'更新内容', splashTap:'点击继续', splashUpdateBtn:'立即更新', splashContinue:'继续', aboutTitle:'关于', aboutVersion:'版本', aboutContact:'联系方式', aboutCheck:'检查更新',
       months:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
-      weekdays:['周日','周一','周二','周三','周四','周五','周六'],
+      weekdays:['周日','周一','周二','周三','周四','周五','周六'], weekdaysShort:['周日','周一','周二','周三','周四','周五','周六'],
       currency:'货币', language:'语言',
       fontSize:'字体大小', fsSmall:'小', fsNormal:'正常', fsLarge:'大',
       save:'保存', reset:'恢复默认',
@@ -527,27 +608,10 @@
     const att = attendOn ? S.attend : 0;
     const ins = S.insurance;
     const total = base + ot + hol + ph + meal + trans + att + other + otMeal - ins;
-    document.getElementById('totalAmt').textContent = fmt(total);
-    document.getElementById('totalCur').textContent = curLabel();
     const otT = document.getElementById('otDayTotal');
     if(otT) otT.textContent = otH;
     const rw = document.getElementById('recWorkedVal');
     if(rw){ rw.textContent = days; document.getElementById('recOtVal').textContent = otH; document.getElementById('recHolVal').textContent = holD; document.getElementById('recOtMealVal').textContent = otDays; document.getElementById('recPhVal').textContent = phD; }
-    document.getElementById('lBase').textContent = fmt(base);
-    document.getElementById('lOt').textContent = fmt(ot);
-    document.getElementById('lHol').textContent = fmt(hol);
-    document.getElementById('lPh').textContent = fmt(ph);
-    document.getElementById('lOtMeal').textContent = fmt(otMeal);
-    document.getElementById('lMeal').textContent = fmt(meal);
-    document.getElementById('lTrans').textContent = fmt(trans);
-    document.getElementById('lAttend').textContent = fmt(att);
-    document.getElementById('lOther').textContent = fmt(other);
-    document.getElementById('lIns').textContent = ins > 0 ? '-' + fmt(ins) : '0';
-    document.getElementById('rowAttend').classList.toggle('dim', !attendOn);
-    document.getElementById('rowOther').classList.toggle('dim', other === 0);
-    document.getElementById('rowIns').classList.toggle('dim', ins === 0);
-    document.getElementById('rowOtMeal').classList.toggle('dim', otMeal === 0);
-    document.getElementById('rowPh').classList.toggle('dim', ph === 0);
     renderSlipCard(base, ot, hol, ph, otMeal, meal, trans, att, other, ins, total, attendOn);
     renderPrint(days, otH, holD, phD, base, ot, hol, ph, meal, trans, att, other, otMeal, ins, total);
   }
@@ -704,80 +768,120 @@
     if(S.lang === 'zh') return recYear + '年' + m;
     return m + ' ' + recYear;
   }
+  let selDay = 0;
   function renderRecord(){
     document.getElementById('recMonthLabel').textContent = monthLabel();
+    renderCalGrid();
+    renderCalEdit();
+    document.getElementById('calLegend').textContent = '✓ ' + t('recColWork') + ' · ' + t('recColHol') + ' · PH';
+    calc();
+  }
+  function calCellMeta(e){
+    if(e.ph) return ['<span class="d-meta ph">PH</span>'];
+    const lines = [];
+    if(e.h) lines.push('<span class="d-meta hol">' + t('recColHol') + '</span>');
+    else if(e.w) lines.push('<span class="d-meta work">✓</span>');
+    if(e.w && (e.ot || 0) > 0) lines.push('<span class="d-meta ot">OT ' + e.ot + 'h</span>');
+    return lines;
+  }
+  function renderCalGrid(){
     const md = monthData();
     const n = daysInMonth(recYear, recMonth);
+    const firstWd = new Date(recYear, recMonth, 1).getDay();
+    const ws = I18N[S.lang].weekdaysShort;
+    document.getElementById('calHead').innerHTML = ws.map(function(w, i){
+      return '<span' + (i === 0 ? ' class="sun-h"' : '') + '>' + w + '</span>';
+    }).join('');
+    const now = new Date();
     let h = '';
+    for(let i = 0; i < firstWd; i++) h += '<div class="cal-blank"></div>';
     for(let d = 1; d <= n; d++){
       const wd = new Date(recYear, recMonth, d).getDay();
       const e = md[d] || {};
-      const w = !!e.w, ot = e.ot ? e.ot : '';
-      const holCls = e.h ? ' hol-row' : '';
-      const phCls = e.ph ? ' ph-row' : '';
-      const sunCls = (wd === 0 && !e.h && !e.ph) ? ' sun-row' : '';
-      h += '<div class="rec-row' + holCls + phCls + sunCls + '"><div class="rec-date">' + d + '<small>' + I18N[S.lang].weekdays[wd] + '</small></div>'
-        + '<input type="checkbox" data-day="' + d + '" ' + (w ? 'checked' : '') + '>'
-        + '<input type="checkbox" data-holday="' + d + '" ' + (e.h ? 'checked' : '') + (w ? '' : ' disabled') + '>'
-        + '<input type="checkbox" data-phday="' + d + '" ' + (e.ph ? 'checked' : '') + '>'
-        + '<input type="number" min="0" step="0.5" inputmode="decimal" placeholder="0" value="' + ot + '" data-otday="' + d + '"' + (w ? '' : ' disabled') + '></div>';
+      let cls = 'cal-day';
+      if(e.ph) cls += ' ph-row';
+      else if(e.h) cls += ' hol-row';
+      else if(wd === 0) cls += ' sun-row';
+      if(d === selDay) cls += ' sel';
+      if(recYear === now.getFullYear() && recMonth === now.getMonth() && d === now.getDate()) cls += ' today';
+      h += '<div class="' + cls + '" data-calday="' + d + '"><div class="d-num">' + d + '</div>' + calCellMeta(e).join('') + '</div>';
     }
-    const box = document.getElementById('recDayRows');
-    box.innerHTML = h;
-    box.querySelectorAll('input[data-day]').forEach(function(cb){
-      cb.addEventListener('change', function(){
-        const d = parseInt(cb.dataset.day, 10);
-        const md2 = monthData();
-        if(cb.checked){
-          if(!md2[d]) md2[d] = { w: true, ot: 0 };
-          else { md2[d].w = true; md2[d].ph = false; }
-        } else {
-          if(md2[d]){ md2[d].w = false; md2[d].ot = 0; md2[d].h = false; }
-        }
-        saveRec(); renderRecord();
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = h;
+    grid.querySelectorAll('[data-calday]').forEach(function(cell){
+      cell.addEventListener('click', function(){
+        const d = parseInt(cell.dataset.calday, 10);
+        selDay = (selDay === d) ? 0 : d;
+        renderRecord();
       });
     });
-    box.querySelectorAll('input[data-holday]').forEach(function(cb){
-      cb.addEventListener('change', function(){
-        const d = parseInt(cb.dataset.holday, 10);
-        const md2 = monthData();
-        if(!md2[d]) md2[d] = { w: false, ot: 0, h: false };
-        md2[d].h = cb.checked;
-        if(cb.checked) md2[d].ph = false;
-        saveRec(); renderRecord();
-      });
-    });
-    box.querySelectorAll('input[data-phday]').forEach(function(cb){
-      cb.addEventListener('change', function(){
-        const d = parseInt(cb.dataset.phday, 10);
-        const md2 = monthData();
-        if(!md2[d]) md2[d] = { w: false, ot: 0, h: false, ph: false };
-        if(cb.checked){ md2[d].ph = true; md2[d].w = false; md2[d].ot = 0; md2[d].h = false; }
-        else md2[d].ph = false;
-        saveRec(); renderRecord();
-      });
-    });
-    box.querySelectorAll('input[type="number"]').forEach(function(inp){
-      inp.addEventListener('input', function(){
-        const d = parseInt(inp.dataset.otday, 10);
-        const v = parseFloat(inp.value);
-        const md2 = monthData();
-        if(!md2[d]) md2[d] = { w: true, ot: 0 };
-        md2[d].ot = (isFinite(v) && v > 0) ? v : 0;
-        saveRec(); calc();
-      });
-    });
-    calc();
   }
+  function renderCalEdit(){
+    const box = document.getElementById('calEdit');
+    if(!selDay){ box.classList.add('hidden'); return; }
+    box.classList.remove('hidden');
+    const md = monthData();
+    const e = md[selDay] || {};
+    const wd = new Date(recYear, recMonth, selDay).getDay();
+    document.getElementById('calEditLabel').textContent = selDay + ' ' + I18N[S.lang].months[recMonth] + ' · ' + I18N[S.lang].weekdays[wd];
+    const wCb = document.getElementById('calEditW');
+    const hCb = document.getElementById('calEditH');
+    const pCb = document.getElementById('calEditP');
+    const otIn = document.getElementById('calEditOt');
+    wCb.checked = !!e.w;
+    hCb.checked = !!e.h;
+    pCb.checked = !!e.ph;
+    otIn.value = (e.ot && e.ot > 0) ? e.ot : '';
+    hCb.disabled = !e.w;
+    otIn.disabled = !e.w;
+  }
+  function closeCalEdit(){ selDay = 0; renderRecord(); }
+  document.getElementById('calEditW').addEventListener('change', function(){
+    if(!selDay) return;
+    const md = monthData();
+    if(this.checked){
+      if(!md[selDay]) md[selDay] = { w: true, ot: 0 };
+      else { md[selDay].w = true; md[selDay].ph = false; }
+    } else {
+      if(md[selDay]){ md[selDay].w = false; md[selDay].ot = 0; md[selDay].h = false; }
+    }
+    saveRec(); renderRecord();
+  });
+  document.getElementById('calEditH').addEventListener('change', function(){
+    if(!selDay) return;
+    const md = monthData();
+    if(!md[selDay]) md[selDay] = { w: false, ot: 0, h: false };
+    md[selDay].h = this.checked;
+    if(this.checked) md[selDay].ph = false;
+    saveRec(); renderRecord();
+  });
+  document.getElementById('calEditP').addEventListener('change', function(){
+    if(!selDay) return;
+    const md = monthData();
+    if(!md[selDay]) md[selDay] = { w: false, ot: 0, h: false, ph: false };
+    if(this.checked){ md[selDay].ph = true; md[selDay].w = false; md[selDay].ot = 0; md[selDay].h = false; }
+    else md[selDay].ph = false;
+    saveRec(); renderRecord();
+  });
+  document.getElementById('calEditOt').addEventListener('input', function(){
+    if(!selDay) return;
+    const md = monthData();
+    const v = parseFloat(this.value);
+    if(!md[selDay]) md[selDay] = { w: true, ot: 0 };
+    md[selDay].ot = (isFinite(v) && v > 0) ? v : 0;
+    saveRec(); calc(); renderCalGrid();
+  });
   function changeMonth(dir){
     recMonth += dir;
     if(recMonth < 0){ recMonth = 11; recYear--; }
     if(recMonth > 11){ recMonth = 0; recYear++; }
+    selDay = 0;
     renderRecord();
   }
   function clearMonthRecord(){
     if(!confirm(t('recClearConfirm'))) return;
     delete recData[recKey(recYear, recMonth)];
+    selDay = 0;
     saveRec(); renderRecord();
   }
 
@@ -892,7 +996,86 @@
   showBanner();
   setInterval(showBanner, 10000);
 
+  let splashDone = false;
+  function hideSplash(){
+    if(splashDone) return;
+    splashDone = true;
+    const s = document.getElementById('splash');
+    if(s) s.classList.add('hidden');
+  }
+  async function initSplash(){
+    try{
+      document.getElementById('splashVersion').textContent = 'Version ' + APP_VERSION;
+      document.getElementById('aboutVersionNum').textContent = APP_VERSION;
+      const notesBox = document.getElementById('aboutNotes');
+      if(notesBox) notesBox.innerHTML = APP_NOTES.map(function(n){ return '<li>' + n + '</li>'; }).join('');
+      const splashEl = document.getElementById('splash');
+      splashEl.addEventListener('click', function(ev){
+        if(ev.target.closest('button')) return;
+        hideSplash();
+      });
+      const statusEl = document.getElementById('splashStatus');
+      statusEl.dataset.state = 'checking';
+      let lastSeen = null;
+      try{ lastSeen = localStorage.getItem('salaryCalcLastVersion'); }catch(e){}
+      const isNew = lastSeen !== APP_VERSION;
+      const start = Date.now();
+      const failsafe = setTimeout(function(){
+        if(statusEl.dataset.state === 'checking') hideSplash();
+      }, 8000);
+      const remote = await fetchRemoteVersion();
+      const wait = Math.max(0, 1500 - (Date.now() - start));
+      await new Promise(function(r){ setTimeout(r, wait); });
+      if(splashDone) return;
+      clearTimeout(failsafe);
+      const notesEl = document.getElementById('splashNotes');
+      const actionsEl = document.getElementById('splashActions');
+      if(remote && verCmp(remote.version, APP_VERSION) > 0){
+        statusEl.textContent = t('splashUpdateAvail') + ' v' + remote.version;
+        statusEl.dataset.state = 'update';
+        splashEl.dataset.keep = '1';
+        if(remote.notes && remote.notes.length){
+          notesEl.innerHTML = '<div><strong>' + t('splashWhatsNew') + '</strong></div>' + remote.notes.map(function(n){ return '<div>• ' + n + '</div>'; }).join('');
+          notesEl.classList.remove('hidden');
+        }
+        actionsEl.classList.remove('hidden');
+        return;
+      }
+      if(isNew){
+        statusEl.textContent = t('splashWhatsNew') + ' v' + APP_VERSION;
+        statusEl.dataset.state = 'new';
+        notesEl.innerHTML = APP_NOTES.map(function(n){ return '<div>• ' + n + '</div>'; }).join('');
+        notesEl.classList.remove('hidden');
+        try{ localStorage.setItem('salaryCalcLastVersion', APP_VERSION); }catch(e){}
+      } else if(remote){
+        statusEl.textContent = t('splashUptoDate');
+        statusEl.dataset.state = 'done';
+      } else {
+        statusEl.textContent = t('splashOffline');
+        statusEl.dataset.state = 'done';
+      }
+      setTimeout(hideSplash, 1200);
+    }catch(e){
+      hideSplash();
+    }
+  }
+  async function checkUpdateFromAbout(){
+    const st = document.getElementById('aboutUpdateStatus');
+    const btn = document.getElementById('aboutUpdateBtn');
+    if(btn) btn.classList.add('hidden');
+    st.textContent = t('splashChecking');
+    const j = await fetchRemoteVersion();
+    if(!j){ st.textContent = t('splashOffline'); return; }
+    if(verCmp(j.version, APP_VERSION) > 0){
+      st.textContent = t('splashUpdateAvail') + ' v' + j.version + (j.notes ? ' — ' + j.notes.join(' · ') : '');
+      if(btn) btn.classList.remove('hidden');
+    } else {
+      st.textContent = t('splashUptoDate') + ' (v' + APP_VERSION + ')';
+    }
+  }
+
   applyLang(); fillSettings(); applyEntryMode();
+  initSplash();
 </script>
 <script>
   if ('serviceWorker' in navigator && (location.protocol === 'http:' || location.protocol === 'https:')) {
