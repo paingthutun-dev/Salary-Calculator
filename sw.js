@@ -24,9 +24,10 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
 
-  // version.json is network-first: the splash update check must see the
-  // freshest version, with the cached copy only as an offline fallback.
-  if (url.pathname.endsWith('version.json')) {
+  // version.json and rates.json are network-first: the splash update check
+  // and the centrally set exchange rate must see the freshest file, with
+  // the cached copy only as an offline fallback.
+  if (url.pathname.endsWith('version.json') || url.pathname.endsWith('rates.json')) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
