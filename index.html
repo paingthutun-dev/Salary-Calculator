@@ -396,6 +396,7 @@
         <div class="btn-row">
           <button class="btn btn-ghost" id="acctLoginBtn" data-t="acctLogin">Google နဲ့ Login</button>
         </div>
+        <p class="note hidden" id="acctError" style="color:#B91C1C"></p>
       </div>
       <div id="acctLoggedIn" class="hidden">
         <p class="note" style="margin-top:0" id="acctEmail"></p>
@@ -548,9 +549,9 @@
 
 <script>
   const KEY = 'salaryCalcSettings.v2', OLD_KEY = 'salaryCalcSettings.v1';
-  const APP_VERSION = '1.2.0';
+  const APP_VERSION = '1.2.1';
   const APP_NOTES = [
-    'Google login နဲ့ cloud sync — ဖုန်းပြောင်းလည်း data မပျောက်'
+    'Google login ကို popup နဲ့ ပြောင်းခြင်း + login error ပေါ်ရင် အကြောင်းပြပေးခြင်း'
   ];
   function verCmp(a, b){
     const pa = String(a).split('.').map(function(x){ return parseInt(x, 10) || 0; });
@@ -1413,6 +1414,12 @@
     if(li) li.classList.add('hidden');
     if(off) off.classList.remove('hidden');
   }
+  function fbShowError(msg){
+    const el = $('acctError');
+    if(!el) return;
+    el.textContent = msg || 'Login မအောင်မြင်ပါ';
+    el.classList.remove('hidden');
+  }
   function fbSetStatus(key){
     fbStatusKey = key;
     const el = $('acctStatus');
@@ -1546,7 +1553,7 @@
       fbProvider = new authMod.GoogleAuthProvider();
       fbFns = { doc: fsMod.doc, getDoc: fsMod.getDoc, setDoc: fsMod.setDoc, onSnapshot: fsMod.onSnapshot, serverTimestamp: fsMod.serverTimestamp };
       try{ await authMod.setPersistence(fbAuth, authMod.browserLocalPersistence); }catch(e){}
-      try{ await authMod.getRedirectResult(fbAuth); }catch(e){}
+      try{ await authMod.getRedirectResult(fbAuth); }catch(e){ fbShowError('Redirect error: ' + (e.code || e.message || e)); }
       // Hook local saves -> debounced cloud upload (no existing code touched:
       // classic-script function declarations live on window, so wrapping them
       // here leaves every existing function and call site intact).
@@ -1558,7 +1565,11 @@
       const loginBtn = $('acctLoginBtn');
       if(loginBtn) loginBtn.addEventListener('click', function(){
         if(!fbAuth) return;
-        authMod.signInWithRedirect(fbAuth, fbProvider).catch(function(){});
+        fbShowError('Google login ဖွင့်နေတယ်…');
+        authMod.signInWithPopup(fbAuth, fbProvider).then(function(){
+          const el = $('acctError');
+          if(el) el.classList.add('hidden');
+        }).catch(function(e){ fbShowError('Login error: ' + (e.code || e.message || e)); });
       });
       const logoutBtn = $('acctLogoutBtn');
       if(logoutBtn) logoutBtn.addEventListener('click', function(){
