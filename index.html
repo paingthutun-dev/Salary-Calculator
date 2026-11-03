@@ -388,6 +388,24 @@
       <input type="file" id="importFile" accept=".json,application/json" class="hidden" onchange="importSettings(event)">
       <div class="ok" id="ioMsg"></div>
     </div>
+
+    <div class="card">
+      <h2 data-t="acctTitle">အကောင့်</h2>
+      <div id="acctLoggedOut">
+        <p class="note" style="margin-top:0" data-t="acctNote">ဖုန်းပြောင်းလည်း data မပျောက်ချင်မှ login လုပ်ပါ — data ကို cloud မှာ သိမ်းပေးမယ်။</p>
+        <div class="btn-row">
+          <button class="btn btn-ghost" id="acctLoginBtn" data-t="acctLogin">Google နဲ့ Login</button>
+        </div>
+      </div>
+      <div id="acctLoggedIn" class="hidden">
+        <p class="note" style="margin-top:0" id="acctEmail"></p>
+        <p class="note" id="acctStatus"></p>
+        <div class="btn-row">
+          <button class="btn btn-ghost" id="acctLogoutBtn" data-t="acctLogout">Logout လုပ်မယ်</button>
+        </div>
+      </div>
+      <p class="note hidden" id="acctOfflineNote" data-t="acctOffline">Offline — cloud sync အတွက် အင်တာနက်လိုတယ်</p>
+    </div>
   </div>
 
   <!-- ===== Rates ===== -->
@@ -530,9 +548,9 @@
 
 <script>
   const KEY = 'salaryCalcSettings.v2', OLD_KEY = 'salaryCalcSettings.v1';
-  const APP_VERSION = '1.1.0';
+  const APP_VERSION = '1.2.0';
   const APP_NOTES = [
-    'ထိုင်းဘာသာ (ไทย) ထပ်တိုးခြင်း'
+    'Google login နဲ့ cloud sync — ဖုန်းပြောင်းလည်း data မပျောက်'
   ];
   function verCmp(a, b){
     const pa = String(a).split('.').map(function(x){ return parseInt(x, 10) || 0; });
@@ -591,7 +609,8 @@
       export:'ဖိုင်ထုတ်မယ် (JSON)', import:'ဖိုင်သွင်းမယ်',
       exportedMsg:'✓ ဆက်တင်ဖိုင် ထုတ်ပြီးပါပြီ', importedMsg:'✓ ဆက်တင် သွင်းပြီးပါပြီ',
       invalidMsg:'ဖိုင်မမှန်ပါ — JSON ဖိုင်အမှန်ကို ရွေးပေးပါ',
-      curNames:{ MMK:'မြန်မာကျပ်', THB:'ထိုင်းဘတ်', JPY:'ဂျပန်ယန်း', CNY:'တရုတ်ယွမ်' }
+      curNames:{ MMK:'မြန်မာကျပ်', THB:'ထိုင်းဘတ်', JPY:'ဂျပန်ယန်း', CNY:'တရုတ်ယွမ်' },
+      acctTitle:'အကောင့်', acctLogin:'Google နဲ့ Login', acctNote:'ဖုန်းပြောင်းလည်း data မပျောက်ချင်မှ login လုပ်ပါ — data ကို cloud မှာ သိမ်းပေးမယ်။', acctLogout:'Logout လုပ်မယ်', acctSyncSynced:'✓ Sync ပြီးပါပြီ', acctSyncSyncing:'Sync လုပ်နေသည်…', acctSyncWaiting:'Offline — အင်တာနက်ရရင် sync လုပ်မယ်', acctOffline:'Offline — cloud sync အတွက် အင်တာနက်လိုတယ်'
     },
     en: {
       appTitle:'Salary Calculator',
@@ -624,7 +643,8 @@
       export:'Export File (JSON)', import:'Import File',
       exportedMsg:'✓ Settings file exported', importedMsg:'✓ Settings imported',
       invalidMsg:'Invalid file — please choose a valid JSON file',
-      curNames:{ MMK:'Myanmar Kyat', THB:'Thai Baht', JPY:'Japanese Yen', CNY:'Chinese Yuan' }
+      curNames:{ MMK:'Myanmar Kyat', THB:'Thai Baht', JPY:'Japanese Yen', CNY:'Chinese Yuan' },
+      acctTitle:'Account', acctLogin:'Login with Google', acctNote:'Login only if you want your data saved to the cloud so it survives phone switches.', acctLogout:'Logout', acctSyncSynced:'✓ Synced', acctSyncSyncing:'Syncing…', acctSyncWaiting:'Offline — will sync when back online', acctOffline:'Offline — internet is needed for cloud sync'
     },
     zh: {
       appTitle:'工资计算器',
@@ -657,7 +677,8 @@
       export:'导出文件 (JSON)', import:'导入文件',
       exportedMsg:'✓ 设置文件已导出', importedMsg:'✓ 设置已导入',
       invalidMsg:'文件无效 — 请选择有效的 JSON 文件',
-      curNames:{ MMK:'缅甸元', THB:'泰铢', JPY:'日元', CNY:'人民币' }
+      curNames:{ MMK:'缅甸元', THB:'泰铢', JPY:'日元', CNY:'人民币' },
+      acctTitle:'账号', acctLogin:'使用 Google 登录', acctNote:'只有希望数据保存到云端、换手机也不丢失时才需要登录。', acctLogout:'退出登录', acctSyncSynced:'✓ 已同步', acctSyncSyncing:'正在同步…', acctSyncWaiting:'离线 — 恢复网络后将同步', acctOffline:'离线 — 云同步需要网络'
     },
     th: {
       appTitle:'เครื่องคำนวณเงินเดือน',
@@ -690,7 +711,8 @@
       export:'ส่งออกไฟล์ (JSON)', import:'นำเข้าไฟล์',
       exportedMsg:'✓ ส่งออกไฟล์การตั้งค่าแล้ว', importedMsg:'✓ นำเข้าการตั้งค่าแล้ว',
       invalidMsg:'ไฟล์ไม่ถูกต้อง — โปรดเลือกไฟล์ JSON ที่ถูกต้อง',
-      curNames:{ MMK:'จ๊าดพม่า', THB:'บาทไทย', JPY:'เยนญี่ปุ่น', CNY:'หยวนจีน' }
+      curNames:{ MMK:'จ๊าดพม่า', THB:'บาทไทย', JPY:'เยนญี่ปุ่น', CNY:'หยวนจีน' },
+      acctTitle:'บัญชี', acctLogin:'เข้าสู่ระบบด้วย Google', acctNote:'เข้าสู่ระบบเฉพาะเมื่อต้องการบันทึกข้อมูลไว้บนคลาวด์ เพื่อไม่ให้ข้อมูลหายเมื่อเปลี่ยนโทรศัพท์', acctLogout:'ออกจากระบบ', acctSyncSynced:'✓ ซิงก์แล้ว', acctSyncSyncing:'กำลังซิงก์…', acctSyncWaiting:'ออฟไลน์ — จะซิงก์เมื่อกลับมาออนไลน์', acctOffline:'ออฟไลน์ — การซิงก์คลาวด์ต้องใช้อินเทอร์เน็ต'
     }
   };
 
@@ -1367,6 +1389,190 @@
       navigator.serviceWorker.register('sw.js').catch(function () {});
     });
   }
+</script>
+<script type="module">
+  // Firebase optional login + cloud sync for the Settings Account card.
+  // The app works fully without login (local-only); login only adds sync.
+  // Any Firebase failure falls back to local-only mode — nothing else breaks.
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyBcF38hU5scZFEjkIpbcriztek6MO58a8I",
+    authDomain: "salary-calculator-7f5f2.firebaseapp.com",
+    projectId: "salary-calculator-7f5f2",
+    storageBucket: "salary-calculator-7f5f2.firebasestorage.app",
+    messagingSenderId: "527242425256",
+    appId: "1:527242425256:web:7476cbccfb3d4a7097a39d"
+  };
+  const FB_CDN = 'https://www.gstatic.com/firebasejs/10.12.2/';
+  const $ = function(id){ return document.getElementById(id); };
+  let fbAuth = null, fbDb = null, fbProvider = null, fbFns = null;
+  let fbUser = null, fbUnsub = null, fbUploadTimer = null, fbApplying = false, fbLastJson = null, fbStatusKey = null;
+
+  function fbShowOffline(){
+    const lo = $('acctLoggedOut'), li = $('acctLoggedIn'), off = $('acctOfflineNote');
+    if(lo) lo.classList.add('hidden');
+    if(li) li.classList.add('hidden');
+    if(off) off.classList.remove('hidden');
+  }
+  function fbSetStatus(key){
+    fbStatusKey = key;
+    const el = $('acctStatus');
+    if(!el) return;
+    el.dataset.t = key; // lets applyLang() re-localize the status on language change
+    el.textContent = t(key);
+  }
+  function fbRender(){
+    const lo = $('acctLoggedOut'), li = $('acctLoggedIn'), off = $('acctOfflineNote');
+    if(off) off.classList.add('hidden');
+    if(!fbUser){
+      if(lo) lo.classList.remove('hidden');
+      if(li) li.classList.add('hidden');
+      return;
+    }
+    if(lo) lo.classList.add('hidden');
+    if(li) li.classList.remove('hidden');
+    const em = $('acctEmail');
+    if(em) em.textContent = fbUser.email || fbUser.displayName || '';
+    if(fbStatusKey) fbSetStatus(fbStatusKey);
+  }
+  function fbSnapshot(){
+    try{ return JSON.stringify({ settings: S, records: recData }); }catch(e){ return null; }
+  }
+  function fbCanon(v){
+    if(v === null || typeof v !== 'object') return JSON.stringify(v);
+    if(Array.isArray(v)) return '[' + v.map(fbCanon).join(',') + ']';
+    return '{' + Object.keys(v).sort().map(function(k){ return JSON.stringify(k) + ':' + fbCanon(v[k]); }).join(',') + '}';
+  }
+  function fbMergeRecords(localRec, cloudRec){
+    const out = {};
+    const months = {};
+    [localRec, cloudRec].forEach(function(src){
+      if(src && typeof src === 'object') Object.keys(src).forEach(function(m){ months[m] = true; });
+    });
+    Object.keys(months).forEach(function(m){
+      out[m] = {};
+      const lm = (localRec && localRec[m]) || {}, cm = (cloudRec && cloudRec[m]) || {};
+      const days = {};
+      [lm, cm].forEach(function(src){ Object.keys(src).forEach(function(d){ days[d] = true; }); });
+      Object.keys(days).forEach(function(d){ out[m][d] = (cm[d] !== undefined) ? cm[d] : lm[d]; });
+    });
+    return out;
+  }
+  function fbScheduleUpload(){
+    if(!fbUser || fbApplying) return;
+    if(fbUploadTimer) clearTimeout(fbUploadTimer);
+    fbUploadTimer = setTimeout(fbDoUpload, 2000);
+  }
+  async function fbDoUpload(){
+    if(!fbUser || fbApplying || !fbFns) return;
+    const snap = fbSnapshot();
+    if(snap === null || snap === fbLastJson) return;
+    fbSetStatus('acctSyncSyncing');
+    try{
+      await fbFns.setDoc(fbFns.doc(fbDb, 'users', fbUser.uid),
+        { settings: S, records: recData, updatedAt: fbFns.serverTimestamp() }, { merge: true });
+      fbLastJson = fbSnapshot();
+      fbSetStatus('acctSyncSynced');
+    }catch(e){
+      fbSetStatus('acctSyncWaiting');
+    }
+  }
+  function fbOnSnapshot(snap){
+    if(!fbUser || fbApplying || !snap.exists()) return;
+    const cloud = snap.data() || {};
+    const cloudSettings = (cloud.settings && typeof cloud.settings === 'object') ? sanitize(cloud.settings) : null;
+    const cloudRecords = (cloud.records && typeof cloud.records === 'object') ? cloud.records : {};
+    const localJson = fbCanon({ settings: S, records: recData });
+    const cloudJson = fbCanon({ settings: cloudSettings, records: cloudRecords });
+    if(cloudJson === localJson) return; // own echo or already in sync
+    fbApplying = true;
+    try{
+      if(cloudSettings) localStorage.setItem(KEY, JSON.stringify(cloudSettings));
+      localStorage.setItem(REC_KEY, JSON.stringify(cloudRecords));
+      S = load();
+      recData = loadRec();
+      fillSettings(); applyLang(); applyEntryMode();
+    }finally{ fbApplying = false; }
+    fbLastJson = fbSnapshot();
+    fbSetStatus('acctSyncSynced');
+  }
+  async function fbOnAuth(user){
+    fbUser = user || null;
+    if(fbUnsub){ try{ fbUnsub(); }catch(e){} fbUnsub = null; }
+    fbLastJson = null; fbStatusKey = null;
+    if(!fbUser){ fbRender(); return; }
+    fbSetStatus('acctSyncSyncing');
+    fbRender();
+    try{
+      const ref = fbFns.doc(fbDb, 'users', fbUser.uid);
+      const snap = await fbFns.getDoc(ref);
+      if(!snap.exists()){
+        // First login: upload local settings + records as-is (no data loss).
+        await fbFns.setDoc(ref, { settings: S, records: recData, updatedAt: fbFns.serverTimestamp() });
+        fbLastJson = fbSnapshot();
+      } else {
+        // Returning login: records = union by month+date (cloud wins on conflict),
+        // settings = cloud wins; apply locally, refresh UI, then upload the merge.
+        const cloud = snap.data() || {};
+        const mergedSettings = sanitize(cloud.settings);
+        const mergedRecords = fbMergeRecords(recData,
+          (cloud.records && typeof cloud.records === 'object') ? cloud.records : {});
+        fbApplying = true;
+        try{
+          localStorage.setItem(KEY, JSON.stringify(mergedSettings));
+          localStorage.setItem(REC_KEY, JSON.stringify(mergedRecords));
+          S = load();
+          recData = loadRec();
+          fillSettings(); applyLang(); applyEntryMode();
+        }finally{ fbApplying = false; }
+        await fbFns.setDoc(ref, { settings: mergedSettings, records: mergedRecords, updatedAt: fbFns.serverTimestamp() }, { merge: true });
+        fbLastJson = fbSnapshot();
+      }
+      fbSetStatus('acctSyncSynced');
+      fbUnsub = fbFns.onSnapshot(fbFns.doc(fbDb, 'users', fbUser.uid), fbOnSnapshot,
+        function(){ fbSetStatus('acctSyncWaiting'); });
+    }catch(e){
+      fbSetStatus('acctSyncWaiting');
+    }
+    fbRender();
+  }
+  async function fbInit(){
+    try{
+      const appMod = await import(FB_CDN + 'firebase-app.js');
+      const authMod = await import(FB_CDN + 'firebase-auth.js');
+      const fsMod = await import(FB_CDN + 'firebase-firestore.js');
+      const app = appMod.initializeApp(FIREBASE_CONFIG);
+      fbAuth = authMod.getAuth(app);
+      fbDb = fsMod.getFirestore(app);
+      fbProvider = new authMod.GoogleAuthProvider();
+      fbFns = { doc: fsMod.doc, getDoc: fsMod.getDoc, setDoc: fsMod.setDoc, onSnapshot: fsMod.onSnapshot, serverTimestamp: fsMod.serverTimestamp };
+      try{ await authMod.setPersistence(fbAuth, authMod.browserLocalPersistence); }catch(e){}
+      try{ await authMod.getRedirectResult(fbAuth); }catch(e){}
+      // Hook local saves -> debounced cloud upload (no existing code touched:
+      // classic-script function declarations live on window, so wrapping them
+      // here leaves every existing function and call site intact).
+      try{
+        const _persist = window.persist, _saveRec = window.saveRec;
+        if(typeof _persist === 'function') window.persist = function(){ _persist(); fbScheduleUpload(); };
+        if(typeof _saveRec === 'function') window.saveRec = function(){ _saveRec(); fbScheduleUpload(); };
+      }catch(e){}
+      const loginBtn = $('acctLoginBtn');
+      if(loginBtn) loginBtn.addEventListener('click', function(){
+        if(!fbAuth) return;
+        authMod.signInWithRedirect(fbAuth, fbProvider).catch(function(){});
+      });
+      const logoutBtn = $('acctLogoutBtn');
+      if(logoutBtn) logoutBtn.addEventListener('click', function(){
+        if(!fbAuth) return;
+        authMod.signOut(fbAuth).catch(function(){});
+      });
+      authMod.onAuthStateChanged(fbAuth, fbOnAuth);
+      fbRender();
+    }catch(e){
+      // SDK failed to load (offline / file version): local-only mode + offline note.
+      fbShowOffline();
+    }
+  }
+  fbInit();
 </script>
 </body>
 </html>
