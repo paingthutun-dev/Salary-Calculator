@@ -206,6 +206,18 @@
   body.thadingyut #printArea .p-total{border-top-color:#A67C00;}
   body.thingyan #printArea .p-total{border-top-color:#D9A400;}
   }
+
+  /* Responsive: mobile layout unchanged; wider canvas on tablet/desktop. */
+  @media (min-width: 660px) and (max-width: 899px){
+    .wrap{max-width:720px;}
+  }
+  @media (min-width: 900px){
+    .wrap{max-width:1060px; padding:28px 32px 48px;}
+    .card{padding:22px;}
+    .row{gap:16px;}
+    .settings-grid{gap:16px;}
+    .cal-grid{gap:8px;}
+  }
 </style>
 </head>
 <body>
@@ -549,9 +561,9 @@
 
 <script>
   const KEY = 'salaryCalcSettings.v2', OLD_KEY = 'salaryCalcSettings.v1';
-  const APP_VERSION = '1.2.1';
+  const APP_VERSION = '1.2.2';
   const APP_NOTES = [
-    'Google login ကို popup နဲ့ ပြောင်းခြင်း + login error ပေါ်ရင် အကြောင်းပြပေးခြင်း'
+    'Desktop + tablet မှာပါ အဆင်ပြေအောင် layout ကျယ်ခြင်း'
   ];
   function verCmp(a, b){
     const pa = String(a).split('.').map(function(x){ return parseInt(x, 10) || 0; });
