@@ -343,6 +343,10 @@
         <label for="otherBonus" data-t="otherBonus">အခြား Bonus</label>
         <input type="number" id="otherBonus" min="0" step="any" inputmode="decimal" placeholder="0">
       </div>
+      <div class="field">
+        <label for="otherDed" data-t="otherDed">အခြား နှုတ်ငွေ</label>
+        <input type="number" id="otherDed" min="0" step="any" inputmode="decimal" placeholder="0">
+      </div>
       <div class="field" id="ot3Wrap">
         <label for="ot3Hours" data-t="ot3Hours">OT*3 နာရီ</label>
         <input type="number" id="ot3Hours" min="0" step="0.5" inputmode="decimal" placeholder="0">
@@ -583,9 +587,9 @@
 
 <script>
   const KEY = 'salaryCalcSettings.v2', OLD_KEY = 'salaryCalcSettings.v1';
-  const APP_VERSION = '1.2.6';
+  const APP_VERSION = '1.2.7';
   const APP_NOTES = [
-    'လူအများအတွက် ပြက္ခဒိန်မှတ်တမ်း (လူတစ်ယောက်ချင်းစီ သီးခြားမှတ်လို့ရပြီ)'
+    'Other deduction ထည့်သွင်းခြင်း'
   ];
   function verCmp(a, b){
     const pa = String(a).split('.').map(function(x){ return parseInt(x, 10) || 0; });
@@ -618,11 +622,11 @@
       calcTitle:'လစာတွက်ရန်', settingsBtn:'⚙️', slipBtn:'🧾 စလစ်', slipTitle:'လစာစလစ်',
       days:'အလုပ်လုပ်ရက် (ရက်)', daysPh:'ဥပမာ — 26',
       otHours:'နေ့စဉ်အချိန်ပို နာရီ', ot3Hours:'OT*3 နာရီ', holDays:'အားလပ်ရက်အချိန်ပို (ရက်)', phDays:'အစိုးရပိတ်ရက် (ရက်)',
-      attend:'ရက်မှန်ကြေး ထည့်မည်', otherBonus:'အခြား Bonus',
+      attend:'ရက်မှန်ကြေး ထည့်မည်', otherBonus:'အခြား Bonus', otherDed:'အခြား နှုတ်ငွေ',
       clear:'ထည့်ထားတာတွေ ရှင်းလင်းမယ်', totalLbl:'စုစုပေါင်း လစာ', print:'🖨️ ပရင့်ထုတ်မယ်', dateLbl:'ရက်စွဲ',
       lBase:'အခြေခံလစာ (လုပ်အားခ × ရက်)', lOt:'နေ့စဉ်အချိန်ပို', lOt3:'OT*3', lHol:'အားလပ်ရက်အချိန်ပို', lPh:'အစိုးရပိတ်ရက် (PH × ရက်)', lOtMeal:'OT ထမင်းစရိတ် (OT meal × OT ရက်)',
       lMeal:'ထမင်းစရိတ် × ရက်', lTrans:'ခရီးစရိတ် × ရက်',
-      lAttend:'ရက်မှန်ကြေး', lOther:'အခြား Bonus', lIns:'အာမခံကြေး (နှုတ်)',
+      lAttend:'ရက်မှန်ကြေး', lOther:'အခြား Bonus', lIns:'အာမခံကြေး (နှုတ်)', lOtherDed:'အခြား နှုတ်ငွေ (နှုတ်)',
       note:'ထမင်းစရိတ်နဲ့ ခရီးစရိတ်ကို အလုပ်လုပ်ရက်နဲ့ မြှောက်တွက်ပါတယ်။ OT ထမင်းစရိတ်ကို OT လုပ်တဲ့ရက်နဲ့ မြှောက်တွက်ပါတယ်။ အစိုးရပိတ်ရက်တွေမှာ PH နှုန်းတစ်မျိုးတည်းသာ ရပြီး ဘာ allowance မှ ထပ်မပေါင်းပါဘူး။ အာမခံကြေးကို စုစုပေါင်းထဲက နှုတ်ပါတယ်။ ဈေးနှုန်းတွေအားလုံးကို ဆက်တင်ထဲမှာ ပြင်လို့ရပါတယ်။',
       settingsTitle:'ဆက်တင်', back:'← ပြန်သွားမယ်',
       sWage:'လုပ်အားခ — တစ်ရက်ဈေး', sOt:'နေ့စဉ်အချိန်ပို — တစ်နာရီဈေး', sOt3:'OT*3 — တစ်နာရီဈေး', sHoliday:'အားလပ်ရက်အချိန်ပို — တစ်ရက်ဈေး', sPh:'အစိုးရပိတ်ရက် — တစ်ရက်ဈေး', sOtMeal:'OT ထမင်းစရိတ် — တစ်ရက်ဈေး',
@@ -652,11 +656,11 @@
       calcTitle:'Calculate Salary', settingsBtn:'⚙️', slipBtn:'🧾 Slip', slipTitle:'Salary Slip',
       days:'Working Days', daysPh:'e.g. 26',
       otHours:'Daily OT Hours', ot3Hours:'OT*3 Hours', holDays:'Holiday OT Days', phDays:'Public Holiday Days',
-      attend:'Full Attendance (include Attendance Bonus)', otherBonus:'Other Bonus',
+      attend:'Full Attendance (include Attendance Bonus)', otherBonus:'Other Bonus', otherDed:'Other Deduction',
       clear:'Clear All', totalLbl:'Total Salary', print:'🖨️ Print', dateLbl:'Date',
       lBase:'Base Salary (Daily Wage × Days)', lOt:'Daily OT', lOt3:'OT*3', lHol:'Holiday OT', lPh:'Public Holiday (PH × Days)', lOtMeal:'OT Meal Allowance (OT Meal × OT Days)',
       lMeal:'Meal Allowance (Meal × Days)', lTrans:'Transport Allowance (Transport × Days)',
-      lAttend:'Attendance Bonus', lOther:'Other Bonus', lIns:'Insurance Fee (deduction)',
+      lAttend:'Attendance Bonus', lOther:'Other Bonus', lIns:'Insurance Fee (deduction)', lOtherDed:'Other Deduction',
       note:'Meal and transport allowances are multiplied by working days. OT meal allowance is multiplied by OT days. On Public Holiday days only the Public Holiday rate is paid, with no allowances added. Insurance fee is deducted from the total. All rates can be changed in Settings.',
       settingsTitle:'Settings', back:'← Back',
       sWage:'Daily Wage — per day', sOt:'Daily OT — per hour', sOt3:'OT*3 — per hour', sHoliday:'Holiday OT — per day', sPh:'Public Holiday — per day', sOtMeal:'OT Meal Allowance — per OT day',
@@ -686,11 +690,11 @@
       calcTitle:'计算工资', settingsBtn:'⚙️', slipBtn:'🧾 工资单', slipTitle:'工资单',
       days:'工作天数', daysPh:'例如：26',
       otHours:'每日加班小时', ot3Hours:'OT*3 小时', holDays:'假日加班天数', phDays:'公共假日天数',
-      attend:'全勤（包含全勤奖）', otherBonus:'其他奖金',
+      attend:'全勤（包含全勤奖）', otherBonus:'其他奖金', otherDed:'其他扣款',
       clear:'清除全部', totalLbl:'工资总额', print:'🖨️ 打印', dateLbl:'日期',
       lBase:'基本工资（日薪 × 天数）', lOt:'每日加班', lOt3:'OT*3', lHol:'假日加班', lPh:'公共假日（假日工资 × 天数）', lOtMeal:'加班餐补（餐补 × 加班天数）',
       lMeal:'餐补（餐补 × 天数）', lTrans:'交通补贴（交通补贴 × 天数）',
-      lAttend:'全勤奖', lOther:'其他奖金', lIns:'保险费（扣除）',
+      lAttend:'全勤奖', lOther:'其他奖金', lIns:'保险费（扣除）', lOtherDed:'其他扣款',
       note:'餐补和交通补贴按工作天数计算。加班餐补按加班天数计算。公共假日仅按假日工资计算，不另加任何补贴。保险费从总额中扣除。所有标准都可以在设置中修改。',
       settingsTitle:'设置', back:'← 返回',
       sWage:'日薪 — 每天', sOt:'每日加班 — 每小时', sOt3:'OT*3 — 每小时', sHoliday:'假日加班 — 每天', sPh:'公共假日 — 每天', sOtMeal:'加班餐补 — 每天',
@@ -720,11 +724,11 @@
       calcTitle:'คำนวณเงินเดือน', settingsBtn:'⚙️', slipBtn:'🧾 สลิป', slipTitle:'สลิปเงินเดือน',
       days:'วันทำงาน (วัน)', daysPh:'เช่น 26',
       otHours:'ชั่วโมงโอทีรายวัน', ot3Hours:'ชั่วโมง OT*3', holDays:'วันโอทีวันหยุด (วัน)', phDays:'วันหยุดนักขัตฤกษ์ (วัน)',
-      attend:'ใส่เบี้ยขยัน', otherBonus:'โบนัสอื่น',
+      attend:'ใส่เบี้ยขยัน', otherBonus:'โบนัสอื่น', otherDed:'หักอื่นๆ',
       clear:'ล้างทั้งหมด', totalLbl:'เงินเดือนรวม', print:'🖨️ พิมพ์', dateLbl:'วันที่',
       lBase:'เงินเดือนพื้นฐาน (ค่าจ้าง × วัน)', lOt:'โอทีรายวัน', lOt3:'OT*3', lHol:'โอทีวันหยุด', lPh:'วันหยุดนักขัตฤกษ์ (PH × วัน)', lOtMeal:'ค่าอาหารโอที (ค่าอาหารโอที × วันโอที)',
       lMeal:'ค่าอาหาร × วัน', lTrans:'ค่าเดินทาง × วัน',
-      lAttend:'เบี้ยขยัน', lOther:'โบนัสอื่น', lIns:'ประกันสังคม (หัก)',
+      lAttend:'เบี้ยขยัน', lOther:'โบนัสอื่น', lIns:'ประกันสังคม (หัก)', lOtherDed:'หักอื่นๆ',
       note:'ค่าอาหารและค่าเดินทางคำนวณตามวันทำงาน ค่าอาหารโอทีคำนวณตามวันโอที ในวันหยุดนักขัตฤกษ์จะจ่ายเฉพาะอัตราวันหยุด ไม่บวกเงินช่วยเหลืออื่น และหักค่าประกันสังคมจากยอดรวม สามารถเปลี่ยนอัตราทั้งหมดได้ในการตั้งค่า',
       settingsTitle:'ตั้งค่า', back:'← กลับ',
       sWage:'ค่าจ้าง — ต่อวัน', sOt:'โอทีรายวัน — ต่อชั่วโมง', sOt3:'OT*3 — ต่อชั่วโมง', sHoliday:'โอทีวันหยุด — ต่อวัน', sPh:'วันหยุดนักขัตฤกษ์ — ต่อวัน', sOtMeal:'ค่าอาหารโอที — ต่อวันโอที',
@@ -815,7 +819,7 @@
   }
 
   function calc(){
-    const days = getWorkingDays(), otH = getOtHours(), holD = getHolDays(), phD = getPhDays(), other = num('otherBonus');
+    const days = getWorkingDays(), otH = getOtHours(), holD = getHolDays(), phD = getPhDays(), other = num('otherBonus'), otherDed = num('otherDed');
     const ot3On = hasHoliday();
     const ot3H = ot3On ? num('ot3Hours') : 0;
     const ot3El = document.getElementById('ot3Hours');
@@ -830,15 +834,15 @@
     const otMeal = S.otMeal * otMealDays;
     const att = attendOn ? S.attend : 0;
     const ins = S.insurance;
-    const total = base + ot + ot3 + hol + ph + meal + trans + att + other + otMeal - ins;
+    const total = base + ot + ot3 + hol + ph + meal + trans + att + other + otMeal - ins - otherDed;
     const rw = document.getElementById('recWorkedVal');
     if(rw){ rw.textContent = days; document.getElementById('recOtVal').textContent = otH; document.getElementById('recHolVal').textContent = holD; document.getElementById('recOtMealVal').textContent = otMealDays; document.getElementById('recPhVal').textContent = phD; }
-    renderSlipCard(base, ot, ot3, hol, ph, otMeal, meal, trans, att, other, ins, total, attendOn);
-    renderPrint(days, otH, holD, phD, ot3H, base, ot, ot3, hol, ph, meal, trans, att, other, otMeal, ins, total);
+    renderSlipCard(base, ot, ot3, hol, ph, otMeal, meal, trans, att, other, ins, otherDed, total, attendOn);
+    renderPrint(days, otH, holD, phD, ot3H, base, ot, ot3, hol, ph, meal, trans, att, other, otMeal, ins, otherDed, total);
   }
 
   /* Slip preview card — same look as the main total card, no IDs, no date. */
-  function renderSlipCard(base, ot, ot3, hol, ph, otMeal, meal, trans, att, other, ins, total, attendOn){
+  function renderSlipCard(base, ot, ot3, hol, ph, otMeal, meal, trans, att, other, ins, otherDed, total, attendOn){
     const rows = [
       [t('lBase'), fmt(base), false],
       [t('lOt'), fmt(ot), false],
@@ -850,7 +854,8 @@
       [t('lTrans'), fmt(trans), false],
       [t('lAttend'), fmt(att), !attendOn],
       [t('lOther'), fmt(other), other === 0],
-      [t('lIns'), ins > 0 ? '-' + fmt(ins) : '0', ins === 0]
+      [t('lIns'), ins > 0 ? '-' + fmt(ins) : '0', ins === 0],
+      [t('lOtherDed'), otherDed > 0 ? '-' + fmt(otherDed) : '0', otherDed === 0]
     ];
     let h = '<div class="total"><div class="lbl">' + t('totalLbl') + '</div>';
     h += '<div class="amt">' + fmt(total) + '<span class="cur">' + curLabel() + '</span></div><div class="lines">';
@@ -860,14 +865,14 @@
     if (sc) sc.innerHTML = h;
   }
 
-  function renderPrint(days, otH, holD, phD, ot3H, base, ot, ot3, hol, ph, meal, trans, att, other, otMeal, ins, total){
+  function renderPrint(days, otH, holD, phD, ot3H, base, ot, ot3, hol, ph, meal, trans, att, other, otMeal, ins, otherDed, total){
     const loc = S.lang === 'zh' ? 'zh-CN' : 'en-GB';
     const d = new Date().toLocaleDateString(loc);
     const rows = [
       [t('days'), days], [t('otHours'), otH], [t('ot3Hours'), ot3H], [t('holDays'), holD], [t('phDays'), phD],
       [t('lBase'), fmt(base)], [t('lOt'), fmt(ot)], [t('lOt3'), fmt(ot3)], [t('lHol'), fmt(hol)], [t('lPh'), fmt(ph)], [t('lOtMeal'), fmt(otMeal)],
       [t('lMeal'), fmt(meal)], [t('lTrans'), fmt(trans)],
-      [t('lAttend'), fmt(att)], [t('lOther'), fmt(other)], [t('lIns'), ins > 0 ? '-' + fmt(ins) : '0']
+      [t('lAttend'), fmt(att)], [t('lOther'), fmt(other)], [t('lIns'), ins > 0 ? '-' + fmt(ins) : '0'], [t('lOtherDed'), otherDed > 0 ? '-' + fmt(otherDed) : '0']
     ];
     let h = '<h1>' + t('appTitle') + '</h1>';
     h += '<div class="p-date">' + t('dateLbl') + ': ' + d + '</div>';
@@ -1229,7 +1234,7 @@
     r.readAsText(f); ev.target.value = '';
   }
   function clearInputs(){
-    ['days','otHours','holDays','phDays','otherBonus','ot3Hours'].forEach(id => document.getElementById(id).value = '');
+    ['days','otHours','holDays','phDays','otherBonus','otherDed','ot3Hours'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('attend').checked = false; calc();
     document.getElementById('days').focus();
   }
@@ -1390,7 +1395,7 @@
     }
   }
 
-  ['days','otHours','holDays','phDays','otherBonus','ot3Hours'].forEach(id =>
+  ['days','otHours','holDays','phDays','otherBonus','otherDed','ot3Hours'].forEach(id =>
     document.getElementById(id).addEventListener('input', calc));
   document.getElementById('attend').addEventListener('change', calc);
   document.getElementById('sCur').addEventListener('change', function(){ S.currency = this.value; persist(); calc(); });
