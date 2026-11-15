@@ -124,6 +124,7 @@
   .cal-day .d-meta.hol{color:#8A5A00; font-weight:700;}
   .cal-day .d-meta.ph{color:var(--blue-dark); font-weight:700;}
   .cal-day .d-meta.ot{color:var(--muted);}
+  .cal-day .d-meta.exp{color:#B91C1C; font-weight:700;}
   .cal-day.hol-row{background:#FFF7E0;}
   .cal-day.ph-row{background:#EAF1FD;}
   .cal-day.sun-row{background:#FDE8E8;}
@@ -215,6 +216,7 @@
   body.dark header{background:#0D0D16; border-bottom:3px solid #2C2C40;}
   body.dark header h1::after{content:' 🌙';}
   body.dark .card h2{color:#EDEDF2;}
+  body.dark .topbar h2{color:#EDEDF2;}
   body.dark .total{background:#23233A;}
   body.dark .total .amt{color:#FFD166;}
   body.dark .btn-blue{background:#6EA8FE; color:#0D0D16;}
@@ -232,6 +234,7 @@
   body.dark .cal-day .d-meta.hol{color:#E8B34B;}
   body.dark .cal-day .d-meta.ph{color:#7FB3FF;}
   body.dark .cal-day .d-meta.ot{color:#9A9AB2;}
+  body.dark .cal-day .d-meta.exp{color:#FF9D9D;}
   body.dark .cal-edit{background:#1F1F2E;}
   body.dark .cal-edit select:disabled{background:#2A2A3E; color:#6B6B85;}
   body.dark #calEditOtWrap{background:#23233A;}
@@ -303,6 +306,7 @@
       <div class="actions">
         <button class="linkbtn" onclick="showSlip()" data-t="slipBtn">🧾 စလစ်</button>
         <button class="linkbtn" onclick="showExchange()" data-t="exBtn">💱 လဲလှယ်</button>
+        <button class="linkbtn" onclick="showBudget()" data-t="bgBtn">💰 ဘတ်ဂျက်</button>
         <button class="linkbtn" onclick="shareApp()" id="shareBtn" data-t="shareBtn">📤 မျှဝေ</button>
         <button class="linkbtn" onclick="showSettings()" data-t="settingsBtn">⚙️</button>
       </div>
@@ -613,15 +617,55 @@
     </div>
   </div>
 
+  <!-- ===== Budget ===== -->
+  <div id="budgetView" class="hidden">
+    <div class="topbar">
+      <h2 data-t="bgTitle">ဘတ်ဂျက်</h2>
+      <button class="linkbtn" onclick="showMain()" data-t="back">← ပြန်သွားမယ်</button>
+    </div>
+    <div class="card">
+      <div class="field">
+        <label for="bgIncome" data-t="bgIncome">လဝင်ငွေ</label>
+        <input type="number" id="bgIncome" min="0" inputmode="decimal" placeholder="0">
+      </div>
+      <div class="field">
+        <label data-t="bgExpTitle">နေ့စဉ် သုံးငွေ</label>
+        <div class="rec-nav">
+          <button class="rec-navbtn" onclick="bgChangeMonth(-1)">‹</button>
+          <strong id="bgMonthLabel"></strong>
+          <button class="rec-navbtn" onclick="bgChangeMonth(1)">›</button>
+        </div>
+        <div id="bgCalHead" class="cal-head"></div>
+        <div id="bgCalGrid" class="cal-grid"></div>
+        <div id="bgCalEdit" class="cal-edit hidden">
+          <div class="cal-edit-head"><strong id="bgCalEditLabel"></strong><button class="linkbtn" onclick="bgCloseEdit()">✕</button></div>
+          <div class="field">
+            <label for="bgDayAmt" data-t="bgDayExp">ဒီနေ့ သုံးငွေ</label>
+            <input type="number" id="bgDayAmt" min="0" inputmode="decimal" placeholder="0">
+          </div>
+        </div>
+        <p class="note" style="margin-top:10px;" data-t="bgTapHint">ရက်ကို နှိပ်ပြီး အဲဒီနေ့ သုံးငွေ ထည့်ပါ။</p>
+      </div>
+      <div class="total" style="margin-top:14px;">
+        <div class="lbl" data-t="bgRemaining">ကျန်ငွေ</div>
+        <div class="amt"><span id="bgRemainAmt">—</span><span class="cur" id="bgRemainCur"></span></div>
+      </div>
+      <div class="lines">
+        <div class="line"><span data-t="bgMonthlyExp">တစ်လ သုံးငွေ (ရက် ၃၀)</span><span id="bgMonthlyAmt">—</span></div>
+        <div class="line"><span data-t="bgDailyBudget">နေ့စဉ် သုံးလို့ရငွေ</span><span id="bgDailyAmt">—</span></div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div id="printArea"></div>
 
 <script>
   const KEY = 'salaryCalcSettings.v2', OLD_KEY = 'salaryCalcSettings.v1';
-  const APP_VERSION = '1.2.9';
+  const APP_VERSION = '1.3.0';
   const APP_NOTES = [
-    'Dark mode (အမှောင် theme) ထည့်သွင်းခြင်း'
+    'Budget tab (ဘတ်ဂျက်) ထည့်သွင်းခြင်း'
   ];
   function verCmp(a, b){
     const pa = String(a).split('.').map(function(x){ return parseInt(x, 10) || 0; });
@@ -664,7 +708,7 @@
       sWage:'လုပ်အားခ — တစ်ရက်ဈေး', sOt:'နေ့စဉ်အချိန်ပို — တစ်နာရီဈေး', sOt3:'OT*3 — တစ်နာရီဈေး', sHoliday:'အားလပ်ရက်အချိန်ပို — တစ်ရက်ဈေး', sPh:'အစိုးရပိတ်ရက် — တစ်ရက်ဈေး', sOtMeal:'OT ထမင်းစရိတ် — တစ်ရက်ဈေး',
       sMeal:'ထမင်းစရိတ် — တစ်ရက်ဈေး', sTrans:'ခရီးစရိတ် — တစ်ရက်ဈေး',
       sAttend:'ရက်မှန်ကြေး — တစ်လစာ', sIns:'အာမခံကြေး — တစ်လစာ',
-      recordMode:'ထည့်သွင်းနည်း', modeCalendar:'ပြက္ခဒိန်', modeCalculator:'တွက်စက်', themeTitle:'Theme', themeDefault:'ပုံမှန်', themeHalloween:'Halloween 🎃', themeThadingyut:'သီတင်းကျွတ် 🪔', themeThingyan:'သင်္ကြန် 💦🌼', themePremium:'Purple Love 💜', themeDark:'အမှောင် 🌙', exBtn:'💱 လဲလှယ်', exTitle:'ငွေလဲလှယ်', exAmount:'ပမာဏ', exFrom:'မှ', exTo:'သို့', exSwap:'⇄ နေရာချင်း', exRefresh:'🔄 ဈေးနှုန်း အသစ်ယူမယ်', exCentral:'သတ်မှတ်ဈေး', exOffline:'အင်တာနက်မရှိလို့ နောက်ဆုံးသိမ်းထားတဲ့ ဈေးနဲ့ တွက်ပြထားတယ်။', exNoRate:'ဈေးနှုန်း မရှိသေးဘူး — အင်တာနက် ဖွင့်ပြီး Refresh နှိပ်ပါ။', exAttr:'Rates by ExchangeRate-API', exUpdated:'နောက်ဆုံး update', shareBtn:'📤 မျှဝေ', shareText:'လစာတွက်စက် — ရက်မှန်ကြေး၊ OT၊ အားလပ်ရက်အပါအဝင် လစာကို အလွယ်တွက်လို့ရတယ်။ Free, login မလို, offline ရတယ်။', shareCopied:'ကူးပြီးပြီ', shareCopyManually:'လင့်ခ်ကို ကူးယူပါ', recTitle:'နေ့စဉ်မှတ်တမ်း',
+      recordMode:'ထည့်သွင်းနည်း', modeCalendar:'ပြက္ခဒိန်', modeCalculator:'တွက်စက်', themeTitle:'Theme', themeDefault:'ပုံမှန်', themeHalloween:'Halloween 🎃', themeThadingyut:'သီတင်းကျွတ် 🪔', themeThingyan:'သင်္ကြန် 💦🌼', themePremium:'Purple Love 💜', themeDark:'အမှောင် 🌙', exBtn:'💱 လဲလှယ်', bgBtn:'💰 ဘတ်ဂျက်', bgTitle:'ဘတ်ဂျက်', bgIncome:'လဝင်ငွေ', bgExpTitle:'နေ့စဉ် သုံးငွေ', bgDayExp:'ဒီနေ့ သုံးငွေ', bgTapHint:'ရက်ကို နှိပ်ပြီး အဲဒီနေ့ သုံးငွေ ထည့်ပါ။', bgMonthlyExp:'တစ်လ သုံးငွေ', bgRemaining:'ကျန်ငွေ', bgDailyBudget:'နေ့စဉ် သုံးလို့ရငွေ', exTitle:'ငွေလဲလှယ်', exAmount:'ပမာဏ', exFrom:'မှ', exTo:'သို့', exSwap:'⇄ နေရာချင်း', exRefresh:'🔄 ဈေးနှုန်း အသစ်ယူမယ်', exCentral:'သတ်မှတ်ဈေး', exOffline:'အင်တာနက်မရှိလို့ နောက်ဆုံးသိမ်းထားတဲ့ ဈေးနဲ့ တွက်ပြထားတယ်။', exNoRate:'ဈေးနှုန်း မရှိသေးဘူး — အင်တာနက် ဖွင့်ပြီး Refresh နှိပ်ပါ။', exAttr:'Rates by ExchangeRate-API', exUpdated:'နောက်ဆုံး update', shareBtn:'📤 မျှဝေ', shareText:'လစာတွက်စက် — ရက်မှန်ကြေး၊ OT၊ အားလပ်ရက်အပါအဝင် လစာကို အလွယ်တွက်လို့ရတယ်။ Free, login မလို, offline ရတယ်။', shareCopied:'ကူးပြီးပြီ', shareCopyManually:'လင့်ခ်ကို ကူးယူပါ', recTitle:'နေ့စဉ်မှတ်တမ်း',
       recColDate:'ရက်စွဲ', recColWork:'အလုပ်ဆင်း', recColHol:'အားလပ်ရက် အလုပ်ဆင်း', recColPh:'နားရက်', recColOt:'OT နာရီ',
       recWorked:'အလုပ်ဆင်းရက်', recOt:'OT နာရီ စုစုပေါင်း', recHol:'အားလပ်ရက်အချိန်ပို (ရက်)', recOtMeal:'OT လုပ်တဲ့ ရက်', recPh:'အစိုးရပိတ်ရက် (ရက်)',
       recClear:'ဒီလရဲ့ မှတ်တမ်း ရှင်းမယ်', recClearConfirm:'ဒီလရဲ့ မှတ်တမ်းအားလုံး ဖျက်မှာလား?', personAdd:'＋ လူထပ်ထည့်မယ်', personDefault:'လူ', personNamePrompt:'နာမည်ထည့်ပါ', personDeleteConfirm:'{name} ရဲ့ မှတ်တမ်းအားလုံး ဖျက်မလား?', splashChecking:'Update စစ်နေသည်…', splashUptoDate:'နောက်ဆုံးဗားရှင်း ဖြစ်နေသည် ✓', splashUpdateAvail:'Update အသစ် ရှိသည်', splashOffline:'Offline — သိမ်းထားတဲ့ ဗားရှင်းကို သုံးနေသည်', splashWhatsNew:'အသစ်ပါဝင်တာများ', splashTap:'ဆက်ရန် နှိပ်ပါ', splashUpdateBtn:'အခု Update လုပ်မယ်', splashContinue:'ဆက်သွားမယ်', aboutTitle:'အကြောင်း', ratesBtn:'ဈေးနှုန်းများ', ratesTitle:'ဈေးနှုန်းများ', aboutVersion:'ဗားရှင်း', aboutContact:'ဆက်သွယ်ရန်', aboutCheck:'Update စစ်မယ်',
@@ -698,7 +742,7 @@
       sWage:'Daily Wage — per day', sOt:'Daily OT — per hour', sOt3:'OT*3 — per hour', sHoliday:'Holiday OT — per day', sPh:'Public Holiday — per day', sOtMeal:'OT Meal Allowance — per OT day',
       sMeal:'Meal Allowance — per day', sTrans:'Transportation Allowance — per day',
       sAttend:'Attendance Bonus — per month', sIns:'Insurance Fee — per month',
-      recordMode:'Entry Method', modeCalendar:'Calendar', modeCalculator:'Calculator', themeTitle:'Theme', themeDefault:'Default', themeHalloween:'Halloween 🎃', themeThadingyut:'Thadingyut 🪔', themeThingyan:'Thingyan 💦🌼', themePremium:'Purple Love 💜', themeDark:'Dark 🌙', exBtn:'💱 Exchange', exTitle:'Currency Exchange', exAmount:'Amount', exFrom:'From', exTo:'To', exSwap:'⇄ Swap', exRefresh:'🔄 Refresh rates', exCentral:'set rate', exOffline:'No internet — showing the last saved rate.', exNoRate:'No rate yet — connect to the internet and tap Refresh.', exAttr:'Rates by ExchangeRate-API', exUpdated:'Last updated', shareBtn:'📤 Share', shareText:'Salary Calculator — easily calculate your salary including attendance bonus, OT and holidays. Free, no login, works offline.', shareCopied:'Copied', shareCopyManually:'Copy the link', recTitle:'Daily Record',
+      recordMode:'Entry Method', modeCalendar:'Calendar', modeCalculator:'Calculator', themeTitle:'Theme', themeDefault:'Default', themeHalloween:'Halloween 🎃', themeThadingyut:'Thadingyut 🪔', themeThingyan:'Thingyan 💦🌼', themePremium:'Purple Love 💜', themeDark:'Dark 🌙', exBtn:'💱 Exchange', bgBtn:'💰 Budget', bgTitle:'Budget', bgIncome:'Monthly income', bgExpTitle:'Daily expenses', bgDayExp:"Today's expense", bgTapHint:"Tap a day to enter that day's expense.", bgMonthlyExp:'Monthly expense', bgRemaining:'Remaining', bgDailyBudget:'Daily budget', exTitle:'Currency Exchange', exAmount:'Amount', exFrom:'From', exTo:'To', exSwap:'⇄ Swap', exRefresh:'🔄 Refresh rates', exCentral:'set rate', exOffline:'No internet — showing the last saved rate.', exNoRate:'No rate yet — connect to the internet and tap Refresh.', exAttr:'Rates by ExchangeRate-API', exUpdated:'Last updated', shareBtn:'📤 Share', shareText:'Salary Calculator — easily calculate your salary including attendance bonus, OT and holidays. Free, no login, works offline.', shareCopied:'Copied', shareCopyManually:'Copy the link', recTitle:'Daily Record',
       recColDate:'Date', recColWork:'Worked', recColHol:'Holiday OT', recColPh:'Public Holiday', recColOt:'OT Hours',
       recWorked:'Worked Days', recOt:'Total OT Hours', recHol:'Holiday OT Days', recOtMeal:'OT Days', recPh:'Public Holiday Days',
       recClear:'Clear This Month', recClearConfirm:'Clear all records for this month?', personAdd:'＋ Add person', personDefault:'Person', personNamePrompt:'Enter a name', personDeleteConfirm:'Delete all records for {name}?', splashChecking:'Checking for updates…', splashUptoDate:'Up to date ✓', splashUpdateAvail:'Update available', splashOffline:'Offline — using saved version', splashWhatsNew:"What's new", splashTap:'Tap to continue', splashUpdateBtn:'Update now', splashContinue:'Continue', aboutTitle:'About', ratesBtn:'Rates', ratesTitle:'Rates', aboutVersion:'Version', aboutContact:'Contact', aboutCheck:'Check for updates',
@@ -732,7 +776,7 @@
       sWage:'日薪 — 每天', sOt:'每日加班 — 每小时', sOt3:'OT*3 — 每小时', sHoliday:'假日加班 — 每天', sPh:'公共假日 — 每天', sOtMeal:'加班餐补 — 每天',
       sMeal:'餐补 — 每天', sTrans:'交通补贴 — 每天',
       sAttend:'全勤奖 — 每月', sIns:'保险费 — 每月',
-      recordMode:'输入方式', modeCalendar:'日历', modeCalculator:'计算器', themeTitle:'主题', themeDefault:'默认', themeHalloween:'万圣节 🎃', themeThadingyut:'点灯节 🪔', themeThingyan:'泼水节 💦🌼', themePremium:'Purple Love 💜', themeDark:'深色 🌙', exBtn:'💱 换算', exTitle:'货币换算', exAmount:'金额', exFrom:'从', exTo:'到', exSwap:'⇄ 互换', exRefresh:'🔄 更新汇率', exCentral:'设定汇率', exOffline:'无网络 — 显示上次保存的汇率。', exNoRate:'暂无汇率 — 请联网后点击刷新。', exAttr:'Rates by ExchangeRate-API', exUpdated:'最后更新', shareBtn:'📤 分享', shareText:'工资计算器 — 轻松计算包含全勤奖、加班和假期的工资。免费、无需登录、可离线使用。', shareCopied:'已复制', shareCopyManually:'复制链接', recTitle:'每日记录',
+      recordMode:'输入方式', modeCalendar:'日历', modeCalculator:'计算器', themeTitle:'主题', themeDefault:'默认', themeHalloween:'万圣节 🎃', themeThadingyut:'点灯节 🪔', themeThingyan:'泼水节 💦🌼', themePremium:'Purple Love 💜', themeDark:'深色 🌙', exBtn:'💱 换算', bgBtn:'💰 预算', bgTitle:'预算', bgIncome:'月收入', bgExpTitle:'每日支出', bgDayExp:'当日支出', bgTapHint:'点一天输入当天的支出。', bgMonthlyExp:'每月支出', bgRemaining:'剩余', bgDailyBudget:'每日预算', exTitle:'货币换算', exAmount:'金额', exFrom:'从', exTo:'到', exSwap:'⇄ 互换', exRefresh:'🔄 更新汇率', exCentral:'设定汇率', exOffline:'无网络 — 显示上次保存的汇率。', exNoRate:'暂无汇率 — 请联网后点击刷新。', exAttr:'Rates by ExchangeRate-API', exUpdated:'最后更新', shareBtn:'📤 分享', shareText:'工资计算器 — 轻松计算包含全勤奖、加班和假期的工资。免费、无需登录、可离线使用。', shareCopied:'已复制', shareCopyManually:'复制链接', recTitle:'每日记录',
       recColDate:'日期', recColWork:'出勤', recColHol:'假日', recColPh:'公共假日', recColOt:'加班小时',
       recWorked:'出勤天数', recOt:'加班总小时', recHol:'假日加班天数', recOtMeal:'加班天数', recPh:'公共假日天数',
       recClear:'清除本月记录', recClearConfirm:'确定清除本月所有记录吗？', personAdd:'＋ 添加人员', personDefault:'人员', personNamePrompt:'输入姓名', personDeleteConfirm:'删除 {name} 的所有记录吗？', splashChecking:'正在检查更新…', splashUptoDate:'已是最新版本 ✓', splashUpdateAvail:'有新版本', splashOffline:'离线 — 使用已保存版本', splashWhatsNew:'更新内容', splashTap:'点击继续', splashUpdateBtn:'立即更新', splashContinue:'继续', aboutTitle:'关于', ratesBtn:'费率', ratesTitle:'费率', aboutVersion:'版本', aboutContact:'联系方式', aboutCheck:'检查更新',
@@ -766,7 +810,7 @@
       sWage:'ค่าจ้าง — ต่อวัน', sOt:'โอทีรายวัน — ต่อชั่วโมง', sOt3:'OT*3 — ต่อชั่วโมง', sHoliday:'โอทีวันหยุด — ต่อวัน', sPh:'วันหยุดนักขัตฤกษ์ — ต่อวัน', sOtMeal:'ค่าอาหารโอที — ต่อวันโอที',
       sMeal:'ค่าอาหาร — ต่อวัน', sTrans:'ค่าเดินทาง — ต่อวัน',
       sAttend:'เบี้ยขยัน — ต่อเดือน', sIns:'ประกันสังคม — ต่อเดือน',
-      recordMode:'วิธีกรอกข้อมูล', modeCalendar:'ปฏิทิน', modeCalculator:'เครื่องคิดเลข', themeTitle:'ธีม', themeDefault:'ปกติ', themeHalloween:'ฮาโลวีน 🎃', themeThadingyut:'Thadingyut 🪔', themeThingyan:'สงกรานต์ 💦🌼', themePremium:'Purple Love 💜', themeDark:'มืด 🌙', exBtn:'💱 แลกเปลี่ยน', exTitle:'แลกเปลี่ยนเงิน', exAmount:'จำนวน', exFrom:'จาก', exTo:'เป็น', exSwap:'⇄ สลับ', exRefresh:'🔄 อัปเดตอัตรา', exCentral:'อัตราที่กำหนด', exOffline:'ไม่มีอินเทอร์เน็ต — แสดงอัตราที่บันทึกไว้ล่าสุด', exNoRate:'ยังไม่มีอัตรา — เชื่อมต่ออินเทอร์เน็ตแล้วกดรีเฟรช', exAttr:'Rates by ExchangeRate-API', exUpdated:'อัปเดตล่าสุด', shareBtn:'📤 แชร์', shareText:'เครื่องคำนวณเงินเดือน — คำนวณเงินเดือนรวมเบี้ยขยัน โอที และวันหยุดได้อย่างง่ายดาย ฟรี ไม่ต้องล็อกอิน ใช้งานออฟไลน์ได้', shareCopied:'คัดลอกแล้ว', shareCopyManually:'คัดลอกลิงก์', recTitle:'บันทึกประจำวัน',
+      recordMode:'วิธีกรอกข้อมูล', modeCalendar:'ปฏิทิน', modeCalculator:'เครื่องคิดเลข', themeTitle:'ธีม', themeDefault:'ปกติ', themeHalloween:'ฮาโลวีน 🎃', themeThadingyut:'Thadingyut 🪔', themeThingyan:'สงกรานต์ 💦🌼', themePremium:'Purple Love 💜', themeDark:'มืด 🌙', exBtn:'💱 แลกเปลี่ยน', bgBtn:'💰 งบประมาณ', bgTitle:'งบประมาณ', bgIncome:'รายได้ต่อเดือน', bgExpTitle:'ค่าใช้จ่ายรายวัน', bgDayExp:'ค่าใช้จ่ายวันนี้', bgTapHint:'แตะวันที่เพื่อกรอกค่าใช้จ่ายของวันนั้น', bgMonthlyExp:'ค่าใช้จ่ายต่อเดือน', bgRemaining:'คงเหลือ', bgDailyBudget:'งบรายวัน', exTitle:'แลกเปลี่ยนเงิน', exAmount:'จำนวน', exFrom:'จาก', exTo:'เป็น', exSwap:'⇄ สลับ', exRefresh:'🔄 อัปเดตอัตรา', exCentral:'อัตราที่กำหนด', exOffline:'ไม่มีอินเทอร์เน็ต — แสดงอัตราที่บันทึกไว้ล่าสุด', exNoRate:'ยังไม่มีอัตรา — เชื่อมต่ออินเทอร์เน็ตแล้วกดรีเฟรช', exAttr:'Rates by ExchangeRate-API', exUpdated:'อัปเดตล่าสุด', shareBtn:'📤 แชร์', shareText:'เครื่องคำนวณเงินเดือน — คำนวณเงินเดือนรวมเบี้ยขยัน โอที และวันหยุดได้อย่างง่ายดาย ฟรี ไม่ต้องล็อกอิน ใช้งานออฟไลน์ได้', shareCopied:'คัดลอกแล้ว', shareCopyManually:'คัดลอกลิงก์', recTitle:'บันทึกประจำวัน',
       recColDate:'วันที่', recColWork:'มาทำงาน', recColHol:'โอทีวันหยุด', recColPh:'วันหยุดนักขัตฤกษ์', recColOt:'ชั่วโมงโอที',
       recWorked:'วันทำงาน', recOt:'ชั่วโมงโอทีรวม', recHol:'วันโอทีวันหยุด', recOtMeal:'วันโอที', recPh:'วันหยุดนักขัตฤกษ์',
       recClear:'ล้างบันทึกเดือนนี้', recClearConfirm:'ล้างบันทึกทั้งหมดของเดือนนี้ใช่ไหม?', personAdd:'＋ เพิ่มบุคคล', personDefault:'บุคคล', personNamePrompt:'ใส่ชื่อ', personDeleteConfirm:'ลบระเบียนทั้งหมดของ {name} หรือไม่?', splashChecking:'กำลังตรวจสอบอัปเดต…', splashUptoDate:'เป็นเวอร์ชันล่าสุดแล้ว ✓', splashUpdateAvail:'มีอัปเดตใหม่', splashOffline:'ออฟไลน์ — ใช้เวอร์ชันที่บันทึกไว้', splashWhatsNew:'มีอะไรใหม่', splashTap:'แตะเพื่อดำเนินการต่อ', splashUpdateBtn:'อัปเดตตอนนี้', splashContinue:'ดำเนินการต่อ', aboutTitle:'เกี่ยวกับ', ratesBtn:'อัตรา', ratesTitle:'อัตรา', aboutVersion:'เวอร์ชัน', aboutContact:'ติดต่อ', aboutCheck:'ตรวจสอบอัปเดต',
@@ -1272,11 +1316,11 @@
     document.getElementById('attend').checked = false; calc();
     document.getElementById('days').focus();
   }
-  function showSettings(){ fillSettings(); document.getElementById('mainView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('exchangeView').classList.add('hidden'); document.getElementById('settingsView').classList.remove('hidden'); window.scrollTo(0,0); }
-  function showMain(){ document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('exchangeView').classList.add('hidden'); document.getElementById('mainView').classList.remove('hidden'); calc(); window.scrollTo(0,0); }
-  function showSlip(){ calc(); document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('exchangeView').classList.add('hidden'); document.getElementById('slipView').classList.remove('hidden'); window.scrollTo(0,0); }
-  function showAbout(){ document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('exchangeView').classList.add('hidden'); document.getElementById('aboutView').classList.remove('hidden'); window.scrollTo(0,0); }
-  function showRates(){ document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('exchangeView').classList.add('hidden'); document.getElementById('ratesView').classList.remove('hidden'); window.scrollTo(0,0); }
+  function showSettings(){ fillSettings(); document.getElementById('mainView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('exchangeView').classList.add('hidden'); document.getElementById('budgetView').classList.add('hidden'); document.getElementById('settingsView').classList.remove('hidden'); window.scrollTo(0,0); }
+  function showMain(){ document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('exchangeView').classList.add('hidden'); document.getElementById('budgetView').classList.add('hidden'); document.getElementById('mainView').classList.remove('hidden'); calc(); window.scrollTo(0,0); }
+  function showSlip(){ calc(); document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('exchangeView').classList.add('hidden'); document.getElementById('budgetView').classList.add('hidden'); document.getElementById('slipView').classList.remove('hidden'); window.scrollTo(0,0); }
+  function showAbout(){ document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('exchangeView').classList.add('hidden'); document.getElementById('budgetView').classList.add('hidden'); document.getElementById('aboutView').classList.remove('hidden'); window.scrollTo(0,0); }
+  function showRates(){ document.getElementById('mainView').classList.add('hidden'); document.getElementById('settingsView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('exchangeView').classList.add('hidden'); document.getElementById('budgetView').classList.add('hidden'); document.getElementById('ratesView').classList.remove('hidden'); window.scrollTo(0,0); }
   /* ===== Exchange ===== */
   const EX_KEY = 'salaryCalcExchange.v1';
   let EX = (function(){
@@ -1397,10 +1441,131 @@
     document.getElementById('slipView').classList.add('hidden');
     document.getElementById('aboutView').classList.add('hidden');
     document.getElementById('ratesView').classList.add('hidden');
+    document.getElementById('budgetView').classList.add('hidden');
     document.getElementById('exchangeView').classList.remove('hidden');
     exPairChanged();
     fetchCentral();
     fetchEx(false);
+    window.scrollTo(0, 0);
+  }
+  /* ===== Budget (calendar) ===== */
+  const BG_KEY = 'salaryCalcBudget.v1';
+  let BG = (function(){
+    try{
+      const p = JSON.parse(localStorage.getItem(BG_KEY));
+      if(p && typeof p === 'object'){
+        const exp = (p.exp && typeof p.exp === 'object') ? p.exp : {};
+        return {income: (+p.income) || 0, exp: exp};
+      }
+    }catch(e){}
+    return {income: 0, exp: {}};
+  })();
+  let bgYear = new Date().getFullYear();
+  let bgMonth = new Date().getMonth();
+  let bgSelDay = 0;
+  function saveBg(){ try{ localStorage.setItem(BG_KEY, JSON.stringify(BG)); }catch(e){} }
+  function bgMonthData(){
+    const k = recKey(bgYear, bgMonth);
+    if(!BG.exp[k]) BG.exp[k] = {};
+    return BG.exp[k];
+  }
+  function bgMonthlySum(){
+    const md = BG.exp[recKey(bgYear, bgMonth)] || {};
+    let s = 0;
+    for(const d in md) s += (+md[d]) || 0;
+    return s;
+  }
+  function renderBg(){
+    const inc = parseFloat(document.getElementById('bgIncome').value) || 0;
+    BG.income = inc; saveBg();
+    const monthly = bgMonthlySum();
+    const remain = inc - monthly;
+    document.getElementById('bgMonthlyAmt').textContent = fmt(monthly) + ' ' + curLabel();
+    document.getElementById('bgDailyAmt').textContent = fmt(inc * 0.01) + ' ' + curLabel();
+    document.getElementById('bgRemainAmt').textContent = fmt(remain);
+    document.getElementById('bgRemainCur').textContent = curLabel();
+  }
+  function bgMonthLabel(){
+    const m = I18N[S.lang].months[bgMonth];
+    if(S.lang === 'my') return bgYear + ' ခုနှစ် ' + m;
+    if(S.lang === 'zh') return bgYear + '年' + m;
+    return m + ' ' + bgYear;
+  }
+  function renderBgCal(){
+    document.getElementById('bgMonthLabel').textContent = bgMonthLabel();
+    const md = bgMonthData();
+    const n = daysInMonth(bgYear, bgMonth);
+    const firstWd = new Date(bgYear, bgMonth, 1).getDay();
+    const ws = I18N[S.lang].weekdaysShort;
+    document.getElementById('bgCalHead').innerHTML = ws.map(function(w, i){
+      return '<span' + (i === 0 ? ' class="sun-h"' : '') + '>' + w + '</span>';
+    }).join('');
+    const now = new Date();
+    let h = '';
+    for(let i = 0; i < firstWd; i++) h += '<div class="cal-blank"></div>';
+    for(let d = 1; d <= n; d++){
+      const wd = new Date(bgYear, bgMonth, d).getDay();
+      const amt = (+md[d]) || 0;
+      let cls = 'cal-day';
+      if(wd === 0) cls += ' sun-row';
+      if(d === bgSelDay) cls += ' sel';
+      if(bgYear === now.getFullYear() && bgMonth === now.getMonth() && d === now.getDate()) cls += ' today';
+      h += '<div class="' + cls + '" data-bgday="' + d + '"><div class="d-num">' + d + '</div>' + (amt > 0 ? '<span class="d-meta exp">' + fmt(amt) + '</span>' : '') + '</div>';
+    }
+    const grid = document.getElementById('bgCalGrid');
+    grid.innerHTML = h;
+    grid.querySelectorAll('[data-bgday]').forEach(function(cell){
+      cell.addEventListener('click', function(){
+        const d = parseInt(cell.dataset.bgday, 10);
+        bgSelDay = (bgSelDay === d) ? 0 : d;
+        renderBgCal();
+      });
+    });
+    renderBgEdit();
+  }
+  function renderBgEdit(){
+    const box = document.getElementById('bgCalEdit');
+    if(!bgSelDay){ box.classList.add('hidden'); return; }
+    box.classList.remove('hidden');
+    const wd = new Date(bgYear, bgMonth, bgSelDay).getDay();
+    document.getElementById('bgCalEditLabel').textContent = bgSelDay + ' ' + I18N[S.lang].months[bgMonth] + ' · ' + I18N[S.lang].weekdays[wd];
+    const md = bgMonthData();
+    document.getElementById('bgDayAmt').value = (md[bgSelDay] || '') === 0 ? '' : (md[bgSelDay] || '');
+  }
+  function bgUpdateCell(d){
+    const cell = document.querySelector('[data-bgday="' + d + '"]');
+    if(!cell) return;
+    const md = BG.exp[recKey(bgYear, bgMonth)] || {};
+    const amt = (+md[d]) || 0;
+    const old = cell.querySelector('.d-meta.exp');
+    if(old) old.remove();
+    if(amt > 0){
+      const s = document.createElement('span');
+      s.className = 'd-meta exp';
+      s.textContent = fmt(amt);
+      cell.appendChild(s);
+    }
+  }
+  function bgChangeMonth(dir){
+    bgMonth += dir;
+    if(bgMonth < 0){ bgMonth = 11; bgYear--; }
+    if(bgMonth > 11){ bgMonth = 0; bgYear++; }
+    bgSelDay = 0;
+    renderBgCal();
+    renderBg();
+  }
+  function bgCloseEdit(){ bgSelDay = 0; renderBgCal(); }
+  function showBudget(){
+    document.getElementById('mainView').classList.add('hidden');
+    document.getElementById('settingsView').classList.add('hidden');
+    document.getElementById('slipView').classList.add('hidden');
+    document.getElementById('aboutView').classList.add('hidden');
+    document.getElementById('ratesView').classList.add('hidden');
+    document.getElementById('exchangeView').classList.add('hidden');
+    document.getElementById('budgetView').classList.remove('hidden');
+    document.getElementById('bgIncome').value = BG.income ? BG.income : '';
+    renderBgCal();
+    renderBg();
     window.scrollTo(0, 0);
   }
   async function shareApp(){
@@ -1439,6 +1604,16 @@
   document.getElementById('sCur').addEventListener('change', function(){ S.currency = this.value; persist(); calc(); });
   document.getElementById('sTheme').addEventListener('change', function(){ S.theme = this.value; persist(); applyTheme(); });
   document.getElementById('exAmount').addEventListener('input', renderEx);
+  document.getElementById('bgIncome').addEventListener('input', renderBg);
+  document.getElementById('bgDayAmt').addEventListener('input', function(){
+    if(!bgSelDay) return;
+    const v = parseFloat(this.value) || 0;
+    const md = bgMonthData();
+    if(v > 0) md[bgSelDay] = v; else delete md[bgSelDay];
+    saveBg();
+    renderBg();
+    bgUpdateCell(bgSelDay);
+  });
   document.getElementById('exFrom').addEventListener('change', exPairChanged);
   document.getElementById('exTo').addEventListener('change', exPairChanged);
   /* ===== Banner: random financial tips + motivation =====
