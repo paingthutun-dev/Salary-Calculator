@@ -80,6 +80,7 @@
     margin-bottom:14px; box-shadow:0 10px 24px rgba(10,37,64,.25);
   }
   .total .lbl{font-size:14px; opacity:.8;}
+  .total .slip-name{font-size:15px; font-weight:600; opacity:.95; margin-bottom:2px;}
   .total .amt{font-size:38px; font-weight:700; margin:4px 0 2px; letter-spacing:.2px;}
   .total .cur{font-size:18px; opacity:.85; margin-left:6px;}
   .lines{margin-top:14px; border-top:1px solid rgba(255,255,255,.18); padding-top:12px;}
@@ -249,6 +250,7 @@
     #splash{display:none;}
     #printArea{display:block; padding:10px 16px; color:#000;}
     #printArea h1{font-size:22px; margin:0 0 4px;}
+    #printArea .p-name{font-size:17px; font-weight:700; margin-bottom:2px;}
     #printArea .p-date{font-size:14px; color:#444; margin-bottom:14px;}
     #printArea .p-row{display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid #ddd; font-size:15px;}
     #printArea .p-row span:last-child{font-weight:600;}
@@ -548,7 +550,10 @@
       <button class="linkbtn" onclick="showMain()" data-t="back">← ပြန်သွားမယ်</button>
     </div>
     <div id="slipContent"></div>
-    <button class="btn btn-blue" onclick="window.print()" data-t="print">🖨️ ပရင့်ထုတ်မယ်</button>
+    <div class="btn-row">
+      <button class="btn btn-blue" onclick="window.print()" data-t="print">🖨️ ပရင့်ထုတ်မယ်</button>
+      <button class="btn btn-ghost" onclick="saveSlipImage()" data-t="saveImage">🖼️ ပုံသိမ်းမယ်</button>
+    </div>
   </div>
 
   <!-- ===== About ===== -->
@@ -665,9 +670,11 @@
 
 <script>
   const KEY = 'salaryCalcSettings.v2', OLD_KEY = 'salaryCalcSettings.v1';
-  const APP_VERSION = '1.3.0';
+  const APP_VERSION = '1.3.1';
   const APP_NOTES = [
-    'Budget tab (ဘတ်ဂျက်) ထည့်သွင်းခြင်း'
+    'Budget tab (ဘတ်ဂျက်) ထည့်သွင်းခြင်း',
+    'Slip ကို ပုံအဖြစ် သိမ်းလို့ရခြင်း',
+    'Slip မှာ နာမည် ပြခြင်း'
   ];
   function verCmp(a, b){
     const pa = String(a).split('.').map(function(x){ return parseInt(x, 10) || 0; });
@@ -701,7 +708,7 @@
       days:'အလုပ်လုပ်ရက် (ရက်)', daysPh:'ဥပမာ — 26',
       otHours:'နေ့စဉ်အချိန်ပို နာရီ', ot3Hours:'OT*3 နာရီ', holDays:'အားလပ်ရက်အချိန်ပို (ရက်)', phDays:'အစိုးရပိတ်ရက် (ရက်)',
       attend:'ရက်မှန်ကြေး ထည့်မည်', otherBonus:'အခြား Bonus', otherDed:'အခြား နှုတ်ငွေ',
-      clear:'ထည့်ထားတာတွေ ရှင်းလင်းမယ်', totalLbl:'စုစုပေါင်း လစာ', print:'🖨️ ပရင့်ထုတ်မယ်', dateLbl:'ရက်စွဲ',
+      clear:'ထည့်ထားတာတွေ ရှင်းလင်းမယ်', totalLbl:'စုစုပေါင်း လစာ', print:'🖨️ ပရင့်ထုတ်မယ်', saveImage:'🖼️ ပုံသိမ်းမယ်', dateLbl:'ရက်စွဲ',
       lBase:'အခြေခံလစာ (လုပ်အားခ × ရက်)', lOt:'နေ့စဉ်အချိန်ပို', lOt3:'OT*3', lHol:'အားလပ်ရက်အချိန်ပို', lPh:'အစိုးရပိတ်ရက် (PH × ရက်)', lOtMeal:'OT ထမင်းစရိတ် (OT meal × OT ရက်)',
       lMeal:'ထမင်းစရိတ် × ရက်', lTrans:'ခရီးစရိတ် × ရက်',
       lAttend:'ရက်မှန်ကြေး', lOther:'အခြား Bonus', lIns:'အာမခံကြေး (နှုတ်)', lOtherDed:'အခြား နှုတ်ငွေ (နှုတ်)',
@@ -736,7 +743,7 @@
       days:'Working Days', daysPh:'e.g. 26',
       otHours:'Daily OT Hours', ot3Hours:'OT*3 Hours', holDays:'Holiday OT Days', phDays:'Public Holiday Days',
       attend:'Full Attendance (include Attendance Bonus)', otherBonus:'Other Bonus', otherDed:'Other Deduction',
-      clear:'Clear All', totalLbl:'Total Salary', print:'🖨️ Print', dateLbl:'Date',
+      clear:'Clear All', totalLbl:'Total Salary', print:'🖨️ Print', saveImage:'🖼️ Save image', dateLbl:'Date',
       lBase:'Base Salary (Daily Wage × Days)', lOt:'Daily OT', lOt3:'OT*3', lHol:'Holiday OT', lPh:'Public Holiday (PH × Days)', lOtMeal:'OT Meal Allowance (OT Meal × OT Days)',
       lMeal:'Meal Allowance (Meal × Days)', lTrans:'Transport Allowance (Transport × Days)',
       lAttend:'Attendance Bonus', lOther:'Other Bonus', lIns:'Insurance Fee (deduction)', lOtherDed:'Other Deduction',
@@ -771,7 +778,7 @@
       days:'工作天数', daysPh:'例如：26',
       otHours:'每日加班小时', ot3Hours:'OT*3 小时', holDays:'假日加班天数', phDays:'公共假日天数',
       attend:'全勤（包含全勤奖）', otherBonus:'其他奖金', otherDed:'其他扣款',
-      clear:'清除全部', totalLbl:'工资总额', print:'🖨️ 打印', dateLbl:'日期',
+      clear:'清除全部', totalLbl:'工资总额', print:'🖨️ 打印', saveImage:'🖼️ 保存图片', dateLbl:'日期',
       lBase:'基本工资（日薪 × 天数）', lOt:'每日加班', lOt3:'OT*3', lHol:'假日加班', lPh:'公共假日（假日工资 × 天数）', lOtMeal:'加班餐补（餐补 × 加班天数）',
       lMeal:'餐补（餐补 × 天数）', lTrans:'交通补贴（交通补贴 × 天数）',
       lAttend:'全勤奖', lOther:'其他奖金', lIns:'保险费（扣除）', lOtherDed:'其他扣款',
@@ -806,7 +813,7 @@
       days:'วันทำงาน (วัน)', daysPh:'เช่น 26',
       otHours:'ชั่วโมงโอทีรายวัน', ot3Hours:'ชั่วโมง OT*3', holDays:'วันโอทีวันหยุด (วัน)', phDays:'วันหยุดนักขัตฤกษ์ (วัน)',
       attend:'ใส่เบี้ยขยัน', otherBonus:'โบนัสอื่น', otherDed:'หักอื่นๆ',
-      clear:'ล้างทั้งหมด', totalLbl:'เงินเดือนรวม', print:'🖨️ พิมพ์', dateLbl:'วันที่',
+      clear:'ล้างทั้งหมด', totalLbl:'เงินเดือนรวม', print:'🖨️ พิมพ์', saveImage:'🖼️ บันทึกภาพ', dateLbl:'วันที่',
       lBase:'เงินเดือนพื้นฐาน (ค่าจ้าง × วัน)', lOt:'โอทีรายวัน', lOt3:'OT*3', lHol:'โอทีวันหยุด', lPh:'วันหยุดนักขัตฤกษ์ (PH × วัน)', lOtMeal:'ค่าอาหารโอที (ค่าอาหารโอที × วันโอที)',
       lMeal:'ค่าอาหาร × วัน', lTrans:'ค่าเดินทาง × วัน',
       lAttend:'เบี้ยขยัน', lOther:'โบนัสอื่น', lIns:'ประกันสังคม (หัก)', lOtherDed:'หักอื่นๆ',
@@ -941,7 +948,10 @@
       [t('lIns'), ins > 0 ? '-' + fmt(ins) : '0', ins === 0],
       [t('lOtherDed'), otherDed > 0 ? '-' + fmt(otherDed) : '0', otherDed === 0]
     ];
-    let h = '<div class="total"><div class="lbl">' + t('totalLbl') + '</div>';
+    let h = '<div class="total">';
+    const ap = activePerson();
+    if(ap) h += '<div class="slip-name">' + escHtml(ap.name) + '</div>';
+    h += '<div class="lbl">' + t('totalLbl') + '</div>';
     h += '<div class="amt">' + fmt(total) + '<span class="cur">' + curLabel() + '</span></div><div class="lines">';
     rows.forEach(function(r){ h += '<div class="line' + (r[2] ? ' dim' : '') + '"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>'; });
     h += '</div></div>';
@@ -959,10 +969,92 @@
       [t('lAttend'), fmt(att)], [t('lOther'), fmt(other)], [t('lIns'), ins > 0 ? '-' + fmt(ins) : '0'], [t('lOtherDed'), otherDed > 0 ? '-' + fmt(otherDed) : '0']
     ];
     let h = '<h1>' + t('appTitle') + '</h1>';
+    const ap2 = activePerson();
+    if(ap2) h += '<div class="p-name">' + escHtml(ap2.name) + '</div>';
     h += '<div class="p-date">' + t('dateLbl') + ': ' + d + '</div>';
     rows.forEach(function(r){ h += '<div class="p-row"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>'; });
     h += '<div class="p-row p-total"><span>' + t('totalLbl') + '</span><span>' + fmt(total) + ' ' + curLabel() + '</span></div>';
     document.getElementById('printArea').innerHTML = h;
+  }
+
+  /* Save the slip as a PNG image — same content as the printout, no library, pure canvas. */
+  function saveSlipImage(){
+    const pa = document.getElementById('printArea');
+    if(!pa) return;
+    const rows = [];
+    pa.querySelectorAll('.p-row:not(.p-total)').forEach(function(r){
+      const sp = r.querySelectorAll('span');
+      rows.push({ label: sp[0] ? sp[0].textContent : '', value: sp[1] ? sp[1].textContent : '' });
+    });
+    if(!rows.length) return;
+    const title = pa.querySelector('h1') ? pa.querySelector('h1').textContent : t('appTitle');
+    const name = pa.querySelector('.p-name') ? pa.querySelector('.p-name').textContent : '';
+    const date = pa.querySelector('.p-date') ? pa.querySelector('.p-date').textContent : '';
+    const tot = pa.querySelector('.p-total');
+    const tsp = tot ? tot.querySelectorAll('span') : [];
+    const totalLabel = tsp[0] ? tsp[0].textContent : t('totalLbl');
+    const totalVal = tsp[1] ? tsp[1].textContent : '';
+
+    const S = 2, W = 960, margin = 24, padX = 48, padTop = 40, padBottom = 36;
+    const titleH = 48, nameH = name ? 34 : 0, dateH = 34, dateGap = 14, rowH = 56, totalH = 76;
+    const contentW = W - margin * 2 - padX * 2;
+    const innerH = padTop + titleH + nameH + dateH + dateGap + rows.length * rowH + totalH + padBottom;
+    const H = innerH + margin * 2;
+    const canvas = document.createElement('canvas');
+    canvas.width = W * S; canvas.height = H * S;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(S, S);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+    ctx.textBaseline = 'middle';
+    const font = function(w, s){ return w + ' ' + s + 'px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'; };
+    function fit(text, maxW){
+      if(ctx.measureText(text).width <= maxW) return text;
+      let x = text;
+      while(x.length > 1 && ctx.measureText(x + '…').width > maxW) x = x.slice(0, -1);
+      return x + '…';
+    }
+    function drawFitted(text, maxW, align, x, cy, weight, size, minSize, color){
+      let s = size;
+      ctx.font = font(weight, s);
+      while(s > minSize && ctx.measureText(text).width > maxW){ s--; ctx.font = font(weight, s); }
+      ctx.fillStyle = color;
+      ctx.textAlign = align;
+      ctx.fillText(fit(text, maxW), x, cy);
+    }
+    const x0 = margin + padX, x1 = W - margin - padX;
+    let y = margin + padTop;
+    drawFitted(title, contentW, 'left', x0, y + titleH / 2, 800, 30, 22, '#111827');
+    y += titleH;
+    if(name){ drawFitted(name, contentW, 'left', x0, y + nameH / 2, 700, 24, 20, '#111827'); y += nameH; }
+    drawFitted(date, contentW, 'left', x0, y + dateH / 2, 400, 22, 18, '#444444');
+    y += dateH + dateGap;
+    rows.forEach(function(r, i){
+      if(i > 0){
+        ctx.fillStyle = '#dddddd';
+        ctx.fillRect(x0, y, contentW, 1);
+      }
+      const cy = y + rowH / 2;
+      drawFitted(r.label, contentW * 0.6, 'left', x0, cy, 400, 26, 20, '#1f2937');
+      drawFitted(r.value, contentW * 0.35, 'right', x1, cy, 700, 26, 20, '#111827');
+      y += rowH;
+    });
+    ctx.fillStyle = '#111827';
+    ctx.fillRect(x0, y + 8, contentW, 2);
+    const cy = y + 8 + totalH / 2;
+    drawFitted(totalLabel, contentW * 0.6, 'left', x0, cy, 700, 28, 22, '#111827');
+    drawFitted(totalVal, contentW * 0.35, 'right', x1, cy, 700, 28, 22, '#111827');
+    canvas.toBlob(function(blob){
+      if(!blob) return;
+      const a = document.createElement('a');
+      const d = new Date();
+      const iso = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      a.download = 'Salary-Slip-' + iso + '.png';
+      a.href = URL.createObjectURL(blob);
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    }, 'image/png');
   }
 
   function getOtHours(){
