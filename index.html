@@ -249,7 +249,6 @@
     .wrap{display:none;}
     #splash{display:none;}
     #printArea{display:block; padding:10px 16px; color:#000;}
-    #printArea h1{font-size:22px; margin:0 0 4px;}
     #printArea .p-name{font-size:17px; font-weight:700; margin-bottom:2px;}
     #printArea .p-date{font-size:14px; color:#444; margin-bottom:14px;}
     #printArea .p-row{display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid #ddd; font-size:15px;}
@@ -670,11 +669,12 @@
 
 <script>
   const KEY = 'salaryCalcSettings.v2', OLD_KEY = 'salaryCalcSettings.v1';
-  const APP_VERSION = '1.3.1';
+  const APP_VERSION = '1.3.2';
   const APP_NOTES = [
     'Budget tab (ဘတ်ဂျက်) ထည့်သွင်းခြင်း',
     'Slip ကို ပုံအဖြစ် သိမ်းလို့ရခြင်း',
-    'Slip မှာ နာမည် ပြခြင်း'
+    'Slip မှာ နာမည် ပြခြင်း',
+    'Slip မှာ ခေါင်းစဉ် ဖြုတ်ခြင်း'
   ];
   function verCmp(a, b){
     const pa = String(a).split('.').map(function(x){ return parseInt(x, 10) || 0; });
@@ -968,8 +968,8 @@
       [t('lMeal'), fmt(meal)], [t('lTrans'), fmt(trans)],
       [t('lAttend'), fmt(att)], [t('lOther'), fmt(other)], [t('lIns'), ins > 0 ? '-' + fmt(ins) : '0'], [t('lOtherDed'), otherDed > 0 ? '-' + fmt(otherDed) : '0']
     ];
-    let h = '<h1>' + t('appTitle') + '</h1>';
     const ap2 = activePerson();
+    let h = '';
     if(ap2) h += '<div class="p-name">' + escHtml(ap2.name) + '</div>';
     h += '<div class="p-date">' + t('dateLbl') + ': ' + d + '</div>';
     rows.forEach(function(r){ h += '<div class="p-row"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>'; });
@@ -987,7 +987,6 @@
       rows.push({ label: sp[0] ? sp[0].textContent : '', value: sp[1] ? sp[1].textContent : '' });
     });
     if(!rows.length) return;
-    const title = pa.querySelector('h1') ? pa.querySelector('h1').textContent : t('appTitle');
     const name = pa.querySelector('.p-name') ? pa.querySelector('.p-name').textContent : '';
     const date = pa.querySelector('.p-date') ? pa.querySelector('.p-date').textContent : '';
     const tot = pa.querySelector('.p-total');
@@ -996,9 +995,9 @@
     const totalVal = tsp[1] ? tsp[1].textContent : '';
 
     const S = 2, W = 960, margin = 24, padX = 48, padTop = 40, padBottom = 36;
-    const titleH = 48, nameH = name ? 34 : 0, dateH = 34, dateGap = 14, rowH = 56, totalH = 76;
+    const nameH = name ? 40 : 0, dateH = 34, dateGap = 14, rowH = 56, totalH = 76;
     const contentW = W - margin * 2 - padX * 2;
-    const innerH = padTop + titleH + nameH + dateH + dateGap + rows.length * rowH + totalH + padBottom;
+    const innerH = padTop + nameH + dateH + dateGap + rows.length * rowH + totalH + padBottom;
     const H = innerH + margin * 2;
     const canvas = document.createElement('canvas');
     canvas.width = W * S; canvas.height = H * S;
@@ -1024,9 +1023,7 @@
     }
     const x0 = margin + padX, x1 = W - margin - padX;
     let y = margin + padTop;
-    drawFitted(title, contentW, 'left', x0, y + titleH / 2, 800, 30, 22, '#111827');
-    y += titleH;
-    if(name){ drawFitted(name, contentW, 'left', x0, y + nameH / 2, 700, 24, 20, '#111827'); y += nameH; }
+    if(name){ drawFitted(name, contentW, 'left', x0, y + nameH / 2, 800, 28, 22, '#111827'); y += nameH; }
     drawFitted(date, contentW, 'left', x0, y + dateH / 2, 400, 22, 18, '#444444');
     y += dateH + dateGap;
     rows.forEach(function(r, i){
