@@ -252,6 +252,7 @@
     #printArea .p-name{font-size:17px; font-weight:700; margin-bottom:2px;}
     #printArea .p-date{font-size:14px; color:#444; margin-bottom:14px;}
     #printArea .p-row{display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid #ddd; font-size:15px;}
+    #printArea .p-row.p-sep{border-bottom:2px solid #000;}
     #printArea .p-row span:last-child{font-weight:600;}
     #printArea .p-total{border-top:2px solid #000; border-bottom:none; font-size:18px; padding-top:12px; margin-top:8px;}
     body.halloween #printArea .p-total{border-top-color:#D9480F;}
@@ -669,12 +670,13 @@
 
 <script>
   const KEY = 'salaryCalcSettings.v2', OLD_KEY = 'salaryCalcSettings.v1';
-  const APP_VERSION = '1.3.2';
+  const APP_VERSION = '1.3.3';
   const APP_NOTES = [
     'Budget tab (ဘတ်ဂျက်) ထည့်သွင်းခြင်း',
     'Slip ကို ပုံအဖြစ် သိမ်းလို့ရခြင်း',
     'Slip မှာ နာမည် ပြခြင်း',
-    'Slip မှာ ခေါင်းစဉ် ဖြုတ်ခြင်း'
+    'Slip မှာ ခေါင်းစဉ် ဖြုတ်ခြင်း',
+    'Slip မှာ အရေအတွက်နဲ့ ငွေပမာဏ ကြား မျဉ်းအထူ ခြားခြင်း'
   ];
   function verCmp(a, b){
     const pa = String(a).split('.').map(function(x){ return parseInt(x, 10) || 0; });
@@ -972,7 +974,7 @@
     let h = '';
     if(ap2) h += '<div class="p-name">' + escHtml(ap2.name) + '</div>';
     h += '<div class="p-date">' + t('dateLbl') + ': ' + d + '</div>';
-    rows.forEach(function(r){ h += '<div class="p-row"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>'; });
+    rows.forEach(function(r, i){ h += '<div class="p-row' + (i === 4 ? ' p-sep' : '') + '"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>'; });
     h += '<div class="p-row p-total"><span>' + t('totalLbl') + '</span><span>' + fmt(total) + ' ' + curLabel() + '</span></div>';
     document.getElementById('printArea').innerHTML = h;
   }
@@ -984,7 +986,7 @@
     const rows = [];
     pa.querySelectorAll('.p-row:not(.p-total)').forEach(function(r){
       const sp = r.querySelectorAll('span');
-      rows.push({ label: sp[0] ? sp[0].textContent : '', value: sp[1] ? sp[1].textContent : '' });
+      rows.push({ label: sp[0] ? sp[0].textContent : '', value: sp[1] ? sp[1].textContent : '', sep: r.classList.contains('p-sep') });
     });
     if(!rows.length) return;
     const name = pa.querySelector('.p-name') ? pa.querySelector('.p-name').textContent : '';
@@ -1028,8 +1030,8 @@
     y += dateH + dateGap;
     rows.forEach(function(r, i){
       if(i > 0){
-        ctx.fillStyle = '#dddddd';
-        ctx.fillRect(x0, y, contentW, 1);
+        if(rows[i-1].sep){ ctx.fillStyle = '#111827'; ctx.fillRect(x0, y, contentW, 2); }
+        else { ctx.fillStyle = '#dddddd'; ctx.fillRect(x0, y, contentW, 1); }
       }
       const cy = y + rowH / 2;
       drawFitted(r.label, contentW * 0.6, 'left', x0, cy, 400, 26, 20, '#1f2937');
