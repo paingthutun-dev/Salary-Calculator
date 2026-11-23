@@ -1079,12 +1079,29 @@
     document.getElementById('ot3Wrap').classList.toggle('hidden', rec);
     document.getElementById('recordWrap').classList.toggle('hidden', !rec);
     if(rec) renderRecord();
-    else calc();
+    else { fillMonthlyInputs(); calc(); }
   }
 
   const REC_KEY = 'salaryCalcRecords.v1';
   const PEOPLE_KEY = 'salaryCalcPeople.v1';
   const ACTIVE_KEY = 'salaryCalcActivePerson.v1';
+  const MONTH_KEY = 'salaryCalcMonthly.v1';
+  let monthlyInputs = (function(){ try{ return JSON.parse(localStorage.getItem(MONTH_KEY)) || {}; }catch(e){ return {}; } })();
+  function saveMonthlyInputs(){ try{ localStorage.setItem(MONTH_KEY, JSON.stringify(monthlyInputs)); }catch(e){} }
+  function curMonthKey(){ return recKey(recYear, recMonth); }
+  function persistMonthlyInputs(){
+    const e = {};
+    ['days','otHours','holDays','phDays','otherBonus','otherDed','ot3Hours'].forEach(function(id){ e[id] = document.getElementById(id).value; });
+    e.attend = document.getElementById('attend').checked;
+    monthlyInputs[curMonthKey()] = e;
+    saveMonthlyInputs();
+  }
+  function fillMonthlyInputs(){
+    const e = monthlyInputs[curMonthKey()] || {};
+    ['days','otHours','holDays','phDays','otherBonus','otherDed'].forEach(function(id){ document.getElementById(id).value = (e[id] != null && e[id] !== '') ? String(e[id]) : ''; });
+    document.getElementById('ot3Hours').value = (e.ot3Hours != null && e.ot3Hours !== '') ? String(e.ot3Hours) : '0';
+    document.getElementById('attend').checked = !!e.attend;
+  }
   function escHtml(s){ return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function personDefaultName(n){ return t('personDefault') + ' ' + n; }
   function sanitizePeople(arr){
@@ -1194,6 +1211,7 @@
   }
   let selDay = 0;
   function renderRecord(){
+    fillMonthlyInputs();
     renderPeople();
     document.getElementById('recMonthLabel').textContent = monthLabel();
     renderCalGrid();
@@ -1434,7 +1452,9 @@
   function clearInputs(){
     ['days','otHours','holDays','phDays','otherBonus','otherDed','ot3Hours'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('ot3Hours').value = '0';
-    document.getElementById('attend').checked = false; calc();
+    document.getElementById('attend').checked = false;
+    delete monthlyInputs[curMonthKey()]; saveMonthlyInputs();
+    calc();
     document.getElementById('days').focus();
   }
   function showSettings(){ fillSettings(); document.getElementById('mainView').classList.add('hidden'); document.getElementById('slipView').classList.add('hidden'); document.getElementById('aboutView').classList.add('hidden'); document.getElementById('ratesView').classList.add('hidden'); document.getElementById('exchangeView').classList.add('hidden'); document.getElementById('budgetView').classList.add('hidden'); document.getElementById('settingsView').classList.remove('hidden'); window.scrollTo(0,0); }
@@ -1719,10 +1739,10 @@
   fillOtSelect(document.getElementById('calEditOt'));
   fillOtSelect(document.getElementById('calEditOt3'));
   fillOtSelect(document.getElementById('ot3Hours'));
-  document.getElementById('ot3Hours').addEventListener('change', calc);
+  document.getElementById('ot3Hours').addEventListener('change', function(){ persistMonthlyInputs(); calc(); });
   ['days','otHours','holDays','phDays','otherBonus','otherDed','ot3Hours'].forEach(id =>
-    document.getElementById(id).addEventListener('input', calc));
-  document.getElementById('attend').addEventListener('change', calc);
+    document.getElementById(id).addEventListener('input', function(){ persistMonthlyInputs(); calc(); }));
+  document.getElementById('attend').addEventListener('change', function(){ persistMonthlyInputs(); calc(); });
   document.getElementById('sCur').addEventListener('change', function(){ S.currency = this.value; persist(); calc(); });
   document.getElementById('sTheme').addEventListener('change', function(){ S.theme = this.value; persist(); applyTheme(); });
   document.getElementById('exAmount').addEventListener('input', renderEx);
