@@ -671,14 +671,15 @@
 
 <script>
   const KEY = 'salaryCalcSettings.v2', OLD_KEY = 'salaryCalcSettings.v1';
-  const APP_VERSION = '1.3.4';
+  const APP_VERSION = '1.3.5';
   const APP_NOTES = [
     'Budget tab (ဘတ်ဂျက်) ထည့်သွင်းခြင်း',
     'Slip ကို ပုံအဖြစ် သိမ်းလို့ရခြင်း',
     'Slip မှာ နာမည် ပြခြင်း',
     'Slip မှာ ခေါင်းစဉ် ဖြုတ်ခြင်း',
     'Slip မှာ အရေအတွက်နဲ့ ငွေပမာဏ ကြား မျဉ်းအထူ ခြားခြင်း',
-    'OT*3 ကို Holiday OT ရက်မှာသာ ဖွင့်ခြင်း'
+    'OT*3 ကို Holiday OT ရက်မှာသာ ဖွင့်ခြင်း',
+    'Bonus/deduction ကို တစ်ယောက်ချင်း သီးသန့်သိမ်းခြင်း'
   ];
   function verCmp(a, b){
     const pa = String(a).split('.').map(function(x){ return parseInt(x, 10) || 0; });
@@ -1088,7 +1089,20 @@
   const MONTH_KEY = 'salaryCalcMonthly.v1';
   let monthlyInputs = (function(){ try{ return JSON.parse(localStorage.getItem(MONTH_KEY)) || {}; }catch(e){ return {}; } })();
   function saveMonthlyInputs(){ try{ localStorage.setItem(MONTH_KEY, JSON.stringify(monthlyInputs)); }catch(e){} }
-  function curMonthKey(){ return recKey(recYear, recMonth); }
+  function curMonthKey(){ return activePersonId + '|' + recKey(recYear, recMonth); }
+  let monthlyMigrated = false;
+  function migrateMonthlyInputs(){
+    if(monthlyMigrated) return; monthlyMigrated = true;
+    let changed = false;
+    Object.keys(monthlyInputs).forEach(function(k){
+      if(/^\d{4}-\d{2}$/.test(k)){
+        const nk = activePersonId + '|' + k;
+        if(!monthlyInputs[nk]) monthlyInputs[nk] = monthlyInputs[k];
+        delete monthlyInputs[k]; changed = true;
+      }
+    });
+    if(changed) saveMonthlyInputs();
+  }
   function persistMonthlyInputs(){
     const e = {};
     ['days','otHours','holDays','phDays','otherBonus','otherDed','ot3Hours'].forEach(function(id){ e[id] = document.getElementById(id).value; });
@@ -1097,6 +1111,7 @@
     saveMonthlyInputs();
   }
   function fillMonthlyInputs(){
+    migrateMonthlyInputs();
     const e = monthlyInputs[curMonthKey()] || {};
     ['days','otHours','holDays','phDays','otherBonus','otherDed'].forEach(function(id){ document.getElementById(id).value = (e[id] != null && e[id] !== '') ? String(e[id]) : ''; });
     document.getElementById('ot3Hours').value = (e.ot3Hours != null && e.ot3Hours !== '') ? String(e.ot3Hours) : '0';
